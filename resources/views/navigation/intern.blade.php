@@ -1,9 +1,11 @@
-<ul class="leftMenu">
-    <a href="/aktuell?wid=459">Aktuelles aus Südhessen</a>
-    <li>
+@auth
+    {{-- @can('isAdmin') --}}
+    <ul class="leftMenu">
+        <a href="/aktuell?wid=459">Aktuelles aus Südhessen</a>
+        <li>
 
-        @php
-            /**
+            @php
+                /**
                          <?php if($AccessControl->acl_check( 'webmoduls', 'config', 'aktuell', 460 )||$AccessControl->acl_check( 'webmoduls', 'access', 'aktuell', 460 )): ?>
                     <?php $selected = '/0'; ?>
                     <?php
@@ -55,85 +57,87 @@
                     <?php $haveMenu = true; ?>
                     <?php endif; ?>
              * */
-        @endphp
+            @endphp
 
-    <li class="has-ul">
-        <b>Dienstplan</b>
-        <span id="subBtn">
-            <svg xmlns="http://www.w3.org/2000/svg" style="height: 1.25rem;width: 1.25rem;" viewBox="0 0 20 20"
-                fill="currentColor">
-                <path fill-rule="evenodd"
-                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                    clip-rule="evenodd"></path>
-            </svg>
-        </span>
-        <ul class="sub " style="padding:0 !important;">
-            <li><a style="color: red" href="/dienstplan/overview?wid=">Ansicht</a></li>
-            <li><a style="color: red" href="/dienstplan/aktuell?wid=">Leitstelle</a></li>
-        </ul>
-    </li>
-    <li class="has-ul">
-        <b>Administrator</b>
-        <span id="subBtn">
-            <svg xmlns="http://www.w3.org/2000/svg" style="height: 1.25rem;width: 1.25rem;" viewBox="0 0 20 20"
-                fill="currentColor">
-                <path fill-rule="evenodd"
-                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                    clip-rule="evenodd"></path>
-            </svg>
-        </span>
-        <ul class="sub " style="padding:0 !important;">
-            <li><a style="color: red" href="/dienstplan/months?wid=">Dienstplankonf.</a></li>
-            <li><a style="color: red" href="/dienstplan/vacation?wid=">Urlaub/Auszeit</a></li>
-            <li><a style="color: red" href="/dienstplan/admin?wid=">Benutzer&uuml;bersicht</a></li>
-            <li><a style="color: red" href="/dienstplan/createUser?wid=">Benutzer anlegen</a></li>
-            <li><a style="color: red" href="/dienstplan/admin_kontakte?wid=">Kontakte</a></li>
-            <li><a style="color: red" href="/dienstplan/settings?wid=">Einstellungen</a></li>
-            <?php //if( $this->Session->read( 'User.DienstplanProps.hour_overview_access' ) == '1' ):
-            ?>
-            <li><a style="color: red" href="/dienstplan/hourOverview?wid=">Stunden&uuml;bersicht</a></li>
-        </ul>
-    </li>
+        <li class="has-ul active">
+            <b>Dienstplan</b>
+            <span id="subBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" style="height: 1.25rem;width: 1.25rem;" viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                        clip-rule="evenodd"></path>
+                </svg>
+            </span>
+            <ul class="sub " style="padding:0 !important;">
+                <li><a style="color: red" href="/dienstplan/overview?wid=">Ansicht</a></li>
+                <li><a style="color: red" href="/dienstplan/aktuell?wid=">Leitstelle</a></li>
+            </ul>
+        </li>
+        <li class="has-ul active">
+            <b>Administrator</b>
+            <span id="subBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" style="height: 1.25rem;width: 1.25rem;" viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                        clip-rule="evenodd"></path>
+                </svg>
+            </span>
+            <ul class="sub " style="padding:0 !important;">
+                <li><a style="color: red" href="/dienstplan/months?wid=">Dienstplankonf.</a></li>
+                <li><a style="color: red" href="/dienstplan/vacation?wid=">Urlaub/Auszeit</a></li>
+                <li><a style="color: red" href="/dienstplan/admin?wid=">Benutzer&uuml;bersicht</a></li>
+                <li><a style="color: red" href="/dienstplan/createUser?wid=">Benutzer anlegen</a></li>
+                <li><a style="color: red" href="/dienstplan/admin_kontakte?wid=">Kontakte</a></li>
+                <li><a style="color: red" href="/dienstplan/settings?wid=">Einstellungen</a></li>
+                <?php //if( $this->Session->read( 'User.DienstplanProps.hour_overview_access' ) == '1' ):
+                ?>
+                <li><a style="color: red" href="/dienstplan/hourOverview?wid=">Stunden&uuml;bersicht</a></li>
+            </ul>
+        </li>
 
-    <li class="has-ul">
-        <b>Dienstplan</b>
-        <span id="subBtn">
-            <svg xmlns="http://www.w3.org/2000/svg" style="height: 1.25rem;width: 1.25rem;" viewBox="0 0 20 20"
-                fill="currentColor">
-                <path fill-rule="evenodd"
-                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                    clip-rule="evenodd"></path>
-            </svg>
-        </span>
-        <ul class="sub " style="padding:0 !important;">
-            <li><a style="color: red" href="/dienstplan/aktuell?wid=">Aktuell</a></li>
-            <li><a style="color: red" href="/dienstplan/overview?wid=">Ansicht</a></li>
-            @if ('User.DienstplanProps.contact_maintainer' == 1)
-                <li><a style="color: red" href="/dienstplan/admin_kontakte?wid=">Kontakte bearbeiten</a></li>
-            @endif
-        </ul>
-    </li>
-    <li class="has-ul">
-        <b>Mein Bereich</b>
-        <span id="subBtn">
-            <svg xmlns="http://www.w3.org/2000/svg" style="height: 1.25rem;width: 1.25rem;" viewBox="0 0 20 20"
-                fill="currentColor">
-                <path fill-rule="evenodd"
-                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                    clip-rule="evenodd"></path>
-            </svg>
-        </span>
-        <ul class="sub " style="padding:0 !important;">
-            <li><a style="color: red" href="/dienstplan/months?wid=">Dienstplan</a></li>
-            <li><a style="color: red" href="/dienstplan/vacation?wid=">Urlaub/Auszeit</a></li>
-            <li><a style="color: red" href="/dienstplan/user_view?wid=">Kontaktverzeichnis</a></li>
-            <li>
-                <a style="color: red" href="/dienstplan/editUser/' . $this->Session->read('User.id')">Mein Profil</a>
-            </li>
-        </ul>
-    </li>
+        <li class="has-ul active">
+            <b>Dienstplan</b>
+            <span id="subBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" style="height: 1.25rem;width: 1.25rem;" viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                        clip-rule="evenodd"></path>
+                </svg>
+            </span>
+            <ul class="sub " style="padding:0 !important;">
+                <li><a style="color: red" href="/dienstplan/aktuell?wid=">Aktuell</a></li>
+                <li><a style="color: red" href="/dienstplan/overview?wid=">Ansicht</a></li>
+                @if ('User.DienstplanProps.contact_maintainer' == 1)
+                    <li><a style="color: red" href="/dienstplan/admin_kontakte?wid=">Kontakte bearbeiten</a></li>
+                @endif
+            </ul>
+        </li>
+        <li class="has-ul active">
+            <b>Mein Bereich</b>
+            <span id="subBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" style="height: 1.25rem;width: 1.25rem;" viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                        clip-rule="evenodd"></path>
+                </svg>
+            </span>
+            <ul class="sub " style="padding:0 !important;">
+                <li><a style="color: red" href="/dienstplan/months?wid=">Dienstplan</a></li>
+                <li><a style="color: red" href="/dienstplan/vacation?wid=">Urlaub/Auszeit</a></li>
+                <li><a style="color: red" href="/dienstplan/user_view?wid=">Kontaktverzeichnis</a></li>
+                <li>
+                    <a style="color: red" href="/dienstplan/editUser/' . $this->Session->read('User.id')">Mein Profil</a>
+                </li>
+            </ul>
+        </li>
 
-</ul>
+    </ul>
+    {{-- @endcan --}}
+@endauth
 
 <style>
     .hideSelectable li ul {
@@ -170,12 +174,6 @@
             //    event.preventDefault();
         });
 
-        // $(".leftMenu li.has-ul").on("mouseover", function (e) {
-        // 	e.stopPropagation();
-        // 	$(this).children('.sub').slideToggle(500);
-        // 	$(this).toggleClass('active');
-        // });
-
         $(".leftMenu a").click(function(e) {
             // e.preventDefault();
             $(".leftMenu").removeClass("open");
@@ -188,7 +186,7 @@
                 // do whatever you wnat if same id
             } else {
                 if ($("ul").hasClass("open")) {
-                    $("ul").removeClass("open");
+                    // $("ul").removeClass("open");
                 }
             }
 
@@ -196,26 +194,6 @@
         });
 
 
-        // $(document).on("mouseover",".selectable li", function (e) {
-        // 	e.stopPropagation();
-        // 	// unlock all ul
-        // 	$(".selectable").removeClass("hideSelectable");
-
-        // 	// hide all ul
-        // 	$(".selectable li ul").addClass("hideList");
-
-        // 	// if($(this).children("ul").hasClass("showList")){
-
-        // 	// }
-
-        // 	// show current ul
-        // 		$(this).children("ul").delay(300).removeClass("hideList");
-        // 		$(this).children("ul").delay(300).addClass("showList");
-
-
-        // 	// $(".selectable li ul").slideUp(300);
-        // 	// $(this).children("ul").slideDown(300);
-        // });
         // hide all ul
         $(".selectable li ul").addClass("hideList");
         $(".selectable > ul > li > a").click(function(e) {
@@ -231,14 +209,18 @@
             //$(this).children("ul").toggleClass("showList");
             $(this).next("ul").toggleClass("showList");
 
-            // if($(this).children("ul").hasClass("hideList")){
-            // 	$(this).children("ul").delay(300).removeClass("hideList");
-            // 	$(this).children("ul").delay(300).addClass("showList");
-            // }else{
-            // 	$(this).children("ul").delay(300).removeClass("hideList");
-            // 	$(this).children("ul").delay(300).addClass("showList");
-            // }
+        });
 
+        $(document).click(function(e) {
+            e.stopPropagation();
+            var element = e.target;
+            // console.log('e', $(element).text())
+            var menuHasClass = $(element).closest(".menu").hasClass("menu");
+            console.log('has', menuHasClass)
+            if (!menuHasClass) {
+                $(".leftMenu").removeClass("open");
+                $(".rightMenu").removeClass("open");
+            }
         });
     });
 </script>

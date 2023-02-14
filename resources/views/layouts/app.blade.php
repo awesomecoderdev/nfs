@@ -154,19 +154,14 @@
             <div class="row headflex">
 
                 <div class="col span_2 clr menu h54">
-
-                    <?php //if($AccessControl->acl_check( 'webmoduls', 'config', 'aktuell', 460 )||$AccessControl->acl_check( 'webmoduls', 'access', 'aktuell', 460 )):
-                    ?>
-                    <nav id="cssmenuleft">
-                        @include('navigation.intern')
-                    </nav>
-                    <?php //endif;
-                    ?>
-
-
+                    @auth
+                        <nav id="cssmenuleft">
+                            @include('navigation.intern')
+                        </nav>
+                    @endauth
                 </div>
                 <div class="col span_5 clr dada">
-                    <span class="pri">Darmstadt &bull; Darmstadt-Dieburg</span>
+                    <span class="">Darmstadt &bull; Darmstadt-Dieburg</span>
                 </div>
                 <div class="col span_2 clr logo">
                     <img src="{{ secure_asset('img/logo-nfs.png') }}" alt="ALTERNATIVTEXT"
@@ -254,7 +249,6 @@
                     swapNowStart--;
                 }
             });
-
 
             $.fn.equalHeights = function(target) {
                 var max_height = 0;

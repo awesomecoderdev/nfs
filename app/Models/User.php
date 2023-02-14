@@ -41,4 +41,15 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+
+    /**
+     * Return the user full name.
+     *
+     * @return string
+     */
+    public function admin(): bool
+    {
+        return ($this->isAdmin != null && $this->isAdmin == 1) ? true : false;
+    }
 }

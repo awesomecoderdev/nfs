@@ -1,4 +1,4 @@
-<ul>
+<ul class="rightMenu">
     <li> <a href="/aktuell/"> Neues/Blog</a></li>
     <li> <a href="/notfallseelsorge-vo"> Notfallseelsorge vor Ort </a>
         <ul>
@@ -14,10 +14,10 @@
     <li> <a href="/mithelfen"> Mit-helfen</a></li>
     <li> <a href="/contact"> Kontakt</a></li>
     @auth
-        <li class="last"> Mita <a href="/aktuell?landing=1">rbeiter intern</a></li>
+        <li class="last"><a href="/aktuell?landing=1">Mitarbeiter intern</a></li>
     @else
         <li> <a href="/"> Start</a></li>
-        <li> <a href="/aktuell"> Intern</a></li>
+        <li> <a href="{{ route('login') }}"> Intern</a></li>
     @endauth
 
     @if (auth()->user())
@@ -26,7 +26,16 @@
 
 
     @auth
-        <li>Logout</li>
+        <li>
+            <!-- Authentication -->
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+
+                <x-dropdown-link :href="route('logout')" onclick="event.preventDefault();this.closest('form').submit();">
+                    {{ __('Log Out') }}
+                </x-dropdown-link>
+            </form>
+        </li>
     @endauth
 
 </ul>
