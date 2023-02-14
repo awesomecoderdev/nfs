@@ -1,4 +1,7 @@
 <x-app-layout>
+    @section('head')
+        <title> Register | {{ __(config('app.name')) }}</title>
+    @endsection
     <form method="POST" action="{{ route('register') }}">
         @csrf
 

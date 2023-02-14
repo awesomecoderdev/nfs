@@ -15,6 +15,9 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+// wids 439, 440, 441,442,443,444
+
 // index route
 Route::get('/', [FrontendController::class, "index"])->name("index");
 

@@ -1,4 +1,7 @@
 <x-app-layout>
+    @section('head')
+        <title> Login | {{ __(config('app.name')) }}</title>
+    @endsection
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 

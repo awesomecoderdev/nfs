@@ -1,4 +1,7 @@
 <x-app-layout>
+    @section('head')
+        <title> Reset Password | {{ __(config('app.name')) }}</title>
+    @endsection
     <form method="POST" action="{{ route('password.store') }}">
         @csrf
 
