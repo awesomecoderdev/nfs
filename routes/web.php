@@ -30,3 +30,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // dashboard route
     Route::any('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
 });
+
+
+Route::middleware([])->group(function () {
+    Route::any('/mitarbeiter', [FrontendController::class, 'mitarbeiter'])->name('mitarbeiter');
+    Route::any('/aktuell', [FrontendController::class, 'aktuell'])->name('aktuell');
+    Route::any('/bergstrasse', [FrontendController::class, 'bergstrasse'])->name('bergstrasse');
+    Route::any('/darmstadt-dieburg', [FrontendController::class, 'darmstadt_dieburg'])->name('darmstadt_dieburg');
+    Route::any('/einsatznachsorge', [FrontendController::class, 'einsatznachsorge'])->name('einsatznachsorge');
+});
+
+
+// protected pages
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::any('/einsatzprotokoll_berg', [FrontendController::class, 'einsatzprotokoll_berg'])->name('einsatzprotokoll_berg');
+    Route::any('/einsatzprotokoll_da', [FrontendController::class, 'einsatzprotokoll_da'])->name('einsatzprotokoll_da');
+});

@@ -147,7 +147,9 @@
     @vite(['resources/js/app.js'])
 </head>
 
-<body>
+<body @hasSection('bodyClass')
+    class="@yield('bodyClass')"
+    @endif>
     <header>
         <div class="blueline"></div>
         <div class="container prz">

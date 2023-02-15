@@ -2,6 +2,7 @@
     @section('head')
         <title> {{ __(config('app.name')) }}</title>
     @endsection
+    @section('bodyClass', 'index')
 
     <div class="container row">
         <div class="row gutters">
