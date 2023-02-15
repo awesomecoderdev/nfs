@@ -4,7 +4,7 @@
     @endsection
     @section('bodyClass', 'index')
 
-    <div class="container row">
+    <div class="container">
         <div class="row gutters">
             <div class="col span_16 clr tar">
                 <h1>Willkommen bei der<br>Notfallseelsorge in Südhessen</h1>
@@ -16,7 +16,7 @@
 
     @can('wid439')
         <div class="fullblue">
-            <div class="container row">
+            <div class="container">
                 <div class="row gutters gutflex">
                     <div class="col span_8 clr">
                         <p> Seit vielen Jahren steht die Notfallseelsorge Südhessen allen Menschen in akuten Notsituationen
@@ -48,7 +48,7 @@
     @endcan
 
 
-    <div class="container row mt80">
+    <div class="container mt80">
         <div class="row gutters">
             <div class="col span_16 clr tar">
                 <h2>Erste Hilfe für die Seele</h2>
@@ -57,7 +57,7 @@
         </div>
     </div>
 
-    <div class="container row mt40 hyp">
+    <div class="container mt40 hyp">
         <div class="row gutters cols4">
             <div class="col span_4 clr">
                 <div class="borders">
@@ -96,7 +96,7 @@
     </div>
 
     <div class="fullblue">
-        <div class="container row mt80">
+        <div class="container mt80">
             <div class="row gutters">
                 <div class="col span_16 clr tar">
                     <h2>Neues/Blog</h2>
@@ -107,7 +107,7 @@
     </div>
 
     <div class="fullblue" style="margin-top: 0 !important">
-        <div class="container row">
+        <div class="container">
             <div class="row gutters hyp">
                 <div class="col span_0 clr">
                     &nbsp;

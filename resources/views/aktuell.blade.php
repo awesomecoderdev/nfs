@@ -9,7 +9,7 @@
     <div class="column-6 push-1 bgcolored int_ov">
     </div>
 
-    <div class="container row">
+    <div class="container">
         <div class="row gutters">
 
             <div class="col span_16 clr tar">
@@ -18,7 +18,7 @@
             </div>
         </div>
     </div>
-    <div class="container row mt80">
+    <div class="container mt80">
         <div class="row gutters">
             <div class="col span_16 clr">
                 {{-- {{ $this->renderDefault() }} --}}

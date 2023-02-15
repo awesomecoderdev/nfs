@@ -4,7 +4,7 @@
     @endsection
     @section('bodyClass', 'einsatznachsorge')
 
-    <div class="container row">
+    <div class="container">
         <div class="row gutters">
             <div class="col span_16 clr tar">
                 <h1>Einsatznachsorge</h1>
@@ -14,7 +14,7 @@
     </div>
 
     <div class="fullblue">
-        <div class="container row">
+        <div class="container ">
             <div class="row gutters gutflex">
                 <div class="col span_8 clr">
                     <p>Ein schwerer Verkehrsunfall, ein Großschadensereignis, ein Suizid oder der Tod eines Kindes - im
@@ -38,7 +38,7 @@
         </div>
     </div>
 
-    <div class="container row mt80">
+    <div class="container mt80">
         <div class="row gutters cols4">
             <div class="col span_4 clr">
                 <div class="borders">
@@ -80,7 +80,7 @@
         </div>
     </div>
 
-    <div class="container row mt80">
+    <div class="container mt80">
         <div class="row gutters">
             <div class="col span_16 clr tar">
                 <h2>Erste Hilfe für die Seele</h2>
@@ -89,7 +89,7 @@
         </div>
     </div>
 
-    <div class="container row mt40 hyp">
+    <div class="container mt40 hyp">
         <div class="row gutters cols4">
             <div class="col span_4 clr">
                 <div class="borders">

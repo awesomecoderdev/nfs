@@ -144,7 +144,7 @@
         }
     </style>
 
-    <div class="container row smallFontSize">
+    <div class="container  smallFontSize">
         <div class="row gutters"></div>
         <div class="col span_16 clr tar">
             <h2>Bergstra&szlig;e Intern</h2>
@@ -156,7 +156,7 @@
             <div class="column-8 bgwhite int_ov" id="einsatzprotokoll_container">
                 <div id="einsatzprotokoll">
 
-                    <div class="container row">
+                    <div class="container">
                         <form>
                             <table style="width:700px;border-collapse:collapse;">
                                 <tr>

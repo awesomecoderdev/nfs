@@ -1,6 +1,6 @@
 <x-app-layout>
     @section('head')
-        <title> Bergstra&szlig;e Intern | {{ __(config('app.name')) }}</title>
+        <title> Darmstadt-Dieburg Intern | {{ __(config('app.name')) }}</title>
 
         <link type="text/css" rel="stylesheet" href="{{ secure_asset('css/jquery-ui-1.11.4.custom/jquery-ui.min.css') }}" />
         <link type="text/css" rel="stylesheet"
@@ -16,7 +16,8 @@
     @section('bodyClass', 'interna')
 
     <style type="text/css">
-        .smallFontSize table,
+        .smallFontSize,
+        table,
         input {
             font-size: 14px;
             font-family: "Lato", sans-serif;
@@ -31,12 +32,6 @@
             border-bottom: 1px solid black;
             border-left: 0px;
             border-right: 0px;
-        }
-
-        .blank {
-            border: 0px;
-            border-right: 1px solid black;
-            background: #DDD9C3;
         }
 
         .checkboxcell {
@@ -55,6 +50,18 @@
 
         .cols2 label {
             width: 50%;
+        }
+
+        .cols3 label {
+            width: 33%;
+        }
+
+        .cols4 label {
+            width: 25%;
+        }
+
+        .cols5 label {
+            width: 20%;
         }
 
         textarea {
@@ -163,28 +170,30 @@
             }
         }
     </style>
-    <div class="container  smallFontSize">
+
+    <div class="container row smallFontSize">
         <div class="row gutters"></div>
         <div class="col span_16 clr tar">
-            <h2>Darmstadt Intern</h2>
+            <h2>Darmstadt-Dieburg Intern</h2>
         </div>
         <div class="column-1 push-1 bgyellow int_ov">
         </div>
         <div class="col span_16 clr tar">
             <div id="einsatzprotokoll">
 
-                <div class="container">
+                <div class="container row">
                     <form>
                         <table style="width:700px;border-collapse:collapse;">
                             <tr>
                                 <td colspan=5 id="heading">
-                                    <h3>Einsatzprotokoll Notfallseelsorge Darmstadt und Umgebung</h3>
+                                    <h3>Einsatzprotokoll Notfallseelsorge Darmstadt-Dieburg</h3>
                                 </td>
                             </tr>
                             <tr id="row_einsatzdatum">
                                 <th>Einsatzdatum:</th>
                                 <td colspan=2><input type="text" name="input_einsatzdatum" class="datepicker"></td>
                             </tr>
+
                             <tr id="row_einsatznummer">
                                 <th>Einsatznummer:</th>
                                 <td colspan=2><input type="text" name="input_einsatznummer"></td>
@@ -243,7 +252,7 @@
                                 </th>
                                 <td colspan=4>
                                     <textarea style="width:99%; height: 99%;" name="input_einsatzstelle">
-					</textarea>
+                      </textarea>
                                 </td>
                             </tr>
                             <tr class="td_singlecheck">
@@ -554,7 +563,7 @@
                                 </th>
                                 <td colspan=4 style="height:25px;">
                                     <textarea style="width:99%; height: 99%;" name="input_thema_nachbespr">
-					</textarea>
+                      </textarea>
                                 </td>
                             </tr>
                             <tr>
@@ -568,14 +577,14 @@
 
                     </form>
                 </div>
+                <button style="margin: 15px 0 10px 10px; float: left;"
+                    onclick="sendMail(['susanne.fitz@bistum-mainz.de', 'michael.fornoff@ekhn.de', 's.fitz@hock-fitz.de' ],
+                     '{{ '/send_mail/send' }}', 'Einsatzprotokoll', 'Anbei das Einsatzprotokoll', 'einsatzprotokoll');">E-Mail
+                    versenden</button>
+
+                <script type="text/javascript" src="{{ secure_asset('js/send_form.js') }}"></script>
+
             </div>
-
-            {{-- send mail --}}
-            <button style="margin: 15px 0 10px 10px; float: left;"
-                onclick="sendMail(['heiko.kapraun@gmx.de'], '{{ '/send_mail/send' }}', 'Einsatzprotokoll', 'Anbei das Einsatzprotokoll', 'einsatzprotokoll');">E-Mail
-                versenden</button>
-
-            <script type="text/javascript" src="{{ secure_asset('js/send_form.js') }}"></script>
         </div>
     </div>
 
@@ -600,5 +609,6 @@
             });
         });
     </script>
+
 
 </x-app-layout>

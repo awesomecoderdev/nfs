@@ -12,7 +12,7 @@
     <link rel="preload" href="{{ secure_asset('js/jquery.min.js') }}" as="script" type="text/javascript" />
 
     {{-- css --}}
-    <link rel="stylesheet" href="{{ secure_asset('css/normalize.min.css') }}">
+    {{-- <link rel="stylesheet" href="{{ secure_asset('css/normalize.min.css') }}"> --}}
     <link rel="stylesheet" href="{{ secure_asset('css/fluidgrid.css') }}">
     <link rel="stylesheet" href="{{ secure_asset('css/font-awesome.min.css') }}">
     <link rel="stylesheet" href="{{ secure_asset('css/home.css') }}">
@@ -219,7 +219,6 @@
 
     <!-- Scripts -->
     <script src="{{ secure_asset('js/jquery.backstretch.min.js') }}"></script>
-
     <!-- starty custom script -->
     <script>
         $(document).ready(function() {

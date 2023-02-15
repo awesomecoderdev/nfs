@@ -38,6 +38,13 @@ Route::middleware([])->group(function () {
     Route::any('/bergstrasse', [FrontendController::class, 'bergstrasse'])->name('bergstrasse');
     Route::any('/darmstadt-dieburg', [FrontendController::class, 'darmstadt_dieburg'])->name('darmstadt_dieburg');
     Route::any('/einsatznachsorge', [FrontendController::class, 'einsatznachsorge'])->name('einsatznachsorge');
+    Route::any('/odenwald', [FrontendController::class, 'odenwald'])->name('odenwald');
+    Route::any('/notfallseelsorge', [FrontendController::class, 'notfallseelsorge'])->name('notfallseelsorge');
+    Route::any('/mitmachen', [FrontendController::class, 'mitmachen'])->name('mitmachen');
+    Route::any('/mithelfen', [FrontendController::class, 'mithelfen'])->name('mithelfen');
+    Route::any('/hilfe_erfahren', [FrontendController::class, 'hilfe_erfahren'])->name('hilfe_erfahren');
+    Route::any('/darmstadt-und-umgebung', [FrontendController::class, 'darmstadt_und_umgebung'])->name('darmstadt_und_umgebung');
+    Route::any('/notfallseelsorge-vor-ort', [FrontendController::class, 'notfallseelsorge_vor_ort'])->name('notfallseelsorge_vor_ort');
 });
 
 
@@ -45,4 +52,11 @@ Route::middleware([])->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::any('/einsatzprotokoll_berg', [FrontendController::class, 'einsatzprotokoll_berg'])->name('einsatzprotokoll_berg');
     Route::any('/einsatzprotokoll_da', [FrontendController::class, 'einsatzprotokoll_da'])->name('einsatzprotokoll_da');
+    Route::any('/einsatzprotokoll_ow', [FrontendController::class, 'einsatzprotokoll_ow'])->name('einsatzprotokoll_ow');
+    Route::any('/einsatzprotokoll_nachsorge_da', [FrontendController::class, 'einsatzprotokoll_nachsorge_da'])->name('einsatzprotokoll_nachsorge_da');
+    Route::any('/reflexion_berg', [FrontendController::class, 'reflexion_berg'])->name('reflexion_berg');
+    Route::any('/reflexion_da', [FrontendController::class, 'reflexion_da'])->name('reflexion_da');
+    Route::any('/einsatzprotokoll_dadi', [FrontendController::class, 'einsatzprotokoll_dadi'])->name('einsatzprotokoll_dadi');
+    Route::any('/reflexion_dadi', [FrontendController::class, 'reflexion_dadi'])->name('reflexion_dadi');
+    Route::any('/reflexion_ow', [FrontendController::class, 'reflexion_ow'])->name('reflexion_ow');
 });

@@ -6,7 +6,7 @@
     {{-- need replace link to route --}}
 
 
-    <div class="container row">
+    <div class="container ">
         <div class="row gutters">
             <div class="col span_16 clr tar">
                 <h1>Darmstadt-Dieburg</h1>
@@ -16,7 +16,7 @@
     </div>
 
     <div class="fullblue">
-        <div class="container row">
+        <div class="container ">
             <div class="row gutters gutflex">
                 <div class="col span_8 clr">
                     <p>Seit über 20 Jahren gibt es die Notfallseelsorge Darmstadt-Dieburg nun schon. Weit mehr als 2000
@@ -46,7 +46,7 @@
     </div>
 
 
-    <div class="container row mt80">
+    <div class="container mt80">
         <div class="row gutters">
             <div class="col span_16 clr tar">
                 <h2>Notfallseelsorge Darmstadt-Dieburg</h2>
@@ -55,7 +55,7 @@
         </div>
     </div>
 
-    <div class="container row mt40 hyp">
+    <div class="container mt40 hyp">
         <div class="row gutters">
             <div class="col span_16 clr">
                 <div class="borders">
@@ -94,7 +94,7 @@
     </div>
 
     <!--
-            <div class="container row mt80">
+            <div class="container mt80">
                 <div class="row gutters">
                     <div class="col span_16 clr tar">
                         <h2>Einssatznachsorge</h2>
@@ -103,7 +103,7 @@
                 </div>
             </div>
 
-            <div class="container row mt40 hyp">
+            <div class="container mt40 hyp">
             <div class="row gutters">
             <div class="col span_16 clr">
                 <div class="borders">
@@ -121,7 +121,7 @@
             </div>
         -->
 
-    <div class="container row mt80">
+    <div class="container mt80">
         <div class="row gutters">
             <div class="col span_16 clr tar">
                 <h2>Kontakt zur Notfallseelsorge Darmstadt-Dieburg</h2>
@@ -130,7 +130,7 @@
         </div>
     </div>
 
-    <div class="container row mt40">
+    <div class="container mt40">
         <div class="row gutters">
             <div class="col span_8 clr wimg">
                 <div class="borders tar">
@@ -159,7 +159,7 @@
         </div>
     </div>
 
-    <div class="container row mt80">
+    <div class="container mt80">
         <div class="row gutters">
 
             <div class="borders bgblue tar">
@@ -174,7 +174,7 @@
         </div>
     </div>
 
-    <div class="container row mt80">
+    <div class="container mt80">
         <div class="row gutters">
             <div class="col span_4 clr">
 
@@ -205,7 +205,7 @@
     </div>
 
     <div class="fullblue">
-        <div class="container row mt80">
+        <div class="container mt80">
             <div class="row gutters">
                 <div class="col span_16 clr tar">
                     <h2>Erste Hilfe für die Seele</h2>
@@ -216,7 +216,7 @@
     </div>
 
     <div class="fullblue" style="margin-top: 0 !important">
-        <div class="container row">
+        <div class="container">
             <div class="row gutters cols4 hyp">
                 <div class="col span_4 clr">
                     <div class="borders white">

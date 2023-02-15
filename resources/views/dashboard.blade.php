@@ -7,7 +7,7 @@
 
     @can('wid439')
         <div class="fullblue">
-            <div class="container row">
+            <div class="container">
                 <div class="row gutters gutflex">
                     <div class="col span_8 clr">
                         <p> Seit vielen Jahren steht die Notfallseelsorge Südhessen allen Menschen in akuten Notsituationen
