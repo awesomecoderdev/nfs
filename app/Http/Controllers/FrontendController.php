@@ -30,14 +30,6 @@ class FrontendController extends Controller
     }
 
     /**
-     * Display the bergstrasse page.
-     */
-    public function bergstrasse(Request $request): View
-    {
-        return view('bergstrasse',);
-    }
-
-    /**
      * Display the darmstadt_dieburg page.
      */
     public function darmstadt_dieburg(Request $request): View
