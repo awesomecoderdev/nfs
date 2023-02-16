@@ -2,11 +2,11 @@
     @section('head')
         <title> Reset Password | {{ __(config('app.name')) }}</title>
     @endsection
-    <form method="POST" action="{{ route('password.store') }}">
+    <form method="POST" action="{{ route('users.password.store') }}">
         @csrf
 
         <!-- Password Reset Token -->
-        <input type="hidden" name="token" value="{{ $request->route('token') }}">
+        <input type="hidden" name="token" value="{{ $request->route('users.token') }}">
 
         <!-- Email Address -->
         <div>

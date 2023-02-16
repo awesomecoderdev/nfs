@@ -8,6 +8,7 @@ use App\Http\Controllers\OdenwaldController;
 use App\Http\Controllers\DarmstadtController;
 use App\Http\Controllers\BergstrasseController;
 use App\Http\Controllers\DarmstadtDieburgController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,15 +26,25 @@ use App\Http\Controllers\DarmstadtDieburgController;
 // index route
 Route::get('/', [FrontendController::class, "index"])->name("index");
 
-Route::middleware(['auth', 'verified'])->group(function () {
+// users routes
+Route::group(['prefix' => 'users', "as" => "users.", "middleware" => ['auth', 'verified'],  "controller" => UserController::class,], function () {
     // profile routes
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/', [AuthController::class, 'dashboard'])->name('index');
+    Route::get('/account', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/account', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/account', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
 
     // dashboard route
     Route::any('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
+    Route::any('/kontakt', 'kontakt')->name('kontakt');
 });
+
+
+// kontakt
+
+
+
 
 
 Route::middleware([])->group(function () {
