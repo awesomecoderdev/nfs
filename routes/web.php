@@ -30,9 +30,9 @@ Route::get('/', [FrontendController::class, "index"])->name("index");
 Route::group(['prefix' => 'users', "as" => "users.", "middleware" => ['auth', 'verified'],  "controller" => UserController::class,], function () {
     // profile routes
     Route::get('/', [AuthController::class, 'dashboard'])->name('index');
-    Route::get('/account', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/account', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/account', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/profil', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profil', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profil', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // dashboard route
     Route::any('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
