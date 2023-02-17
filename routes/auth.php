@@ -24,6 +24,7 @@ Route::group(['prefix' => 'users', "as" => "users.", "middleware" => "guest"], f
     Route::post('reset-password', [NewPasswordController::class, 'store'])->name('password.store');
 });
 
+
 Route::group(['prefix' => 'users', "as" => "users.", "middleware" => "auth"], function () {
     // Route::middleware('auth')->group(function () {
     Route::get('confirm-password', [ConfirmablePasswordController::class, 'show'])->name('password.confirm');
@@ -31,6 +32,8 @@ Route::group(['prefix' => 'users', "as" => "users.", "middleware" => "auth"], fu
     Route::put('password', [PasswordController::class, 'update'])->name('password.update');
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 });
+
+
 
 Route::middleware('auth')->group(function () {
     Route::get('users/verify-email', [EmailVerificationPromptController::class, '__invoke'])->name('verification.notice');

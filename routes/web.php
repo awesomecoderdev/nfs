@@ -34,17 +34,12 @@ Route::group(['prefix' => 'users', "as" => "users.", "middleware" => ['auth', 'v
     Route::patch('/account', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/account', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-
     // dashboard route
     Route::any('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
     Route::any('/kontakt', 'kontakt')->name('kontakt');
 });
 
-
 // kontakt
-
-
-
 
 
 Route::middleware([])->group(function () {
