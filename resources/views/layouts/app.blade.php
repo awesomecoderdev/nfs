@@ -144,6 +144,8 @@
     <!-- Node.js -->
     {{-- @viteReactRefresh --}}
     {{-- @vite(['resources/css/app.css', 'resources/js/app.js']) --}}
+    @viteReactRefresh
+
     @vite(['resources/js/app.js'])
 </head>
 
@@ -184,13 +186,11 @@
 
     {{-- content --}}
     <div class="container ">
-        <div class="row">
-            <div class="wrapper">
-                <div class="col span_16 clr">
-                    {{-- start::content --}}
-                    {{ $slot }}
-                    {{-- end::content --}}
-                </div>
+        <div class="wrapper">
+            <div class="col span_16 clr">
+                {{-- start::content --}}
+                {{ $slot }}
+                {{-- end::content --}}
             </div>
         </div>
     </div>

@@ -117,3 +117,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::any('/reflexion_dadi', [FrontendController::class, 'reflexion_dadi'])->name('reflexion_dadi');
     Route::any('/reflexion_ow', [FrontendController::class, 'reflexion_ow'])->name('reflexion_ow');
 });
+
+Route::any('/timetable', [FrontendController::class, 'timetable'])->name('timetable');

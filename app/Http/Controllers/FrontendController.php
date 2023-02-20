@@ -208,4 +208,13 @@ class FrontendController extends Controller
     {
         return view('notfallseelsorge_vor_ort',);
     }
+
+
+    /**
+     * Display the timetable page.
+     */
+    public function timetable(Request $request): View
+    {
+        return view('timetable',);
+    }
 }
