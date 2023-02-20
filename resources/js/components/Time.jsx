@@ -162,177 +162,13 @@ const Time = () => {
 
     return (
         <Fragment>
-            {/* <div className="hours_container">
-          <div className="hours_header_wraper">
-            <button
-              type="button"
-              onClick={previousDay}
-              className="go_next_prev_hr"
-            >
-              <ChevronLeftIcon className="go_next_prev_hr_icon " aria-hidden="true" />
-            </button>
-            <span className="current_hr_text">
-              {format(currentDay, 'd MMMM yyyy')}
-            </span>
-            <button
-              onClick={nextDay}
-              type="button"
-              className="go_next_prev_hr"
-            >
-              <ChevronRightIcon className="go_next_prev_hr_icon" aria-hidden="true" />
-            </button>
-          </div>
-        </div> */}
-
             <div className="container">
-                <div className="week_container">
-                    <Popover className="pos_relative">
-                        {({ open }) => (
-                            <>
-                                <button
-                                    className={`active week_item`}
-                                    type="button"
-                                >
-                                    Week {format(today, "I")}
-                                </button>
-                                <Popover.Button
-                                    // onClick={processSubmit}
-                                    className={`week_item`}
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="18"
-                                        height="18"
-                                        viewBox="0 0 24 24"
-                                        color="currentColor"
-                                    >
-                                        <path d="M21 20V6c0-1.103-.897-2-2-2h-2V2h-2v2H9V2H7v2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h14c1.103 0 2-.897 2-2zM9 18H7v-2h2v2zm0-4H7v-2h2v2zm4 4h-2v-2h2v2zm0-4h-2v-2h2v2zm4 4h-2v-2h2v2zm0-4h-2v-2h2v2zm2-5H5V7h14v2z"></path>
-                                    </svg>
-                                </Popover.Button>
-                                <Popover.Panel className="popup_calendar">
-                                    <div className="calendar_popup_item">
-                                        <div className="popup_calendar_card">
-                                            <div className="calendar_inner">
-                                                <div className="calendar_relative">
-                                                    <div className="calendar_header">
-                                                        <button
-                                                            type="button"
-                                                            onClick={
-                                                                previousMonth
-                                                            }
-                                                            className="calendar_next_prev_btn"
-                                                        >
-                                                            <ChevronLeftIcon
-                                                                className="next_prev_icon"
-                                                                aria-hidden="true"
-                                                            />
-                                                        </button>
-
-                                                        <span className="calendar_h2 tac">
-                                                            {format(
-                                                                startCalendar,
-                                                                "MMMM yyyy"
-                                                            )}
-                                                        </span>
-                                                        <button
-                                                            onClick={nextMonth}
-                                                            type="button"
-                                                            className="calendar_next_prev_btn"
-                                                        >
-                                                            <ChevronRightIcon
-                                                                className="next_prev_icon"
-                                                                aria-hidden="true"
-                                                            />
-                                                        </button>
-                                                    </div>
-
-                                                    <div className="calendar_week_names">
-                                                        <div>S</div>
-                                                        <div>M</div>
-                                                        <div>T</div>
-                                                        <div>W</div>
-                                                        <div>T</div>
-                                                        <div>F</div>
-                                                        <div>S</div>
-                                                    </div>
-                                                    <div className="calendar_date_list">
-                                                        {days.map(
-                                                            (day, dayIdx) => (
-                                                                <div
-                                                                    key={day.toString()}
-                                                                    className={classNames(
-                                                                        dayIdx ===
-                                                                            0 &&
-                                                                            colStartClasses[
-                                                                                getDay(
-                                                                                    day
-                                                                                )
-                                                                            ],
-                                                                        "padding_y"
-                                                                    )}
-                                                                >
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() => {
-                                                                            console.log(
-                                                                                "===================================="
-                                                                            );
-                                                                            console.log(
-                                                                                day
-                                                                            );
-                                                                            console.log(
-                                                                                "===================================="
-                                                                            );
-                                                                        }}
-                                                                        className={classNames(
-                                                                            "calender_default_btn", // default class
-                                                                            isEqual(
-                                                                                day,
-                                                                                today
-                                                                            ) &&
-                                                                                "current_date_btn", // set current date color
-                                                                            tday >
-                                                                                day &&
-                                                                                "previous_next_month_btn", // disable previous date to select
-                                                                            !isSameMonth(
-                                                                                day,
-                                                                                today
-                                                                            ) &&
-                                                                                !(
-                                                                                    tday >
-                                                                                    day
-                                                                                ) &&
-                                                                                "not_same_month" // set different month date color
-                                                                        )}
-                                                                    >
-                                                                        <time
-                                                                            dateTime={format(
-                                                                                day,
-                                                                                "yyyy-MM-dd"
-                                                                            )}
-                                                                        >
-                                                                            {format(
-                                                                                day,
-                                                                                "d"
-                                                                            )}
-                                                                        </time>
-                                                                    </button>
-                                                                </div>
-                                                            )
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </Popover.Panel>
-                            </>
-                        )}
-                    </Popover>
-                </div>
+                <button className={`active week_item`} type="button">
+                    Week {format(today, "I")}
+                </button>
             </div>
 
-            <div className="hours_wraper">
+            <div className="timetables">
                 {currentWeek.map((day, indexOfDay) => {
                     const hours = eachHourOfInterval({
                         start: startOfDay(day),
@@ -340,301 +176,63 @@ const Time = () => {
                     });
 
                     return (
-                        <div key={indexOfDay} className="hour_group">
-                            <div className="get_current_date">
-                                {format(day, "d MMMM yyyy")}
-                            </div>
-                            <div className="hr_container">
-                                {timeTables.map((table, tableIndex) => {
-                                    const doctorSchedule =
-                                        scheduleJson[table.group];
-                                    return (
-                                        <div
-                                            key={table.group}
-                                            className="hr_card_item"
-                                        >
-                                            <div className={"hr_card_content"}>
-                                                <div className="hr_card_body">
-                                                    <div className="relative_card">
-                                                        <div className="hr_card_header">
-                                                            <div className="hr_card_title">
-                                                                {table.title}
-                                                            </div>
-                                                            {/* <div className="hr_card_save ">
-                              <Popover className="relative_card">
-                                {({ open }) => (
-                                  <>
-                                    <Popover.Button
-                                      onClick={processSubmit}
-                                      className={`${
-                                        open ? "" : "inactive"
-                                      } hr_card_save_btn `}
+                        <div key={indexOfDay} className="timetable">
+                            <div className="hourtables">
+                                {timeTables.map((timetable) => (
+                                    <div
+                                        key={timetable.group}
+                                        className={`hourtable ${timetable.group}`}
                                     >
-                                      <DocumentDuplicateIcon className="icon_4 " />
-                                    </Popover.Button>
-                                    <Transition
-                                      as={Fragment}
-                                      enter="hr_popup_enter"
-                                      enterFrom="hr_popup_enterFrom"
-                                      enterTo="hr_popup_enterTo"
-                                      leave="hr_popup_leave"
-                                      leaveFrom="hr_popup_leaveFrom"
-                                      leaveTo="hr_popup_leaveTo"
-                                    >
-                                      <Popover.Panel className="hr_submit_popup">
-                                        <div className="hr_popup_container">
-                                          <div className="hr_popup_card">
-                                            <div className="hr_popup_content">
-                                              <div className="hr_popup_text">
-                                                <span>
-                                                  Tag :{" "}
-                                                  {format(today, "yyyy-MM-dd")}
-                                                </span>
-                                                <br />
-                                                <span>
-                                                  Tag :{" "}
-                                                  {format(today, "yyyy-MM-dd")}
-                                                </span>
-                                                <br />
-                                                <span>
-                                                  Tag :{" "}
-                                                  {format(today, "yyyy-MM-dd")}
-                                                </span>
-                                                <br />
-                                              </div>
-                                              <select
-                                                name=""
-                                                id=""
-                                                className="hr_popup_select"
-                                              >
-                                                <option value="">Demo 1</option>
-                                                <option value="">Demo 2</option>
-                                              </select>
-                                            </div>
-                                            <div className="hr_popup_footer_container">
-                                              <div className="hr_footer_btns">
+                                        <button className="hour title">
+                                            {timetable.group.toUpperCase()}
+                                        </button>
+                                        {hours.map((hour, hrIndex) => {
+                                            return (
                                                 <button
-                                                  onClick={processNeinAction}
-                                                  className="hr_popup_cancel_btn"
+                                                    key={hrIndex}
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        const scheduleKey = `${
+                                                            table.group
+                                                        }-${format(
+                                                            hour,
+                                                            "MM-dd-yyyy"
+                                                        )}-${getHours(hour)}`;
+                                                        setSelectedHour(
+                                                            scheduleKey
+                                                        );
+                                                        setSchedule(
+                                                            scheduleKey
+                                                        );
+                                                    }}
+                                                    className={classNames(
+                                                        "hour",
+                                                        hrIndex == 6 && "space",
+                                                        hrIndex == 12 &&
+                                                            "space",
+                                                        hrIndex == 18 && "space"
+                                                    )}
                                                 >
-                                                  Nein
+                                                    <time
+                                                        dateTime={hour}
+                                                        className="hr_time"
+                                                    >
+                                                        {getHours(hour) < 10
+                                                            ? "0" +
+                                                              getHours(hour) +
+                                                              ":00"
+                                                            : getHours(hour) +
+                                                              ":00"}
+                                                    </time>
                                                 </button>
-                                                <button
-                                                  onClick={processJaAction}
-                                                  className="hr_popup_ok_btn"
-                                                >
-                                                  Ja
-                                                </button>
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </Popover.Panel>
-                                    </Transition>
-                                  </>
-                                )}
-                              </Popover>
-                            </div> */}
-                                                        </div>
-                                                        <div className="hr_btns_container">
-                                                            {hours.map(
-                                                                (
-                                                                    hour,
-                                                                    hrIndex
-                                                                ) => {
-                                                                    var haveSchedule = false;
-                                                                    doctorSchedule.filter(
-                                                                        (
-                                                                            hr
-                                                                        ) => {
-                                                                            if (
-                                                                                isSameHour(
-                                                                                    hr,
-                                                                                    hour
-                                                                                )
-                                                                            ) {
-                                                                                // console.log(hour);
-                                                                                haveSchedule = true;
-                                                                                return true;
-                                                                            }
-                                                                            return false;
-                                                                        }
-                                                                    );
-
-                                                                    return (
-                                                                        <button
-                                                                            key={
-                                                                                hrIndex
-                                                                            }
-                                                                            type="button"
-                                                                            onClick={(
-                                                                                e
-                                                                            ) => {
-                                                                                const scheduleKey = `${
-                                                                                    table.group
-                                                                                }-${format(
-                                                                                    hour,
-                                                                                    "MM-dd-yyyy"
-                                                                                )}-${getHours(
-                                                                                    hour
-                                                                                )}`;
-                                                                                setSelectedHour(
-                                                                                    scheduleKey
-                                                                                );
-                                                                                setSchedule(
-                                                                                    scheduleKey
-                                                                                );
-                                                                            }}
-                                                                            className={classNames(
-                                                                                "hr_time_btn", // default class
-                                                                                selectedSchedule.includes(
-                                                                                    `${
-                                                                                        table.group
-                                                                                    }-${format(
-                                                                                        hour,
-                                                                                        "MM-dd-yyyy"
-                                                                                    )}-${getHours(
-                                                                                        hour
-                                                                                    )}`
-                                                                                ) &&
-                                                                                    table.group ==
-                                                                                        "a" &&
-                                                                                    "a_selected", // disable previous date to select
-                                                                                selectedSchedule.includes(
-                                                                                    `${
-                                                                                        table.group
-                                                                                    }-${format(
-                                                                                        hour,
-                                                                                        "MM-dd-yyyy"
-                                                                                    )}-${getHours(
-                                                                                        hour
-                                                                                    )}`
-                                                                                ) &&
-                                                                                    table.group ==
-                                                                                        "b" &&
-                                                                                    "b_selected", // disable previous date to select
-                                                                                selectedSchedule.includes(
-                                                                                    `${
-                                                                                        table.group
-                                                                                    }-${format(
-                                                                                        hour,
-                                                                                        "MM-dd-yyyy"
-                                                                                    )}-${getHours(
-                                                                                        hour
-                                                                                    )}`
-                                                                                ) &&
-                                                                                    table.group ==
-                                                                                        "h" &&
-                                                                                    "h_selected", // disable previous date to select
-                                                                                haveSchedule &&
-                                                                                    table.group ==
-                                                                                        "a" &&
-                                                                                    "a",
-                                                                                haveSchedule &&
-                                                                                    table.group ==
-                                                                                        "b" &&
-                                                                                    "b",
-                                                                                haveSchedule &&
-                                                                                    table.group ==
-                                                                                        "h" &&
-                                                                                    "h",
-                                                                                // !(currentHour > hour) && !isSameHour(currentHour,hour) && 'hover:bg-gray-300', // hover to normal time item
-                                                                                !isSameHour(
-                                                                                    currentHour,
-                                                                                    hour
-                                                                                ) &&
-                                                                                    currentHour >
-                                                                                        hour &&
-                                                                                    "disabled", // disable previous date to select
-                                                                                (currentHour <=
-                                                                                    hour ||
-                                                                                    isSameHour(
-                                                                                        currentHour,
-                                                                                        hour
-                                                                                    )) &&
-                                                                                    !haveSchedule &&
-                                                                                    !selectedSchedule.includes(
-                                                                                        `${
-                                                                                            table.group
-                                                                                        }-${format(
-                                                                                            hour,
-                                                                                            "MM-dd-yyyy"
-                                                                                        )}-${getHours(
-                                                                                            hour
-                                                                                        )}`
-                                                                                    ) &&
-                                                                                    "normal" // hover to normal time item
-                                                                            )}
-                                                                        >
-                                                                            <time
-                                                                                dateTime={
-                                                                                    hour
-                                                                                }
-                                                                                className="hr_time"
-                                                                            >
-                                                                                {getHours(
-                                                                                    hour
-                                                                                ) <
-                                                                                10
-                                                                                    ? "0" +
-                                                                                      getHours(
-                                                                                          hour
-                                                                                      ) +
-                                                                                      ":00"
-                                                                                    : getHours(
-                                                                                          hour
-                                                                                      ) +
-                                                                                      ":00"}
-                                                                            </time>
-                                                                        </button>
-                                                                    );
-                                                                }
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
+                                            );
+                                        })}
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     );
                 })}
-
-                {/* start the tab */}
-                <div className="hour_group">
-                    <div className="hr_tab_item">
-                        <div className={"hr_tabs"}>
-                            <Tab.Group>
-                                <Tab.List className="hr_tab_header">
-                                    {tabs.map((tab) => (
-                                        <Tab
-                                            key={tab.id}
-                                            className={({ selected }) =>
-                                                classNames(
-                                                    "hr_tab_btn",
-                                                    selected
-                                                        ? "selected"
-                                                        : "normal"
-                                                )
-                                            }
-                                        >
-                                            {tab.title}
-                                        </Tab>
-                                    ))}
-                                </Tab.List>
-                                <Tab.Panels className="hr_tab_body">
-                                    {tabs.map((tab, idx) => (
-                                        <Tab.Panel key={idx}>
-                                            {tab.component}
-                                        </Tab.Panel>
-                                    ))}
-                                </Tab.Panels>
-                            </Tab.Group>
-                        </div>
-                    </div>
-                </div>
             </div>
         </Fragment>
     );

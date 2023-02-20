@@ -2,7 +2,11 @@
     @section('head')
         <title> Time table | {{ __(config('app.name')) }}</title>
     @endsection
-    <link rel="stylesheet" href="{{ secure_asset('css/frontend.css') }}">
+    <link rel="stylesheet" href="{{ secure_asset('css/timetable.css') }}">
+
+    @empty($_GET['start'])
+        <link rel="stylesheet" href="{{ secure_asset('css/frontend.css') }}">
+    @endempty
 
     @php
         if (isset($_GET['start']) && !empty($_GET['start'])) {

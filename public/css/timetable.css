@@ -1,0 +1,47 @@
+.timetables {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0.5rem;
+}
+
+.timetable {
+    min-height: 100vh;
+    /* background: #ddd; */
+}
+
+.hourtables {
+    position: relative;
+    display: flex;
+    justify-content: space-evenly;
+    padding: 1.5rem 0;
+}
+
+.hour.title {
+    padding: 0;
+    margin: 0;
+    margin-bottom: 25px;
+    color: black;
+    background: whitesmoke;
+}
+
+.hour {
+    position: relative;
+    border: transparent;
+    background: red;
+    color: whitesmoke;
+    border-radius: 50%;
+    height: 3.5rem;
+    width: 3.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2px;
+}
+
+.hour.space {
+    margin-bottom: 25px;
+}
+
+time {
+    font-size: 10px;
+}
