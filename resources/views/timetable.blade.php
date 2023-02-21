@@ -17,7 +17,6 @@
         }
     @endphp
 
-
     <script>
         const showTimeTable = {{ isset($_GET['start']) && !empty($_GET['start']) ? 'true' : 'false' }};
         const startFrom = "{{ $date }}";
