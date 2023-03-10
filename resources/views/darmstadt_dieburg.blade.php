@@ -32,13 +32,13 @@
                 </div>
                 <div class="col span_8 clr swap">
                     <div class="nfsvol mb10">
-                        <img src="{{ secure_asset('img/01.jpg') }}" class="scale schick" alt="ALTERNATIVTEXT">
+                        <img src="{{ asset('img/01.jpg') }}" class="scale schick" alt="ALTERNATIVTEXT">
                     </div>
                     <div class="nfsvor mb10">
-                        <img src="{{ secure_asset('img/10.jpg') }}" class="scale schick" alt="ALTERNATIVTEXT">
+                        <img src="{{ asset('img/10.jpg') }}" class="scale schick" alt="ALTERNATIVTEXT">
                     </div>
                     {{-- <!--  <div class="col span_8 clr"> --}}
-                    <img src="{{ secure_asset('img/02.jpg') }}" class="scale schick" alt="ALTERNATIVTEXT">
+                    <img src="{{ asset('img/02.jpg') }}" class="scale schick" alt="ALTERNATIVTEXT">
                     {{-- </div>--> --}}
                 </div>
             </div>
@@ -134,7 +134,7 @@
         <div class="row gutters">
             <div class="col span_8 clr wimg">
                 <div class="borders tar">
-                    <img src="{{ secure_asset('img/Fitz.jpg') }}" class="schick2" alt="ALTERNATIVTEXT">
+                    <img src="{{ asset('img/Fitz.jpg') }}" class="schick2" alt="ALTERNATIVTEXT">
                     <span class="blue">Susanne Fitz</span>
                     Kath. Dekanatsbeauftragte für Notfallseelsorge<br>
                     Kommissarische Leitung<br>
@@ -145,7 +145,7 @@
             </div>
             <div class="col span_8 clr wimg">
                 <div class="borders tar">
-                    <img src="{{ secure_asset('img/Fornoff.jpg') }}" class="schick2" alt="ALTERNATIVTEXT">
+                    <img src="{{ asset('img/Fornoff.jpg') }}" class="schick2" alt="ALTERNATIVTEXT">
                     <br>
                     <span class="blue">Michael Fornoff</span>
                     Evangelischer Pfarrer<br>

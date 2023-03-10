@@ -1,11 +1,28 @@
-.container {
-    max-width: 120rem !important;
+.timetablecontainer {
+    max-width: 120rem;
+    padding: 0;
+}
+header{
+    margin-bottom: 0;
+}
+.wrapper{
+    padding: 0 2rem;
 }
 .timetables {
     display: grid;
     grid-template-columns: repeat(7, minmax(0, 1fr));
     gap: 0.5rem;
 }
+
+.date.format.mobile{
+    display: flex;
+    align-items: center;
+}
+
+.date.format.mobile time{
+    margin: 0 2.5rem;
+}
+
 
 .timetable {
     min-height: 100vh;
@@ -33,12 +50,14 @@
     background: red;
     color: whitesmoke;
     border-radius: 50%;
-    height: 3.5rem;
-    width: 3.5rem;
+    height: 2rem;
+    width: 2rem;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 2px;
+    margin: 7px 0;
+    cursor: pointer;
 }
 
 .hour.space {
@@ -46,7 +65,8 @@
 }
 
 time {
-    font-size: 10px;
+    font-size: 7px;
+    font-weight: bold;
 }
 
 .date.format {
@@ -54,7 +74,7 @@ time {
     justify-content: center;
 }
 
-.date.format date {
+.date.format time {
     font-size: 14px;
     font-weight: bold;
 }
@@ -90,7 +110,7 @@ time {
 
 .timeheading .wid {
     padding: 0 0.85rem;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: bold;
     margin-right: 2rem;
     margin: 0;
@@ -114,7 +134,7 @@ time {
 
 .centerdate {
     padding: 0 0.85rem;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: bold;
     margin-right: 2rem;
     margin: 0;
@@ -309,6 +329,7 @@ time {
     border-radius: 9999px;
     font-family: "Poppins", sans-serif;
     font-weight: 400;
+    cursor: pointer;
 }
 .calender_default_btn time {
     line-height: 1;
@@ -882,4 +903,48 @@ time {
 
 .week_item svg {
     fill: rgb(100 116 139);
+}
+
+
+@media (max-width: 640px){
+    .timetables {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+        gap: 0;
+    }
+
+    .timetable{
+        border: none;
+    }
+
+    .hourtables {
+        justify-content: center !important; 
+    }
+
+    .hour {
+        padding: 4px;
+        margin: 6px;
+    }
+
+    .timeheadings {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .timeheading.leftcontents{
+        padding: 0;
+    }
+
+    
+    .timeheading.centercontents{
+        padding: 0;
+    }
+
+    .timeheading.rightcontentss{
+        display: none;
+    }
+
+    .hour.title{
+        margin: auto;
+        margin-bottom: 15px;
+        padding: 4px;
+    }
 }

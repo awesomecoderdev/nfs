@@ -571,7 +571,7 @@
             </div>
 
             {{-- send mail --}}
-            <button style="margin: 15px 0 10px 10px; float: left;"
+            <button style="margin: 15px 0 10px 19px; float: left;"
                 onclick="sendMail(['heiko.kapraun@gmx.de'], '{{ '/send_mail/send' }}', 'Einsatzprotokoll', 'Anbei das Einsatzprotokoll', 'einsatzprotokoll');">E-Mail
                 versenden</button>
 

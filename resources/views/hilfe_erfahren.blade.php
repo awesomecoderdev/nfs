@@ -36,7 +36,7 @@
                     <p>Erreichbar ist die Notfallseelsorge über die Notrufnummer 112.</p>
                 </div>
                 <div class="col span_8 clr swap">
-                    <img src="{{ secure_asset('img/05.jpg') }}" alt="ALTERNATIVTEXT" class="scale schick">
+                    <img src="{{ asset('img/05.jpg') }}" alt="ALTERNATIVTEXT" class="scale schick">
                 </div>
             </div>
         </div>

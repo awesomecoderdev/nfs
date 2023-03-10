@@ -452,7 +452,7 @@
                 </div>
             </div>
             {{-- route need to be changed --}}
-            <button style="margin: 15px 0 10px 10px; float: left;"
+            <button style="margin: 15px 0 10px 19px !important; float: left;"
                 onclick="sendMail(['heiko.kapraun@gmx.de'],
                 '{{ '/send_mail/send' }}',
                  'Reflexionsprotokoll', 'Anbei das Reflexionsprotokoll', 'reflexionsprotokoll');">

@@ -31,13 +31,13 @@
                 </div>
                 <div class="col span_8 clr swap">
                     <div class="nfsvol mb10">
-                        <img class="scale schick" src="{{ secure_asset('img/03.jpg') }}" alt="ALTERNATIVTEXT">
+                        <img class="scale schick" src="{{ asset('img/03.jpg') }}" alt="ALTERNATIVTEXT">
                     </div>
                     <div class="nfsvor mb10">
-                        <img class="scale schick" src="{{ secure_asset('img/05.jpg') }}" alt="ALTERNATIVTEXT">
+                        <img class="scale schick" src="{{ asset('img/05.jpg') }}" alt="ALTERNATIVTEXT">
                     </div>
                     {{-- <!--  <div class="col span_8 clr"> --}}
-                    <img class="scale schick" src="{{ secure_asset('img/02.jpg') }}" alt="ALTERNATIVTEXT">
+                    <img class="scale schick" src="{{ asset('img/02.jpg') }}" alt="ALTERNATIVTEXT">
                     {{-- </div>--> --}}
                 </div>
             </div>
@@ -124,7 +124,7 @@
         <div class="row gutters">
             <div class="col span_8 clr wimg">
                 <div class="borders tar">
-                    <img class="schick2" src="{{ secure_asset('img/Ruff-Kapraun.jpg') }}" alt="ALTERNATIVTEXT"><br>
+                    <img class="schick2" src="{{ asset('img/Ruff-Kapraun.jpg') }}" alt="ALTERNATIVTEXT"><br>
 
                     <span class="blue">Heiko Ruff-Kapraun</span>
                     Leiter der Notfallseelsorge und Krisenintervention Odenwaldkreis
@@ -136,7 +136,7 @@
             </div>
             <div class="col span_8 clr wimg">
                 <div class="borders tar">
-                    <img class="schick2" src="{{ secure_asset('img/Buechner.jpg') }}" alt="ALTERNATIVTEXT"><br>
+                    <img class="schick2" src="{{ asset('img/Buechner.jpg') }}" alt="ALTERNATIVTEXT"><br>
 
                     <span class="blue">Ulrike Büchner</span>
                     Stv. Leitung der Notfallseelsorge und Krisenintervention Odenwaldkreis<br>
@@ -151,7 +151,7 @@
         <div class="row gutters">
             <div class="col span_8 clr wimg">
                 <div class="borders tar">
-                    <img class="schick2" src="{{ secure_asset('img/romerschweers.jpg') }}" alt="ALTERNATIVTEXT"><br>
+                    <img class="schick2" src="{{ asset('img/romerschweers.jpg') }}" alt="ALTERNATIVTEXT"><br>
 
                     <span class="blue">Brigitte Romer-Schweers</span>
                     Stv. Leitung der Notfallseelsorge und Krisenintervention Odenwaldkreis<br>
@@ -163,7 +163,7 @@
             </div>
             <div class="col span_8 clr wimg">
                 <div class="borders tar">
-                    <img class="schick2" src="{{ secure_asset('img/rossner.jpg') }}" alt="ALTERNATIVTEXT"><br>
+                    <img class="schick2" src="{{ asset('img/rossner.jpg') }}" alt="ALTERNATIVTEXT"><br>
                     <span class="blue">Bärbel Roßner</span>
                     Stv. Leitung der Notfallseelsorge und Krisenintervention Odenwaldkreis<br>
                     E-Mail:<a href="mailto: leitung@nfs-odenwald.de"> leitung@nfs-odenwald.de</a><br>

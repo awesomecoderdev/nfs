@@ -3,7 +3,7 @@
         <title> Dashboard | {{ __(config('app.name')) }}</title>
     @endsection
 
-    <h1>This is dashboard</h1>
+    <h1>Hello , {{ auth()->user()->fullname() }} {{ auth()->user()->id }}</h1>
 
     @can('wid439')
         <div class="fullblue">

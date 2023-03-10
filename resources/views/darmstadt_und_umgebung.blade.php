@@ -28,15 +28,15 @@
                 </div>
                 <div class="col span_8 clr swap">
                     <div class="nfsvol mb10">
-                        <img class="scale schick" src="{{ secure_asset('img/01.jpg') }}" alt="ALTERNATIVTEXT">
+                        <img class="scale schick" src="{{ asset('img/01.jpg') }}" alt="ALTERNATIVTEXT">
                     </div>
                     <div class="nfsvor mb10">
-                        <img class="scale schick" src="{{ secure_asset('img/08.jpg') }}" alt="ALTERNATIVTEXT">
+                        <img class="scale schick" src="{{ asset('img/08.jpg') }}" alt="ALTERNATIVTEXT">
                     </div>
                     {{-- <!--  <div class="col span_8 clr">
                         </div>--> --}}
 
-                    <img class="scale schick" src="{{ secure_asset('img/02.jpg') }}" alt="ALTERNATIVTEXT">
+                    <img class="scale schick" src="{{ asset('img/02.jpg') }}" alt="ALTERNATIVTEXT">
                 </div>
             </div>
         </div>
@@ -112,7 +112,7 @@
             <div class="row gutters">
                 <div class="col span_8 clr wimg">
                     <div class="borders tar">
-                        <img src="{{ secure_asset('img/Phillips-Willumeit.jpg') }}" alt="ALTERNATIVTEXT"
+                        <img src="{{ asset('img/Phillips-Willumeit.jpg') }}" alt="ALTERNATIVTEXT"
                             class="schick2"><br>
                         <span class="blue">Erika Phillips-Willumeit</span>
                         Medizinische Fachangestellte<br>
@@ -122,7 +122,7 @@
                 </div>
                 <div class="col span_8 clr wimg">
                     <div class="borders tar">
-                        <img src="{{ secure_asset('img/Grosskopf.jpg') }}" alt="ALTERNATIVTEXT" class="schick2"><br>
+                        <img src="{{ asset('img/Grosskopf.jpg') }}" alt="ALTERNATIVTEXT" class="schick2"><br>
                         <span class="blue">Marcus-Stefan Großkopf</span>
                         Evangelischer Pfarrer<br>
                         Telefon: 0151 - 20 27 32 64<br>
@@ -138,7 +138,7 @@
                 <div class="col span_8 clr wimg">
                     <div class="borders tar">
 
-                        <img src="{{ secure_asset('img/Ruff-Kapraun.jpg') }}" alt="ALTERNATIVTEXT" class="schick2"><br>
+                        <img src="{{ asset('img/Ruff-Kapraun.jpg') }}" alt="ALTERNATIVTEXT" class="schick2"><br>
 
                         <span class="blue">Heiko Ruff-Kapraun</span>
                         Evangelischer Pfarrer<br>
@@ -149,7 +149,7 @@
                 </div>
                 <div class="col span_8 clr wimg">
                     <div class="borders tar">
-                        <img src="{{ secure_asset('img/Fitz.jpg') }}" alt="ALTERNATIVTEXT" class="schick2"><br>
+                        <img src="{{ asset('img/Fitz.jpg') }}" alt="ALTERNATIVTEXT" class="schick2"><br>
 
                         <span class="blue">Susanne Fitz</span>
                         Kath. Dekanatsbeauftragte für Notfallseelsorge<br>
@@ -165,7 +165,7 @@
             <div class="row gutters">
                 <div class="col span_8 clr wimg">
                     <div class="borders tar">
-                        <img src="{{ secure_asset('img/Pfalzgraf.jpg') }}" alt="ALTERNATIVTEXT" class="schick2"><br>
+                        <img src="{{ asset('img/Pfalzgraf.jpg') }}" alt="ALTERNATIVTEXT" class="schick2"><br>
 
                         <span class="blue">Bettina Pfalzgraf</span>
                         Dipl. Kauffrau (Project Management Office)<br>
@@ -176,7 +176,7 @@
                 </div>
                 <div class="col span_8 clr wimg">
                     <div class="borders tar">
-                        <img src="{{ secure_asset('img/Fairley.jpg') }}" alt="ALTERNATIVTEXT" class="schick2"><br>
+                        <img src="{{ asset('img/Fairley.jpg') }}" alt="ALTERNATIVTEXT" class="schick2"><br>
 
                         <span class="blue">Iris Fairley</span>
                         Medizinisch-technische Assistentin<br>
@@ -192,7 +192,7 @@
                 <div class="col span_8 clr wimg">
                     <div class="borders tar">
 
-                        <img src="{{ secure_asset('img/Winterstein.jpg') }}" alt="ALTERNATIVTEXT" class="schick2"><br>
+                        <img src="{{ asset('img/Winterstein.jpg') }}" alt="ALTERNATIVTEXT" class="schick2"><br>
 
                         <span class="blue">Detlef Winterstein</span>
                         Unternehmensberater<br>

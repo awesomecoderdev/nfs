@@ -11,10 +11,14 @@
 
     <div class="container">
         <div class="row gutters">
-
-            <div class="col span_16 clr tar">
-                <h1>Neues/Blog</h1>
-                <span class="wei400 fsi22">Aktuelles aus der Notfallseelsorge Südhessen</span>
+            <div class="col span_16 clr tar">        
+                @if($aktuells->count() == 0)
+                    <h1>Willkommen bei der Notfallseelsorge in Südhessen</h1>
+                    <span class="wei400 fsi22">Not sehen, für Menschen da sein</span>
+                @else
+                    <h1>Neues/Blog</h1>
+                    <span class="wei400 fsi22">Aktuelles aus der Notfallseelsorge Südhessen</span>
+                @endif
             </div>
         </div>
     </div>
@@ -27,11 +31,49 @@
         </div>
     </div>
 
-    <div class="column-1 push-1 bgyellow">
+    <!-- <div class="column-1 push-1 bgyellow">
     </div>
 
     <div class="column-6 push-1 bgcolored" style="background-image: url({{ secure_asset('img/steine100.jpg') }});">
         <h2>Willkommen bei der Notfallseelsorge in Südhessen<br /><span>Erste Hilfe für die Seele</span></h2>
-    </div>
+    </div> -->
+
+
+    
+    @foreach ($aktuells as $key => $aktuell)
+        <div class="aktuell_entry">
+
+
+            <div class="aktuell_heading">
+                <h2 class="" onclick="scrolling(this)" id="aktuell_entry_{{ $aktuell->id }}"
+                    style="cursor:pointer">
+                    <span class="">{{ date('d.m.Y', strtotime($aktuell->date)) }} - </span>
+                    {{ $aktuell->title }}
+                </h2>
+            </div>
+
+
+            <div id="aktuell_entry_body_{{ $aktuell->id }}" class="aktuellElement " style="">
+
+
+                <div class="aktuellEntryText">
+
+                    <div class="mini_slideshow_container mini_slideshow_right">
+                        <div class="mini_slideshow" id="mini_slideshow_{{ $aktuell->id }}" style="">
+
+                            <div class="mini_slideshow_slideshow" id="{{ $aktuell->id }}_slideshow"
+                                style="width: 100%;">
+                            </div>
+                        </div>
+                    </div>
+
+                    {!! $aktuell->body !!}
+
+                    <br style="clear: both;">
+
+                </div>
+            </div>
+        </div>
+    @endforeach
 
 </x-app-layout>

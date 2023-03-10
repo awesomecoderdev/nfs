@@ -29,12 +29,12 @@
                     <p> Hier erfahren Sie mehr über unsere Arbeit...</p>
                 </div>
                 <div class="col span_8 clr swap">
-                    <div class="nfsvol mb10"><img src="{{ secure_asset('img/03.jpg') }}" alt="ALTERNATIVTEXT"
+                    <div class="nfsvol mb10"><img src="{{ asset('img/03.jpg') }}" alt="ALTERNATIVTEXT"
                             class='scale schick'></div>
-                    <div class="nfsvor mb10"><img src="{{ secure_asset('img/09.jpg') }}" alt="ALTERNATIVTEXT"
+                    <div class="nfsvor mb10"><img src="{{ asset('img/09.jpg') }}" alt="ALTERNATIVTEXT"
                             class='scale schick'></div>
                     {{-- <!--  <div class="col span_8 clr"> --}}
-                    <div class="nfsvor mb10"><img src="{{ secure_asset('img/02.jpg') }}" alt="ALTERNATIVTEXT"
+                    <div class="nfsvor mb10"><img src="{{ asset('img/02.jpg') }}" alt="ALTERNATIVTEXT"
                             class='scale schick'></div>
                     {{-- </div>--> --}}
                 </div>
@@ -132,7 +132,7 @@
         <div class="row gutters">
             <div class="col span_8 clr wimg">
                 <div class="borders tar">
-                    <img src="{{ secure_asset('img/Ritter.jpg') }}" class="schick2" alt="ALTERNATIVTEXT">
+                    <img src="{{ asset('img/Ritter.jpg') }}" class="schick2" alt="ALTERNATIVTEXT">
                     <br>
                     <span class="blue">Karin Ritter</span>
                     Leiterin der Notfallseelsorge<br>
@@ -141,7 +141,7 @@
             </div>
             <div class="col span_8 clr wimg">
                 <div class="borders tar">
-                    <img src="{{ secure_asset('img/Geiger.jpg') }}" class="schick2" alt="ALTERNATIVTEXT"><br>
+                    <img src="{{ asset('img/Geiger.jpg') }}" class="schick2" alt="ALTERNATIVTEXT"><br>
                     <span class="blue">Sabina Geiger</span>
                     Büro der Notfallseelsorge<br>
                     E-Mail: <a href="mailto: notfallseelsorge@haus-der-kirche.de "> notfallseelsorge@haus-der-kirche.de

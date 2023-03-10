@@ -873,7 +873,7 @@
 
 
             {{-- need to change route --}}
-            <button style="margin: 15px 0 10px 10px; float: left;"
+            <button style="margin: 15px 0 10px 0px; float: left;"
                 onclick="sendMail(['heiko.kapraun@gmx.de', 'baerbelrossner@gmx.de', 'brigitteromer@web.de', 'rodenhausen.b@gmx.de', 'rainer.wackerodw@t-online.de', 'lena.raubach@drk-odenwaldkreis.de', 'volkmar.raabe@t-online.de' ],
                  '{{ '/send_mail/send' }}', 'Einsatzprotokoll', 'Anbei das Einsatzprotokoll', 'einsatzprotokoll');">E-Mail
                 versenden</button>

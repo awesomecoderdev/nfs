@@ -124,10 +124,10 @@ svg{
   margin-right: auto;
   display: grid;
   width: 100%;
-  max-width: 56rem;
+  max-width: 76rem;
   grid-template-columns: repeat(1, minmax(0, 1fr));
-  gap: 1rem;
-  padding: 1rem;
+  gap: 2.5rem;
+  padding: 2rem;
 }
 @media (min-width: 768px){
   .calendar_container{

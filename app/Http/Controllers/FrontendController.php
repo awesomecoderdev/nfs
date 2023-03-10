@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use App\Models\Aktuell;
+use App\Models\AktuellCategory;
+use App\Models\DienstplanBooked;
+
 
 class FrontendController extends Controller
 {
@@ -14,6 +18,16 @@ class FrontendController extends Controller
     {
         return view('index',);
     }
+
+    /**
+     * Redirect to home page.
+     */
+    public function redirect(Request $request)
+    {
+        return redirect()->route("index");
+
+    }
+
     /**
      * Display the mitarbeiter page.
      */
@@ -24,10 +38,54 @@ class FrontendController extends Controller
     /**
      * Display the aktuell page.
      */
-    public function aktuell(Request $request): View
+    // public function aktuell(Request $request): View
+    // {
+    //     return view('aktuell',);
+    // }
+    public function aktuell(Request $request)
     {
-        return view('aktuell',);
+        if(!$request->wid){
+            return redirect()->route("index");
+        }
+
+        // return Aktuell::with(["category"])->limit(100)->orderBy("date",'DESC')->orderBy("sort",'DESC')->get();
+        // $cats= AktuellCategory::with(['aktuell'])->limit(10)->get();
+       
+        // $aktuells = Aktuell::with(["category"])->where("firma_id",250)->when($request->wid, function($query) use($request){
+        //     return $query->where("webmodul_id",$request->wid);
+        // })->orderBy("date",'DESC')->orderBy("sort",'DESC')->get();
+        
+        $aktuells = Aktuell::with(["category"])
+        ->where("firma_id",250)
+        ->when($request->wid, function($query) use($request){
+            return $query->where("webmodul_id",$request->wid);
+        })
+        ->limit(100)
+        ->orderBy("date",'DESC')
+        ->orderBy("sort",'DESC')
+        ->get();
+
+        return view('aktuell',compact("aktuells"));
     }
+
+
+     /**
+     * Display the aktuellr page.
+     */
+    public function aktuellr(Request $request)
+    {
+        if(!$request->id || !$request->wid){
+            return redirect()->route("index");
+        }
+
+        $category= AktuellCategory::where("webmodul_id",$request->wid)->findOrFail($request->id);
+        $category->load(["aktuell"]);
+
+        // return $category;
+        return view('aktuellr',compact("category",));
+    }
+
+
 
     /**
      * Display the darmstadt_dieburg page.
@@ -67,8 +125,8 @@ class FrontendController extends Controller
     }
 
     /**
-    //  * Display the einsatzprotokoll_da page.
-    //  */
+     * Display the einsatzprotokoll_da page.
+     */
     // public function einsatzprotokoll_da(Request $request): View
     // {
     // header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
@@ -211,10 +269,32 @@ class FrontendController extends Controller
 
 
     /**
-     * Display the timetable page.
+     * Display the odienstplanOverview page.
      */
-    public function timetable(Request $request): View
+    public function odienstplanOverview(Request $request) //: View
     {
-        return view('timetable',);
+		$start = strtotime( "midnight" );
+		$end = strtotime( "+1 month", strtotime( "tomorrow" ) );
+		
+		if( $request->start != null ){
+			$start = intval($request->start);
+        }
+
+		if( $request->end != null ){
+			$end = strtotime( "tomorrow", intval($request->end) );
+        }
+
+        return DienstplanBooked::with(["user"])->orderBy('start')->limit(100)->get();
+
+        return view('dienstplan.overview',compact("start","end",));
     }
+
+    /**
+     * Display the odienstplanAktuell page.
+     */
+    public function odienstplanAktuell(Request $request): View
+    {
+        return view('dienstplan.aktuell',);
+    }
+    
 }

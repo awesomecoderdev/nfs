@@ -5,19 +5,18 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    {{-- start::head --}} @yield('head') {{-- end::head --}}
 
     <!-- Fonts -->
     <link rel="stylesheet" href="https://fonts.bunny.net/css2?family=Nunito:wght@400;600;700&display=swap">
-    <link rel="preload" href="{{ secure_asset('js/jquery.min.js') }}" as="script" type="text/javascript" />
+    <link rel="preload" href="{{ asset('js/jquery.min.js') }}" as="script" type="text/javascript" />
 
     {{-- css --}}
-    {{-- <link rel="stylesheet" href="{{ secure_asset('css/normalize.min.css') }}"> --}}
-    <link rel="stylesheet" href="{{ secure_asset('css/fluidgrid.css') }}">
-    <link rel="stylesheet" href="{{ secure_asset('css/font-awesome.min.css') }}">
-    <link rel="stylesheet" href="{{ secure_asset('css/home.css') }}">
-    <link rel="stylesheet" href="{{ secure_asset('css/milligram.min.css') }}">
-    <link rel="stylesheet" href="{{ secure_asset('css/style.css') }}">
+    {{-- <link rel="stylesheet" href="{{ asset('css/normalize.min.css') }}"> --}}
+    <link rel="stylesheet" href="{{ asset('css/fluidgrid.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/font-awesome.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/home.css') }}">
+    <!-- <link rel="stylesheet" href="{{ asset('css/milligram.min.css') }}"> -->
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
     <style>
         .dienstplan-week-job-item-small {
@@ -129,24 +128,31 @@
                 right: 20px !important;
             }
         }
+
+        b{
+            cursor: pointer;
+        }
     </style>
 
 
 
     <!-- Scripts -->
-    <script src="{{ secure_asset('js/jquery.min.js') }}"></script>
+    <script src="{{ asset('js/jquery.min.js') }}"></script>
     <script>
         var isDarkMode = window.matchMedia && window.matchMedia("(prefers-color-scheme:dark)") && window.matchMedia(
             "(prefers-color-scheme:dark)").matches ? true : false;
         var breackdown = window.screen.width > 786 ? 'lg' : (window.screen.width > 640 ? 'md' : 'sm');
     </script>
 
+
     <!-- Node.js -->
     {{-- @viteReactRefresh --}}
     {{-- @vite(['resources/css/app.css', 'resources/js/app.js']) --}}
-    @viteReactRefresh
-
+   {{-- @viteReactRefresh --}}
     @vite(['resources/js/app.js'])
+
+    
+    {{-- start::head --}} @yield('head') {{-- end::head --}}
 </head>
 
 <body @hasSection('bodyClass')
@@ -168,8 +174,10 @@
                     <span class="">Darmstadt &bull; Darmstadt-Dieburg</span>
                 </div>
                 <div class="col span_2 clr logo">
-                    <img src="{{ secure_asset('img/logo-nfs.png') }}" alt="ALTERNATIVTEXT"
-                        class="scale fle posrel z1000" />
+                    <a href="{{ route('index') }}" class="scale fle posrel z1000">
+                        <img src="{{ asset('img/logo-nfs.png') }}" alt="ALTERNATIVTEXT"
+                            class="scale fle posrel z1000" />
+                    </a>
                 </div>
                 <div class="col span_5 clr odbe">
                     <span class="ple">Odenwaldkreis &bull; Bergstraße</span>
@@ -186,14 +194,20 @@
 
     {{-- content --}}
     <div class="container ">
-        <div class="wrapper">
-            <div class="col span_16 clr">
-                {{-- start::content --}}
-                {{ $slot }}
-                {{-- end::content --}}
+        <!-- <div class="row"> -->
+            <div class="wrapper">
+                <div class="col span_16 clr">
+                    {{-- start::content --}}
+                    {{ $slot }}
+                    {{-- end::content --}}
+                </div>
             </div>
-        </div>
+        <!-- </div> -->
     </div>
+
+    @hasSection('content')
+        @yield('content')
+    @endif
 
     {{-- footer --}}
     <footer>
@@ -218,7 +232,7 @@
     </footer>
 
     <!-- Scripts -->
-    <script src="{{ secure_asset('js/jquery.backstretch.min.js') }}"></script>
+    <script src="{{ asset('js/jquery.backstretch.min.js') }}"></script>
     <!-- starty custom script -->
     <script>
         $(document).ready(function() {
@@ -241,7 +255,7 @@
                 if (swapNowStart === 1) {
                     // console.log("Don't Have more item in left");
                 } else {
-                    console.log("Have more item in left");
+                    // console.log("Have more item in left");
                     $(".swapItem").removeClass("activeItem");
                     $(".swapNow" + (swapNowStart - 1)).addClass("activeItem");
                 }
@@ -295,10 +309,10 @@
 
             $(".slider").backstretch(
                 [
-                    "{{ secure_asset('img/home-big1.jpg') }}",
-                    "{{ secure_asset('img/home-big4.jpg') }}",
-                    "{{ secure_asset('img/home-big3.jpg') }}",
-                    "{{ secure_asset('img/home-big2.jpg') }}",
+                    "{{ asset('img/home-big1.jpg') }}",
+                    "{{ asset('img/home-big4.jpg') }}",
+                    "{{ asset('img/home-big3.jpg') }}",
+                    "{{ asset('img/home-big2.jpg') }}",
                 ], {
                     fade: 1000,
                     duration: 5000,

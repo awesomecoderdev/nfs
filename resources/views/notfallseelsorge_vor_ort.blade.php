@@ -41,16 +41,16 @@
                 </div>
                 <div class="col span_8 clr swap">
                     <div class="nfsvol mb10">
-                        <img src="{{ secure_asset('img/01.jpg') }}" alt="ALTERNATIVTEXT" class="scale schick">
+                        <img src="{{ asset('img/01.jpg') }}" alt="ALTERNATIVTEXT" class="scale schick">
                     </div>
                     <div class="nfsvor mb10">
-                        <img src="{{ secure_asset('img/02.jpg') }}" alt="ALTERNATIVTEXT" class="scale schick">
+                        <img src="{{ asset('img/02.jpg') }}" alt="ALTERNATIVTEXT" class="scale schick">
                     </div>
                     <div class="nfsvol">
-                        <img src="{{ secure_asset('img/04.jpg') }}" alt="ALTERNATIVTEXT" class="scale schick">
+                        <img src="{{ asset('img/04.jpg') }}" alt="ALTERNATIVTEXT" class="scale schick">
                     </div>
                     <div class="nfsvor">
-                        <img src="{{ secure_asset('img/03.jpg') }}" alt="ALTERNATIVTEXT" class="scale schick">
+                        <img src="{{ asset('img/03.jpg') }}" alt="ALTERNATIVTEXT" class="scale schick">
                     </div>
                 </div>
             </div>

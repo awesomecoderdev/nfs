@@ -32,7 +32,7 @@
                         eigenverantwortlich.</p>
                 </div>
                 <div class="col span_8 clr swap">
-                    <img src="{{ secure_asset('img/06.jpg') }}" class="scale schick" alt="ALTERNATIVTEXT">
+                    <img src="{{ asset('img/06.jpg') }}" class="scale schick" alt="ALTERNATIVTEXT">
                 </div>
             </div>
         </div>

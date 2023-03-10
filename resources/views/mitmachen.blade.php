@@ -37,7 +37,7 @@
                         unter Tel.: 0171-3744999</p>
                 </div>
                 <div class="col span_8 clr swap">
-                    <img class="scale schick" src="{{ secure_asset('img/07.jpg') }}" alt="ALTERNATIVTEXT">
+                    <img class="scale schick" src="{{ asset('img/07.jpg') }}" alt="ALTERNATIVTEXT">
                 </div>
             </div>
         </div>

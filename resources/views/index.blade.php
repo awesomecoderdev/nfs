@@ -14,7 +14,7 @@
     </div>
 
 
-    @can('wid439')
+   
         <div class="fullblue">
             <div class="container">
                 <div class="row gutters gutflex">
@@ -45,8 +45,6 @@
                 </div>
             </div>
         </div>
-    @endcan
-
 
     <div class="container mt80">
         <div class="row gutters">

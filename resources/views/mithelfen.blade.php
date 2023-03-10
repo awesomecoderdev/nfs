@@ -29,7 +29,7 @@
                     <a href="/files/Bankverbindungen.pdf" class="btn">Jetzt spenden</a>
                 </div>
                 <div class="col span_8 clr swap">
-                    <img src="{{ secure_asset('img/07.jpg') }}" alt="ALTERNATIVTEXT" class="scale schick">
+                    <img src="{{ asset('img/07.jpg') }}" alt="ALTERNATIVTEXT" class="scale schick">
                 </div>
             </div>
         </div>

@@ -2,16 +2,16 @@
     @section('head')
         <title> Bergstra&szlig;e Intern | {{ __(config('app.name')) }}</title>
 
-        <link type="text/css" rel="stylesheet" href="{{ secure_asset('css/jquery-ui-1.11.4.custom/jquery-ui.min.css') }}" />
+        <link type="text/css" rel="stylesheet" href="{{ asset('css/jquery-ui-1.11.4.custom/jquery-ui.min.css') }}" />
         <link type="text/css" rel="stylesheet"
-            href="{{ secure_asset('css/jquery-ui-1.11.4.custom/jquery-ui.structure.min.css') }}" />
+            href="{{ asset('css/jquery-ui-1.11.4.custom/jquery-ui.structure.min.css') }}" />
         <link type="text/css" rel="stylesheet"
-            href="{{ secure_asset('css/jquery-ui-1.11.4.custom/jquery-ui.theme.min.css') }}" />
-        <link type="text/css" rel="stylesheet" href="{{ secure_asset('css/jquery.timepicker.css') }}" />
-        <link type="text/css" rel="stylesheet" href="{{ secure_asset('css/jquery.timepicker.css') }}" />
+            href="{{ asset('css/jquery-ui-1.11.4.custom/jquery-ui.theme.min.css') }}" />
+        <link type="text/css" rel="stylesheet" href="{{ asset('css/jquery.timepicker.css') }}" />
+        <link type="text/css" rel="stylesheet" href="{{ asset('css/jquery.timepicker.css') }}" />
 
-        <script src="{{ secure_asset('js/ui-1.11.4/jquery-ui.min.js') }}"></script>
-        <script src="{{ secure_asset('js/jquery.timepicker.min.js') }}"></script>
+        <script src="{{ asset('js/ui-1.11.4/jquery-ui.min.js') }}"></script>
+        <script src="{{ asset('js/jquery.timepicker.min.js') }}"></script>
     @endsection
     @section('bodyClass', 'interna')
 
@@ -642,14 +642,14 @@
 
 
                     {{-- send mail --}}
-                    <button style="margin: 15px 0 10px 10px; float: left;"
+                    <button style="margin: 15px 0 10px 19px; float: left;"
                         onclick="sendMail(['notfallseelsorge@haus-der-kirche.de'], '{{ '/send_mail/send' }}', 'Einsatzprotokoll', 'Anbei das Einsatzprotokoll', 'einsatzprotokoll');">E-Mail
                         versenden</button>
                     <p align="right">
                         <b>Fax bitte an 06252 673355</b>
                     </p>
 
-                    <script type="text/javascript" src="{{ secure_asset('js/send_form.js') }}"></script>
+                    <script type="text/javascript" src="{{ asset('js/send_form.js') }}"></script>
                 </div>
             </div>
         </div>

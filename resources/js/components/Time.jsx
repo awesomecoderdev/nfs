@@ -87,9 +87,7 @@ const Time = () => {
     }
 
     useEffect(() => {
-        console.log("====================================");
         console.log("selectedSchedule", selectedSchedule);
-        console.log("====================================");
     }, [selectedSchedule, setSchedule]);
 
     const processSubmit = () => {
@@ -299,9 +297,13 @@ const Time = () => {
                                                                             <button
                                                                                 type="button"
                                                                                 onClick={() => {
-                                                                                    console.log(
-                                                                                        day
+                                                                                    const date = format(
+                                                                                        day,
+                                                                                        "d-MM-yyyy"
                                                                                     );
+                                                                                    const redirect = `${window.location.origin}${window.location.pathname}?start=${date}`;
+                                                                                    window.location =
+                                                                                        redirect;
                                                                                 }}
                                                                                 className={classNames(
                                                                                     "calender_default_btn", // default class
@@ -351,93 +353,221 @@ const Time = () => {
                         </div>
                     </div>
                 </div>
-                <div className="timeheading"></div>
+                <div className="timeheading rightcontentss"></div>
             </div>
 
             <div className="timetables">
-                {currentWeek.map((day, indexOfDay) => {
-                    const hours = eachHourOfInterval({
-                        start: startOfDay(day),
-                        end: endOfDay(day),
-                    });
+                {breackdown && breackdown !== "sm" ? (
+                    <Fragment>
+                        {currentWeek.map((day, indexOfDay) => {
+                            const hours = eachHourOfInterval({
+                                start: startOfDay(day),
+                                end: endOfDay(day),
+                            });
 
-                    return (
-                        <>
-                            <div
-                                key={format(day, "d.MM yyyy")}
-                                className="timetable"
-                            >
-                                <div className="date format">
-                                    <date>{format(day, "d.MM yyyy")}</date>
-                                </div>
-                                <div className="hourtables">
-                                    {timeTables.map((timetable) => (
-                                        <div
-                                            key={timetable.group.toUpperCase()}
-                                            className={`hourtable ${timetable.group}`}
-                                        >
-                                            <button className="hour title">
-                                                {timetable.group.toUpperCase()}
-                                            </button>
-                                            {hours.map((hour, hrIndex) => {
-                                                return (
-                                                    <button
-                                                        key={
-                                                            hrIndex +
-                                                            timetable.group
-                                                        }
-                                                        type="button"
-                                                        onClick={(e) => {
-                                                            const scheduleKey = `${
-                                                                table.group
-                                                            }-${format(
-                                                                hour,
-                                                                "MM-dd-yyyy"
-                                                            )}-${getHours(
-                                                                hour
-                                                            )}`;
-                                                            setSelectedHour(
-                                                                scheduleKey
-                                                            );
-                                                            setSchedule(
-                                                                scheduleKey
-                                                            );
-                                                        }}
-                                                        className={classNames(
-                                                            "hour",
-                                                            hrIndex == 6 &&
-                                                                "space",
-                                                            hrIndex == 12 &&
-                                                                "space",
-                                                            hrIndex == 18 &&
-                                                                "space"
-                                                        )}
-                                                    >
-                                                        <time
-                                                            dateTime={hour}
-                                                            className="hr_time"
+                            return (
+                                <div
+                                    key={format(day, "d.MM yyyy")}
+                                    className="timetable"
+                                >
+                                    <div className="date format">
+                                        <time>{format(day, "d.MM yyyy")}</time>
+                                    </div>
+                                    <div className="hourtables">
+                                        {timeTables.map((timetable) => (
+                                            <div
+                                                key={timetable.group.toUpperCase()}
+                                                className={`hourtable ${timetable.group}`}
+                                            >
+                                                <button className="hour title">
+                                                    {timetable.group.toUpperCase()}
+                                                </button>
+                                                {hours.map((hour, hrIndex) => {
+                                                    return (
+                                                        <button
+                                                            key={
+                                                                hrIndex +
+                                                                timetable.group
+                                                            }
+                                                            type="button"
+                                                            onClick={(e) => {
+                                                                const scheduleKey = `${
+                                                                    timetable.group
+                                                                }-${format(
+                                                                    hour,
+                                                                    "MM-dd-yyyy"
+                                                                )}-${getHours(
+                                                                    hour
+                                                                )}`;
+                                                                setSelectedHour(
+                                                                    scheduleKey
+                                                                );
+                                                                setSchedule(
+                                                                    scheduleKey
+                                                                );
+                                                            }}
+                                                            className={classNames(
+                                                                "hour",
+                                                                hrIndex == 6 &&
+                                                                    "space",
+                                                                hrIndex == 12 &&
+                                                                    "space",
+                                                                hrIndex == 18 &&
+                                                                    "space"
+                                                            )}
                                                         >
-                                                            {getHours(hour) < 10
-                                                                ? "0" +
-                                                                  getHours(
-                                                                      hour
-                                                                  ) +
-                                                                  ":00"
-                                                                : getHours(
-                                                                      hour
-                                                                  ) + ":00"}
-                                                        </time>
-                                                    </button>
-                                                );
-                                            })}
-                                        </div>
-                                    ))}
+                                                            <time
+                                                                dateTime={hour}
+                                                                className="hr_time"
+                                                            >
+                                                                {getHours(
+                                                                    hour
+                                                                ) < 10
+                                                                    ? "0" +
+                                                                      getHours(
+                                                                          hour
+                                                                      ) +
+                                                                      ":00"
+                                                                    : getHours(
+                                                                          hour
+                                                                      ) + ":00"}
+                                                            </time>
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                        </>
-                    );
-                })}
+                            );
+                        })}
+                    </Fragment>
+                ) : (
+                    <Fragment>
+                        {(() => {
+                            const hours = eachHourOfInterval({
+                                start: startOfDay(currentDay),
+                                end: endOfDay(currentDay),
+                            });
+
+                            return (
+                                <div className="timetable">
+                                    <div className="date format mobile">
+                                        <button
+                                            type="button"
+                                            className="calendar_next_prev_btn"
+                                            onClick={(e)=>{
+                                                const date = format(
+                                                    add(currentDay, { days: -1 }) ,
+                                                    "d-MM-yyyy"
+                                                );
+                                                const redirect = `${window.location.origin}${window.location.pathname}?start=${date}`;
+                                                window.location =
+                                                    redirect;
+                                            }}
+                                        >
+                                            <ChevronLeftIcon
+                                                className="next_prev_icon"
+                                                aria-hidden="true"
+                                            />
+                                        </button>
+                                        <time>
+                                            {format(currentDay, "d.MM yyyy")}
+                                        </time>
+                                        <button
+                                            type="button"
+                                            className="calendar_next_prev_btn"
+                                            onClick={(e)=>{
+                                                const date = format(
+                                                    add(currentDay, { days: 1 }) ,
+                                                    "d-MM-yyyy"
+                                                );
+                                                const redirect = `${window.location.origin}${window.location.pathname}?start=${date}`;
+                                                window.location =
+                                                    redirect;
+                                            }}
+                                        >
+                                            <ChevronRightIcon
+                                                className="next_prev_icon"
+                                                aria-hidden="true"
+                                            />
+                                        </button>
+                                    </div>
+                                    <div className="hourtables">
+                                        {timeTables.map((timetable) => (
+                                            <div
+                                                key={timetable.group.toUpperCase()}
+                                                className={`hourtable ${timetable.group}`}
+                                            >
+                                                <button className="hour title">
+                                                    {timetable.group.toUpperCase()}
+                                                </button>
+                                                {hours.map((hour, hrIndex) => {
+                                                    return (
+                                                        <button
+                                                            key={
+                                                                hrIndex +
+                                                                timetable.group
+                                                            }
+                                                            type="button"
+                                                            onClick={(e) => {
+                                                                const scheduleKey = `${
+                                                                    timetable.group
+                                                                }-${format(
+                                                                    hour,
+                                                                    "MM-dd-yyyy"
+                                                                )}-${getHours(
+                                                                    hour
+                                                                )}`;
+                                                                setSelectedHour(
+                                                                    scheduleKey
+                                                                );
+                                                                setSchedule(
+                                                                    scheduleKey
+                                                                );
+                                                            }}
+                                                            className={classNames(
+                                                                "hour",
+                                                                hrIndex == 6 &&
+                                                                    "space",
+                                                                hrIndex == 12 &&
+                                                                    "space",
+                                                                hrIndex == 18 &&
+                                                                    "space"
+                                                            )}
+                                                        >
+                                                            <time
+                                                                dateTime={hour}
+                                                                className="hr_time"
+                                                            >
+                                                                {getHours(
+                                                                    hour
+                                                                ) < 10
+                                                                    ? "0" +
+                                                                      getHours(
+                                                                          hour
+                                                                      ) +
+                                                                      ":00"
+                                                                    : getHours(
+                                                                          hour
+                                                                      ) + ":00"}
+                                                            </time>
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            );
+                        })()}
+                    </Fragment>
+                )}
             </div>
+
+
+
+
         </Fragment>
     );
 };

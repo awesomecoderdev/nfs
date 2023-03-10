@@ -424,7 +424,7 @@ span.codedirection {
     border-top: 6px solid #00519e;
     content: "";
     display: block;
-    height: 20px;
+    height: 8px;
     position: absolute;
     right: 6px;
     width: 40px;
@@ -463,7 +463,7 @@ header.mobile #cssmenu #menu-button:after {
     border-top: 6px solid #e95d0d;
     content: "";
     display: block;
-    height: 20px;
+    height: 8px;
     position: absolute;
     right: 6px;
     width: 40px;
@@ -592,7 +592,7 @@ header.mobile #cssmenu #menu-button:before {
     border-top: 6px solid #00519e;
     content: "";
     display: block;
-    height: 20px;
+    height: 8px;
     position: absolute;
     right: 6px;
     width: 40px;
@@ -618,7 +618,6 @@ header.mobile #cssmenuleft #menu-button-left {
     display: block;
     margin-right: 0;
     width: 54px;
-    height: 54px;
     margin-top: 0px;
     position: relative;
     border: 1px solid #e95d0d;
@@ -630,7 +629,7 @@ header.mobile #cssmenuleft #menu-button-left:after {
     border-top: 6px solid #e95d0d;
     content: "";
     display: block;
-    height: 20px;
+    height: 8px;
     position: absolute;
     right: 6px;
     width: 40px;
@@ -1423,7 +1422,7 @@ a.btnwhite {
         width: 34%;
         height: auto;
         display: block;
-        margin: 0 0 0 46%;
+        margin: 0px 0 0 54%;
     }
 
     #cssmenu > ul.open {
@@ -1794,4 +1793,37 @@ div.dienstplan-week-item-label {
 #menu-button::before,
 #menu-button-left::before {
     top: 38px !important;
+}
+
+.dltbtn{
+    height: 15px;
+    padding: 0;
+    margin: 0;
+    background: #433333f7;
+    border: none;
+    cursor: pointer;
+}
+
+.dltform {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.usrdltbtn{
+    padding: 0;
+    margin: 0;
+    text-decoration: none;
+    color: #8da2b5;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    font-family: "Open Sans", sans-serif;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-size-adjust: none;
+    line-height: 30px;
+    box-sizing: border-box;
+    text-decoration: none;
+    background: transparent;
 }

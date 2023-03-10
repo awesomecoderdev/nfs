@@ -14,15 +14,16 @@
     <li> <a href="{{ route('mithelfen') }}"> Mit-helfen</a></li>
     <li> <a href="/contact"> Kontakt</a></li>
     @auth
-        <li class="last"><a href="/aktuell?landing=1">Mitarbeiter intern</a></li>
+        <li> <a href="{{route('index') }}"> Start</a></li>
+        <li> <a href="/aktuell?wid=459"> Intern</a></li>
     @else
-        <li> <a href="/"> Start</a></li>
-        <li> <a href="{{ route('users.login') }}"> Intern</a></li>
+        <li class="last"><a href="/aktuell?landing=1">Mitarbeiter intern</a></li>
     @endauth
 
-    @if (auth()->user())
+    @can("isAdmin")
         <li><a href="/intern?wid=" target="_blank">Administrator</a></li>
-    @endif
+        
+    @endcan
 
 
     @auth
