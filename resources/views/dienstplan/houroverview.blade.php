@@ -10,49 +10,46 @@
         }
 
         .readable {
-
+           
             font-size: 17px;
         }
 
-        .readable img {
-            margin: 0;
+        .readable img{
+          margin: 0;
         }
     </style>
 
-    <form action="{{ route('dienstplan.hour.overview') }}" method="get">
-        <table border=0>
-            <tr>
-                <th style="text-align: left;">
-                    Von:
-                </th>
-                <th style="text-align: left;">
-                    Bis:
-                </th>
-                <td>
-                </td>
-            </tr>
-            <tr>
+   <form action="{{route('dienstplan.hour.overview') }}" method="get">
+    <table border=0>
+        <tr>
+            <th style="text-align: left;">
+                Von:
+            </th>
+            <th style="text-align: left;">
+                Bis:
+            </th>
+            <td>
+            </td>
+        </tr>
+        <tr>
 
-                <td>
-                    <input type="date"
-                        value="{{ date('Y-m-d', strtotime(request('start', '-1 month'))) ?? date('Y-m-d', strtotime('-1 month')) }}"
-                        name="start">
-                </td>
+            <td>
+                <input type="date" value="{{  date('Y-m-d',strtotime(request('start','-1 month'))) ?? date('Y-m-d',strtotime('-1 month')) }}" name="start">
+            </td>
 
-                <td>
-                    <input type="date" value="{{ date('Y-m-d', strtotime(request('end', 'today'))) ?? date('Y-m-d') }}"
-                        name="end">
-                </td>
-                <td>
-                    <button type="submit">Los</button>
-                </td>
-            </tr>
-        </table>
-    </form>
+            <td>
+                <input type="date" value="{{ date('Y-m-d',strtotime(request('end','today'))) ?? date('Y-m-d') }}"  name="end">
+            </td>
+            <td>
+                <button type="submit">Los</button>
+            </td>
+        </tr>
+    </table>
+   </form>
 
     <table class="readable">
         <th>
-            <a href="{{ route('dienstplan.hour.overview', ['sort' => $sort == 2 ? -2 : 2]) }}">Nachname</a>
+            <a href="{{ route('dienstplan.hour.overview', ['sort'=> $sort == 2 ? -2 : 2] ) }}">Nachname</a>
             @if ($sort == 2)
                 <img width="10px" src="{{ asset('/img/dienstplan/down.png') }}">
             @endif
@@ -61,7 +58,7 @@
             @endif
         </th>
         <th>
-            <a href="{{ route('dienstplan.hour.overview', ['sort' => $sort == 1 ? -1 : 1]) }}">Vorname</a>
+            <a href="{{ route('dienstplan.hour.overview', ['sort'=> $sort == 1 ? -1 : 1] ) }}">Vorname</a>
             @if ($sort == 1)
                 <img width="10px" src="{{ asset('/img/dienstplan/down.png') }}">
             @endif
@@ -70,7 +67,7 @@
             @endif
         </th>
         <th>
-            <a href="{{ route('dienstplan.hour.overview', ['sort' => $sort == 3 ? -3 : 3]) }}">Dienstzeit</a>
+            <a href="{{ route('dienstplan.hour.overview', ['sort'=> $sort == 3 ? -3 : 3] ) }}">Dienstzeit</a>
             @if ($sort == 3)
                 <img width="10px" src="{{ asset('/img/dienstplan/down.png') }}">
             @endif
@@ -79,15 +76,15 @@
             @endif
         </th>
         @foreach ($tbl as $key => $col)
-            <tr class="{{ $key % 2 != 0 ?: 'even' }}">
+            <tr class="{{ $key % 2 != 0 ?:'even' }}">
                 <td>
-                    {{ $col['last_name'] }}
+                    {{$col['last_name']}}
                 </td>
                 <td>
-                    {{ $col['first_name'] }}
+                    {{$col['first_name']}}
                 </td>
                 <td style="text-align: right;">
-                    {{ $col['hours'] }}
+                    {{$col["hours"]}}
                 </td>
             </tr>
         @endforeach

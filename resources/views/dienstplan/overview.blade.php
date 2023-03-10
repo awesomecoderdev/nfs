@@ -32,7 +32,8 @@
     </table>
 
     <div style="float:left; margin-left: 370px; margin-top: 10px;">
-        <a href='{{ "/dienstplan/overview_pdf/$start/$end/$currentUserOnly" }}' target="_blank">
+        <a href='{{ "/dienstplan/overview_pdf/$start/$end/$currentUserOnly" }}'
+            target="_blank">
             <img src="{{ asset('img/dienstplan/pdf.jpg') }}" width="50px">
         </a>
     </div>
@@ -53,7 +54,7 @@
         function refresh() {
             var start = Math.floor(Date.parse($('#datepicker-start').datepicker("getDate")) / 1000);
             var end = Math.floor(Date.parse($('#datepicker-end').datepicker("getDate")) / 1000);
-            var baseurl = '{{ route('dienstplan.overview') }}';
+            var baseurl = '{{ route("dienstplan.overview") }}';
             var url = baseurl.split('?')[0];
             if (url.slice(-1) == '/')
                 url += '' + start + '/' + end;
@@ -124,135 +125,135 @@
 
     <div class="overview" style="margin-top:150px;">
 
-        @foreach ($table as $row)
-            <div class="overview_day readable">
-                <h2><?= $row['date'] ?></h2>
-                <table class="overview_table">
-                    <tr>
-                        <?php if($r1Set): ?>
-                        <th><b>A-Dienst</b></th>
+        @foreach( $table as $row )
+        <div class="overview_day readable">
+            <h2><?= $row['date'] ?></h2>
+            <table class="overview_table">
+                <tr>
+                    <?php if($r1Set): ?>
+                    <th><b>A-Dienst</b></th>
+                    <?php endif; ?>
+                    <?php if($r2Set): ?>
+                    <th><b>B-Dienst</b></th>
+                    <?php endif; ?>
+                    <?php if($r3Set): ?>
+                    <th><b>Hintergrund-Dienst</b></th>
+                    <?php endif; ?>
+                    <?php if($r4Set): ?>
+                    <th><b>Dienst-Absicherung</b></th>
+                    <?php endif; ?>
+                </tr>
+                <tr>
+                    <?php if($r1Set): ?>
+                    <td class="overview_timeslot overview_timeslot_0">
+                        <?php if(isset($row[0])): ?>
+                        <?php foreach( $row[0] as $time=>$data ): ?>
+                        <div class="overview_event">
+                            <table>
+                                <tr>
+                                    <th></th>
+                                    <td><b><?= $time ?></b></td>
+                                </tr>
+                                <tr>
+                                    <th>Mitarbeiter: </th>
+                                    <td><?= $data['name'] ?></td>
+                                </tr>
+                                <tr>
+                                    <th><?= $data['cont_typ'] ?>:</th>
+                                    <td><a href="tel:<?= $data['tel'] ?>"><?= $data['tel'] ?></a></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <?php endforeach; ?>
                         <?php endif; ?>
-                        <?php if($r2Set): ?>
-                        <th><b>B-Dienst</b></th>
-                        <?php endif; ?>
-                        <?php if($r3Set): ?>
-                        <th><b>Hintergrund-Dienst</b></th>
-                        <?php endif; ?>
-                        <?php if($r4Set): ?>
-                        <th><b>Dienst-Absicherung</b></th>
-                        <?php endif; ?>
-                    </tr>
-                    <tr>
-                        <?php if($r1Set): ?>
-                        <td class="overview_timeslot overview_timeslot_0">
-                            <?php if(isset($row[0])): ?>
-                            <?php foreach( $row[0] as $time=>$data ): ?>
-                            <div class="overview_event">
-                                <table>
-                                    <tr>
-                                        <th></th>
-                                        <td><b><?= $time ?></b></td>
-                                    </tr>
-                                    <tr>
-                                        <th>Mitarbeiter: </th>
-                                        <td><?= $data['name'] ?></td>
-                                    </tr>
-                                    <tr>
-                                        <th><?= $data['cont_typ'] ?>:</th>
-                                        <td><a href="tel:<?= $data['tel'] ?>"><?= $data['tel'] ?></a></td>
-                                    </tr>
-                                </table>
-                            </div>
-                            <?php endforeach; ?>
-                            <?php endif; ?>
-                        </td>
-                        <?php endif; ?>
+                    </td>
+                    <?php endif; ?>
 
-                        <?php if($r2Set): ?>
-                        <td class="overview_timeslot overview_timeslot_1">
-                            <?php if(isset($row[1])): ?>
-                            <?php foreach( $row[1] as $time=>$data ): ?>
-                            <div class="overview_event">
-                                <table>
-                                    <tr>
-                                        <th></th>
-                                        <td><b><?= $time ?></b></td>
-                                    </tr>
-                                    <tr>
-                                        <th>Mitarbeiter: </th>
-                                        <td><?= $data['name'] ?></td>
-                                    </tr>
-                                    <tr>
-                                        <th><?= $data['cont_typ'] ?>:</th>
-                                        <td><a href="tel:<?= $data['tel'] ?>"><?= $data['tel'] ?></a></td>
-                                    </tr>
-                                </table>
-                            </div>
-                            <?php endforeach; ?>
-                            <?php endif; ?>
-                        </td>
+                    <?php if($r2Set): ?>
+                    <td class="overview_timeslot overview_timeslot_1">
+                        <?php if(isset($row[1])): ?>
+                        <?php foreach( $row[1] as $time=>$data ): ?>
+                        <div class="overview_event">
+                            <table>
+                                <tr>
+                                    <th></th>
+                                    <td><b><?= $time ?></b></td>
+                                </tr>
+                                <tr>
+                                    <th>Mitarbeiter: </th>
+                                    <td><?= $data['name'] ?></td>
+                                </tr>
+                                <tr>
+                                    <th><?= $data['cont_typ'] ?>:</th>
+                                    <td><a href="tel:<?= $data['tel'] ?>"><?= $data['tel'] ?></a></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <?php endforeach; ?>
                         <?php endif; ?>
+                    </td>
+                    <?php endif; ?>
 
-                        <?php if($r3Set): ?>
-                        <td class="overview_timeslot overview_timeslot_2">
-                            <?php if(isset($row[2])): ?>
-                            <?php foreach( $row[2] as $time=>$data ): ?>
-                            <div class="overview_event">
-                                <table>
-                                    <tr>
-                                        <th></th>
-                                        <td><b><?= $time ?></b></td>
-                                    </tr>
-                                    <tr>
-                                        <th>Mitarbeiter: </th>
-                                        <td><?= $data['name'] ?></td>
-                                    </tr>
-                                    <tr>
-                                        <th><?= $data['cont_typ'] ?>:</th>
-                                        <td><a href="tel:<?= $data['tel'] ?>"><?= $data['tel'] ?></a></td>
-                                    </tr>
-                                </table>
-                            </div>
-                            <?php endforeach; ?>
-                            <?php endif; ?>
-                        </td>
+                    <?php if($r3Set): ?>
+                    <td class="overview_timeslot overview_timeslot_2">
+                        <?php if(isset($row[2])): ?>
+                        <?php foreach( $row[2] as $time=>$data ): ?>
+                        <div class="overview_event">
+                            <table>
+                                <tr>
+                                    <th></th>
+                                    <td><b><?= $time ?></b></td>
+                                </tr>
+                                <tr>
+                                    <th>Mitarbeiter: </th>
+                                    <td><?= $data['name'] ?></td>
+                                </tr>
+                                <tr>
+                                    <th><?= $data['cont_typ'] ?>:</th>
+                                    <td><a href="tel:<?= $data['tel'] ?>"><?= $data['tel'] ?></a></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <?php endforeach; ?>
                         <?php endif; ?>
+                    </td>
+                    <?php endif; ?>
 
 
 
-                        <?php if($r4Set): ?>
-                        <td class="overview_timeslot overview_timeslot_3">
-                            <?php
-                            // echo '<pre>';
-                            // print_r($row);
-                            // echo '</pre>';
-                            ?>
-                            <?php if(isset($row[3])): ?>
-                            <?php foreach( $row[3] as $time=>$data ): ?>
-                            <div class="overview_event">
-                                <table>
-                                    <tr>
-                                        <th></th>
-                                        <td><b><?= $time ?></b></td>
-                                    </tr>
-                                    <tr>
-                                        <th>Mitarbeiter: </th>
-                                        <td><?= $data['name'] ?></td>
-                                    </tr>
-                                    <tr>
-                                        <th><?= $data['cont_typ'] ?>:</th>
-                                        <td><a href="tel:<?= $data['tel'] ?>"><?= $data['tel'] ?></a></td>
-                                    </tr>
-                                </table>
-                            </div>
-                            <?php endforeach; ?>
-                            <?php endif; ?>
-                        </td>
+                    <?php if($r4Set): ?>
+                    <td class="overview_timeslot overview_timeslot_3">
+                        <?php
+                        // echo '<pre>';
+                        // print_r($row);
+                        // echo '</pre>';
+                        ?>
+                        <?php if(isset($row[3])): ?>
+                        <?php foreach( $row[3] as $time=>$data ): ?>
+                        <div class="overview_event">
+                            <table>
+                                <tr>
+                                    <th></th>
+                                    <td><b><?= $time ?></b></td>
+                                </tr>
+                                <tr>
+                                    <th>Mitarbeiter: </th>
+                                    <td><?= $data['name'] ?></td>
+                                </tr>
+                                <tr>
+                                    <th><?= $data['cont_typ'] ?>:</th>
+                                    <td><a href="tel:<?= $data['tel'] ?>"><?= $data['tel'] ?></a></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <?php endforeach; ?>
                         <?php endif; ?>
+                    </td>
+                    <?php endif; ?>
 
-                    </tr>
-                </table>
-            </div>
+                </tr>
+            </table>
+        </div>
         @endforeach
     </div>
 

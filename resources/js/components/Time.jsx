@@ -54,6 +54,10 @@ const Time = () => {
     const [currentDay, setCurrentDay] = useState(today);
     const [startCalendar, setStartCalendar] = useState(today);
     const firstCurrentHour = parse(currentHour, "MMM-yyyy", new Date());
+    const [groupA, setGroupA] = useState([]);
+    const [groupB, setGroupB] = useState([]);
+    const [groupH, setGroupH] = useState([]);
+    const [groupD, setGroupD] = useState([]);
 
     const days = eachDayOfInterval({
         start: startOfWeek(startOfMonth(startCalendar)),
@@ -297,10 +301,11 @@ const Time = () => {
                                                                             <button
                                                                                 type="button"
                                                                                 onClick={() => {
-                                                                                    const date = format(
-                                                                                        day,
-                                                                                        "d-MM-yyyy"
-                                                                                    );
+                                                                                    const date =
+                                                                                        format(
+                                                                                            day,
+                                                                                            "d-MM-yyyy"
+                                                                                        );
                                                                                     const redirect = `${window.location.origin}${window.location.pathname}?start=${date}`;
                                                                                     window.location =
                                                                                         redirect;
@@ -391,19 +396,22 @@ const Time = () => {
                                                             }
                                                             type="button"
                                                             onClick={(e) => {
-                                                                const scheduleKey = `${
+                                                                // const scheduleKey = `${
+                                                                //     timetable.group
+                                                                // }-${format(
+                                                                //     hour,
+                                                                //     "MM-dd-yyyy"
+                                                                // )}-${getHours(
+                                                                //     hour
+                                                                // )}`;
+                                                                // setSelectedHour(
+                                                                //     scheduleKey
+                                                                // );
+                                                                // setSchedule(
+                                                                //     scheduleKey
+                                                                // );
+                                                                console.log(
                                                                     timetable.group
-                                                                }-${format(
-                                                                    hour,
-                                                                    "MM-dd-yyyy"
-                                                                )}-${getHours(
-                                                                    hour
-                                                                )}`;
-                                                                setSelectedHour(
-                                                                    scheduleKey
-                                                                );
-                                                                setSchedule(
-                                                                    scheduleKey
                                                                 );
                                                             }}
                                                             className={classNames(
@@ -413,7 +421,8 @@ const Time = () => {
                                                                 hrIndex == 12 &&
                                                                     "space",
                                                                 hrIndex == 18 &&
-                                                                    "space"
+                                                                    "space",
+                                                                `${timetable.group}`
                                                             )}
                                                         >
                                                             <time
@@ -456,14 +465,15 @@ const Time = () => {
                                         <button
                                             type="button"
                                             className="calendar_next_prev_btn"
-                                            onClick={(e)=>{
+                                            onClick={(e) => {
                                                 const date = format(
-                                                    add(currentDay, { days: -1 }) ,
+                                                    add(currentDay, {
+                                                        days: -1,
+                                                    }),
                                                     "d-MM-yyyy"
                                                 );
                                                 const redirect = `${window.location.origin}${window.location.pathname}?start=${date}`;
-                                                window.location =
-                                                    redirect;
+                                                window.location = redirect;
                                             }}
                                         >
                                             <ChevronLeftIcon
@@ -477,14 +487,15 @@ const Time = () => {
                                         <button
                                             type="button"
                                             className="calendar_next_prev_btn"
-                                            onClick={(e)=>{
+                                            onClick={(e) => {
                                                 const date = format(
-                                                    add(currentDay, { days: 1 }) ,
+                                                    add(currentDay, {
+                                                        days: 1,
+                                                    }),
                                                     "d-MM-yyyy"
                                                 );
                                                 const redirect = `${window.location.origin}${window.location.pathname}?start=${date}`;
-                                                window.location =
-                                                    redirect;
+                                                window.location = redirect;
                                             }}
                                         >
                                             <ChevronRightIcon
@@ -564,10 +575,6 @@ const Time = () => {
                     </Fragment>
                 )}
             </div>
-
-
-
-
         </Fragment>
     );
 };

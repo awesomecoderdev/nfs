@@ -41,11 +41,11 @@
             }
 
             /*
-                            #dienstplan_vacation #addvacationbox
-                            {
-                            margin-top: 20px;
-                            clear:both;
-                            }*/
+                        #dienstplan_vacation #addvacationbox
+                        {
+                        margin-top: 20px;
+                        clear:both;
+                        }*/
 
             #dienstplan_vacation .interactionBox {
                 padding-top: 20px;
@@ -74,14 +74,15 @@
                 border: none;
                 border-radius: 0.25rem;
             }
-
-            #dienstplan_vacation {
+     
+            #dienstplan_vacation{
                 display: flex;
                 justify-content: center;
                 align-items: center;
                 flex-direction: column;
             }
-        </style>
+
+            </style>
     @endsection
 
     <div class="column-6 push-1 bgcolored">
@@ -90,7 +91,7 @@
     <div class="container">
         <div class="row">
             <div id="dienstplan_vacation">
-                @if ($errors->any())
+                @if($errors->any())
                     @foreach ($errors->all() as $error)
                         <div class="error">
                             <img src="{{ asset('img/critical.png') }}" alt="Error">
@@ -98,13 +99,13 @@
                         </div>
                     @endforeach
                 @endif
-                @if (session()->has('alert'))
+                @if(session()->has('alert'))
                     <div class="error">
                         <img src="{{ asset('img/critical.png') }}" alt="Error">
                         <div class="errortext">{{ session('alert') }}</div>
                     </div>
                 @endif
-                @if (session()->has('success'))
+                @if(session()->has('success'))
                     <div class="error">
                         <img src="{{ asset('img/okay.png') }}" alt="Success">
                         <div class="errortext">{{ session('success') }}</div>
@@ -131,25 +132,25 @@
                     </select>
                 </td>
 
-                @if ($config->delete_mode == 0)
-            <tr>
-                <th style="vertical-align: top; text-align: left;">
-                    L&ouml;schsperre:
-                </th>
-                <td>
-                    <input type="text" name="delete_border" value="{{ $config->delete_border }}" /> Tage
-                </td>
-            </tr>
-        @else
-            <tr>
-                <th style="vertical-align: center; text-align: left;">
-                    Der Tag, ab dem das<br /> L&ouml;schen
-                    im Folgemonat<br /> nicht mehr m&ouml;glich ist:
-                </th>
-                <td>
-                    <input type="text" name="delete_date" value="{{ $config->delete_date }}" />
-                </td>
-            </tr>
+            @if($config->delete_mode == 0)
+                <tr>
+                    <th style="vertical-align: top; text-align: left;">
+                        L&ouml;schsperre:
+                    </th>
+                    <td>
+                        <input type="text" name="delete_border" value="{{ $config->delete_border }}" /> Tage
+                    </td>
+                </tr>
+            @else
+                <tr>
+                    <th style="vertical-align: center; text-align: left;">
+                        Der Tag, ab dem das<br /> L&ouml;schen
+                        im Folgemonat<br /> nicht mehr m&ouml;glich ist:
+                    </th>
+                    <td>
+                        <input type="text" name="delete_date" value="{{ $config->delete_date }}" />
+                    </td>
+                </tr>
             @endif
 
 

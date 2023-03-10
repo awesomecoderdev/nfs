@@ -5,13 +5,17 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
     server: {
         host: "nfs.one",
+        hmr: { host: "nfs.one" },
     },
     plugins: [
         laravel({
-            input: ["resources/css/app.css", "resources/js/app.js"],
+            input: ["resources/js/app.js"],
             refresh: true,
             valetTls: "nfs.one",
         }),
-        react(),
+        react({ fastRefresh: false }),
     ],
+    worker: {
+        plugins: [react()],
+    },
 });

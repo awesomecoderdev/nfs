@@ -47,12 +47,12 @@ Route::group(['prefix' => 'users', "as" => "users.", "middleware" => ['auth', 'v
 
 Route::middleware([])->group(function () {
     Route::any('/mitarbeiter', [FrontendController::class, 'mitarbeiter'])->name('mitarbeiter');
-    Route::any('/aktuell', [FrontendController::class, 'aktuell'])->middleware(["auth","verified"])->name('aktuell');
-    Route::any('/aktuell', [FrontendController::class, 'aktuell'])->middleware(["auth","verified"])->name('aktuell');
-    
-    Route::any('/aktuellr', [FrontendController::class, 'redirect'])->middleware(["auth","verified"]);
-    Route::any('/aktuellr/view/{id?}', [FrontendController::class, 'aktuellr'])->middleware(["auth","verified"])->name('aktuellr');
-    
+    Route::any('/aktuell', [FrontendController::class, 'aktuell'])->middleware(["auth", "verified"])->name('aktuell');
+    Route::any('/aktuell', [FrontendController::class, 'aktuell'])->middleware(["auth", "verified"])->name('aktuell');
+
+    Route::any('/aktuellr', [FrontendController::class, 'redirect'])->middleware(["auth", "verified"]);
+    Route::any('/aktuellr/view/{id?}', [FrontendController::class, 'aktuellr'])->middleware(["auth", "verified"])->name('aktuellr');
+
 
     // Route::any('/bergstrasse', [FrontendController::class, 'bergstrasse'])->name('bergstrasse');
     // Route::any('/darmstadt-dieburg', [FrontendController::class, 'darmstadt_dieburg'])->name('darmstadt_dieburg');
@@ -129,36 +129,36 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 // dienstplan routes
 Route::group(['prefix' => 'dienstplan', "as" => "dienstplan.", "controller" => DienstplanController::class,], function () {
-    Route::any('/', 'index')->middleware(["auth","verified"]);
-    Route::any('/overview', 'dienstplanOverview')->middleware(["auth","verified"])->name("overview");
-    Route::any('/aktuell','dienstplanAktuell')->middleware(["auth","verified"])->name("aktuell");
-    Route::any('/months','months')->middleware(["auth","verified"])->name("months");
-    Route::get('/vacation/{user?}','vacation')->middleware(["auth","verified"])->name("vacation");
-    Route::post('/vacation/store','store')->middleware(["auth","verified"])->name("vacation.store");
-    Route::delete('/vacation/delete/{id?}','delete')->middleware(["auth","verified"])->name("vacation.delete");
-    Route::any('/queryvacation','queryVacation')->middleware(["auth","verified"])->name("queryvacation");
-    Route::any('/admin','admin')->middleware(["auth","verified"])->name("admin");
-    Route::get('/edit/{id?}','editUser')->middleware(["auth","verified"])->name("edit");
-    Route::post('/edit/{id?}','updateUser')->middleware(["auth","verified"])->name("update.user");
-    Route::delete('/delete/{id?}','deleteUser')->middleware(["auth","verified"])->name("delete");
-    Route::get('/createuser','createUser')->middleware(["auth","verified","isAdmin"])->name("user.create");
-    Route::post('/createuser','saveUser')->middleware(["auth","verified","isAdmin"])->name("user.store");
-    Route::get('/admin_kontakte','adminKontakte')->middleware(["auth","verified"])->name("admin.kontakte");
-    Route::get('/admin_kontakte','adminKontakte')->middleware(["auth","verified"])->name("admin.kontakte");
-    Route::get('/admin_kontakte/create','createKontakte')->middleware(["auth","verified"])->name("kontakte.create");
-    Route::post('/admin_kontakte/create','storeKontakte')->middleware(["auth","verified"])->name("kontakte.store");
-    Route::get('/admin_kontakte/edit/{id?}','editKontakte')->middleware(["auth","verified"])->name("kontakte.edit");
-    Route::post('/admin_kontakte/edit/{id?}','updateKontakte')->middleware(["auth","verified"])->name("kontakte.update");
-    Route::delete('/admin_kontakte/delete/{id?}','deleteKontakte')->middleware(["auth","verified"])->name("kontakte.delete");
-    Route::get('/settings','settings')->middleware(["auth","verified"])->name("settings");
-    Route::post('/settings','updateSettings')->middleware(["auth","verified"])->name("settings.update");
-    Route::get('/hour-overview','hourOverview')->middleware(["auth","verified"])->name("hour.overview");
+    Route::any('/', 'index')->middleware(["auth", "verified"]);
+    Route::any('/overview', 'dienstplanOverview')->middleware(["auth", "verified"])->name("overview");
+    Route::any('/aktuell', 'dienstplanAktuell')->middleware(["auth", "verified"])->name("aktuell");
+    Route::any('/months', 'months')->middleware(["auth", "verified"])->name("months");
+    Route::get('/vacation/{user?}', 'vacation')->middleware(["auth", "verified"])->name("vacation");
+    Route::post('/vacation/store', 'store')->middleware(["auth", "verified"])->name("vacation.store");
+    Route::delete('/vacation/delete/{id?}', 'delete')->middleware(["auth", "verified"])->name("vacation.delete");
+    Route::any('/queryvacation', 'queryVacation')->middleware(["auth", "verified"])->name("queryvacation");
+    Route::any('/admin', 'admin')->middleware(["auth", "verified"])->name("admin");
+    Route::get('/edit/{id?}', 'editUser')->middleware(["auth", "verified"])->name("edit");
+    Route::post('/edit/{id?}', 'updateUser')->middleware(["auth", "verified"])->name("update.user");
+    Route::delete('/delete/{id?}', 'deleteUser')->middleware(["auth", "verified"])->name("delete");
+    Route::get('/createuser', 'createUser')->middleware(["auth", "verified", "isAdmin"])->name("user.create");
+    Route::post('/createuser', 'saveUser')->middleware(["auth", "verified", "isAdmin"])->name("user.store");
+    Route::get('/admin_kontakte', 'adminKontakte')->middleware(["auth", "verified"])->name("admin.kontakte");
+    Route::get('/admin_kontakte', 'adminKontakte')->middleware(["auth", "verified"])->name("admin.kontakte");
+    Route::get('/admin_kontakte/create', 'createKontakte')->middleware(["auth", "verified"])->name("kontakte.create");
+    Route::post('/admin_kontakte/create', 'storeKontakte')->middleware(["auth", "verified"])->name("kontakte.store");
+    Route::get('/admin_kontakte/edit/{id?}', 'editKontakte')->middleware(["auth", "verified"])->name("kontakte.edit");
+    Route::post('/admin_kontakte/edit/{id?}', 'updateKontakte')->middleware(["auth", "verified"])->name("kontakte.update");
+    Route::delete('/admin_kontakte/delete/{id?}', 'deleteKontakte')->middleware(["auth", "verified"])->name("kontakte.delete");
+    Route::get('/settings', 'settings')->middleware(["auth", "verified"])->name("settings");
+    Route::post('/settings', 'updateSettings')->middleware(["auth", "verified"])->name("settings.update");
+    Route::get('/hour-overview', 'hourOverview')->middleware(["auth", "verified"])->name("hour.overview");
 });
 
 
 
 
-Route::any('/import', function (){
+Route::any('/import', function () {
 
 
     echo md5("Lsjr4h789");
@@ -179,15 +179,15 @@ Route::any('/import', function (){
     foreach ($oldUsers as $key => $user) {
         // unset($user['id']);
         // unset($user['firma_id']);
-       // $user["wid"]= "";
-        $user['title']= $user["titel"];
-        $user['first_name']= $user["vorname"];
-        $user['last_name']= $user["nachname"];
+        // $user["wid"]= "";
+        $user['title'] = $user["titel"];
+        $user['first_name'] = $user["vorname"];
+        $user['last_name'] = $user["nachname"];
         // $user['email']= $user[""];
         // $user['username']= $user["username"];
-        $user['password']= $user["credential"];
-        $user['telephone']= $user["telefon"];
-        $user['mobile']= $user["mobil"];
+        $user['password'] = $user["credential"];
+        $user['telephone'] = $user["telefon"];
+        $user['mobile'] = $user["mobil"];
         // $user['fax']= $user[""];
         // $user['plain']= $user[""];
         // $user['salutation']= $user[""];
@@ -202,11 +202,11 @@ Route::any('/import', function (){
         // $user['hausnummer']= $user[""];
         // $user['plz']= $user[""];
         // $user['ort']= $user[""];
-        $user['avatar']= $user["image"];
+        $user['avatar'] = $user["image"];
         // $user["isAdmin"]= $user[""];
         // $user["active"]= $user[""];
         // $user["visible"]= $user[""];
-        $users[]= $user;
+        $users[] = $user;
     }
 
 
@@ -219,16 +219,14 @@ Route::any('/import', function (){
     //         echo "Created <br>";
     //     } catch (\Throwable $e) {
     //         // throw $th;
-            
+
     //         echo "Error {$e->getMessage()} <br>";
     //         continue;
     //     }
     // }
 
-    
+
 
 
     // return $users;
 });
-
-
