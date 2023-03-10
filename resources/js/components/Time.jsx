@@ -40,9 +40,8 @@ const colStartClasses = [
     "start-6",
     "start-7",
 ];
-
 const Time = () => {
-    const [wid, setWid] = useState(439);
+    const [wid, setWid] = useState(request.wid ?? 439);
     const startFromNow = startFrom
         ? parse(startFrom, "d-M-yyyy", new Date())
         : startOfToday();
@@ -184,6 +183,34 @@ const Time = () => {
         setStartCalendar(firstDayNextMonth);
     }
 
+    const selectByGroup = (scheduleKey, group) => {
+        if (group == "a") {
+            setGroupA((prevState) =>
+                groupA.includes(scheduleKey)
+                    ? groupA.filter((i) => i !== scheduleKey)
+                    : [...prevState, scheduleKey]
+            );
+        } else if (group == "b") {
+            setGroupB((prevState) =>
+                groupB.includes(scheduleKey)
+                    ? groupB.filter((i) => i !== scheduleKey)
+                    : [...prevState, scheduleKey]
+            );
+        } else if (group == "d") {
+            setGroupD((prevState) =>
+                groupD.includes(scheduleKey)
+                    ? groupD.filter((i) => i !== scheduleKey)
+                    : [...prevState, scheduleKey]
+            );
+        } else if (group == "h") {
+            setGroupH((prevState) =>
+                groupH.includes(scheduleKey)
+                    ? groupH.filter((i) => i !== scheduleKey)
+                    : [...prevState, scheduleKey]
+            );
+        }
+    };
+
     return (
         <Fragment>
             <div className="timeheadings">
@@ -195,8 +222,10 @@ const Time = () => {
                                 name="wid"
                                 id="wid"
                                 onChange={(e) => {
-                                    setWid(e.target.value);
+                                    window.location.href =
+                                        widroute + e.target.value;
                                 }}
+                                defaultValue={wid}
                             >
                                 <option value="439">439</option>
                                 <option value="440">440</option>
@@ -306,7 +335,20 @@ const Time = () => {
                                                                                             day,
                                                                                             "d-MM-yyyy"
                                                                                         );
-                                                                                    const redirect = `${window.location.origin}${window.location.pathname}?start=${date}`;
+                                                                                    const redirect = `${
+                                                                                        window
+                                                                                            .location
+                                                                                            .origin
+                                                                                    }${
+                                                                                        window
+                                                                                            .location
+                                                                                            .pathname
+                                                                                    }?start=${date}${
+                                                                                        request.wid
+                                                                                            ? "&wid=" +
+                                                                                              request.wid
+                                                                                            : ""
+                                                                                    }`;
                                                                                     window.location =
                                                                                         redirect;
                                                                                 }}
@@ -413,16 +455,81 @@ const Time = () => {
                                                                 console.log(
                                                                     timetable.group
                                                                 );
+                                                                const scheduleKey = `${format(
+                                                                    hour,
+                                                                    "MM-dd-yyyy"
+                                                                )} ${getHours(
+                                                                    hour
+                                                                )}:00`;
+
+                                                                selectByGroup(
+                                                                    scheduleKey,
+                                                                    timetable.group
+                                                                );
                                                             }}
                                                             className={classNames(
-                                                                "hour",
-                                                                hrIndex == 6 &&
-                                                                    "space",
-                                                                hrIndex == 12 &&
-                                                                    "space",
-                                                                hrIndex == 18 &&
-                                                                    "space",
-                                                                `${timetable.group}`
+                                                                `hour`,
+                                                                groupA.includes(
+                                                                    `${format(
+                                                                        hour,
+                                                                        "MM-dd-yyyy"
+                                                                    )} ${getHours(
+                                                                        hour
+                                                                    )}:00`
+                                                                ) &&
+                                                                    `${
+                                                                        timetable.group ==
+                                                                        "a"
+                                                                            ? "a selected"
+                                                                            : "selected"
+                                                                    }`,
+                                                                groupB.includes(
+                                                                    `${format(
+                                                                        hour,
+                                                                        "MM-dd-yyyy"
+                                                                    )} ${getHours(
+                                                                        hour
+                                                                    )}:00`
+                                                                ) &&
+                                                                    `${
+                                                                        timetable.group ==
+                                                                        "b"
+                                                                            ? "b selected"
+                                                                            : "selected"
+                                                                    }`,
+                                                                groupD.includes(
+                                                                    `${format(
+                                                                        hour,
+                                                                        "MM-dd-yyyy"
+                                                                    )} ${getHours(
+                                                                        hour
+                                                                    )}:00`
+                                                                ) &&
+                                                                    `${
+                                                                        timetable.group ==
+                                                                        "d"
+                                                                            ? "d selected"
+                                                                            : "selected"
+                                                                    }`,
+                                                                groupH.includes(
+                                                                    `${format(
+                                                                        hour,
+                                                                        "MM-dd-yyyy"
+                                                                    )} ${getHours(
+                                                                        hour
+                                                                    )}:00`
+                                                                ) &&
+                                                                    `${
+                                                                        timetable.group ==
+                                                                        "h"
+                                                                            ? "h selected"
+                                                                            : "selected"
+                                                                    }`,
+                                                                [
+                                                                    6, 12, 18,
+                                                                ].includes(
+                                                                    hrIndex
+                                                                ) && "space"
                                                             )}
                                                         >
                                                             <time

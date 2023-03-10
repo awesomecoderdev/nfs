@@ -2,10 +2,22 @@
     max-width: 120rem;
     padding: 0;
 }
-header{
+button.hour.selected {
+    pointer-events: none;
+    background: #a9a9a9;
+}
+button.hour.a.selected,
+button.hour.b.selected,
+button.hour.d.selected,
+button.hour.h.selected {
+    background: #575757;
+    pointer-events: all;
+}
+
+header {
     margin-bottom: 0;
 }
-.wrapper{
+.wrapper {
     padding: 0 2rem;
 }
 .timetables {
@@ -14,15 +26,14 @@ header{
     gap: 0.5rem;
 }
 
-.date.format.mobile{
+.date.format.mobile {
     display: flex;
     align-items: center;
 }
 
-.date.format.mobile time{
+.date.format.mobile time {
     margin: 0 2.5rem;
 }
-
 
 .timetable {
     min-height: 100vh;
@@ -905,19 +916,18 @@ time {
     fill: rgb(100 116 139);
 }
 
-
-@media (max-width: 640px){
+@media (max-width: 640px) {
     .timetables {
         grid-template-columns: repeat(1, minmax(0, 1fr));
         gap: 0;
     }
 
-    .timetable{
+    .timetable {
         border: none;
     }
 
     .hourtables {
-        justify-content: center !important; 
+        justify-content: center !important;
     }
 
     .hour {
@@ -929,20 +939,19 @@ time {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .timeheading.leftcontents{
+    .timeheading.leftcontents {
         padding: 0;
     }
 
-    
-    .timeheading.centercontents{
+    .timeheading.centercontents {
         padding: 0;
     }
 
-    .timeheading.rightcontentss{
+    .timeheading.rightcontentss {
         display: none;
     }
 
-    .hour.title{
+    .hour.title {
         margin: auto;
         margin-bottom: 15px;
         padding: 4px;
