@@ -40,11 +40,11 @@
             }
 
             /*
-                        #dienstplan_vacation #addvacationbox
-                        {
-                        margin-top: 20px;
-                        clear:both;
-                        }*/
+                            #dienstplan_vacation #addvacationbox
+                            {
+                            margin-top: 20px;
+                            clear:both;
+                            }*/
 
             #dienstplan_vacation .interactionBox {
                 padding-top: 20px;
@@ -73,6 +73,7 @@
                 border: none;
                 border-radius: 0.25rem;
             }
+
             label {
                 margin-right: 10px;
             }
@@ -85,12 +86,14 @@
             .settingsss form {
                 width: 50%;
             }
-            #dienstplan_vacation{
+
+            #dienstplan_vacation {
                 display: flex;
                 justify-content: center;
                 align-items: center;
                 flex-direction: column;
             }
+
             .even td {
                 background: #DDDDDD;
             }
@@ -104,7 +107,7 @@
     <div class="container">
         <div class="row">
             <div id="dienstplan_vacation">
-                @if($errors->any())
+                @if ($errors->any())
                     @foreach ($errors->all() as $error)
                         <div class="error">
                             <img src="{{ asset('img/critical.png') }}" alt="Error">
@@ -112,13 +115,13 @@
                         </div>
                     @endforeach
                 @endif
-                @if(session()->has('alert'))
+                @if (session()->has('alert'))
                     <div class="error">
                         <img src="{{ asset('img/critical.png') }}" alt="Error">
                         <div class="errortext">{{ session('alert') }}</div>
                     </div>
                 @endif
-                @if(session()->has('success'))
+                @if (session()->has('success'))
                     <div class="error">
                         <img src="{{ asset('img/okay.png') }}" alt="Success">
                         <div class="errortext">{{ session('success') }}</div>
@@ -132,15 +135,29 @@
     {!! $contacts->links() ?? $contacts->links() !!}
     <table class="readable">
         <tr>
-            <th><a href="{{ route('dienstplan.admin.kontakte', ['page'=> intval(request('page')), 'by' => 'nachname', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}">Nachname</a></th>
-            <th><a href="{{ route('dienstplan.admin.kontakte', ['page'=> intval(request('page')), 'by' => 'vorname', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}">Vorname</a></th>
-            <th><a href="{{ route('dienstplan.admin.kontakte', ['page'=> intval(request('page')), 'by' => 'email', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}">Email</a></th>
+            <th><a
+                    href="{{ route('dienstplan.admin.kontakte', ['page' => intval(request('page')), 'by' => 'nachname', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}">Nachname</a>
+            </th>
+            <th><a
+                    href="{{ route('dienstplan.admin.kontakte', ['page' => intval(request('page')), 'by' => 'vorname', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}">Vorname</a>
+            </th>
+            <th><a
+                    href="{{ route('dienstplan.admin.kontakte', ['page' => intval(request('page')), 'by' => 'email', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}">Email</a>
+            </th>
             @if (request('wid', 441) != 441)
-                <th><a href="{{ route('dienstplan.admin.kontakte', ['page'=> intval(request('page')), 'by' => 'funktion', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}">Funktion</a></th>
+                <th><a
+                        href="{{ route('dienstplan.admin.kontakte', ['page' => intval(request('page')), 'by' => 'funktion', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}">Funktion</a>
+                </th>
             @endif
-            <th><a href="{{ route('dienstplan.admin.kontakte', ['page'=> intval(request('page')), 'by' => 'strasse', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}">Stra&szlig;e</a></th>
-            <th><a href="{{ route('dienstplan.admin.kontakte', ['page'=> intval(request('page')), 'by' => 'plz', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}">PLZ</a></th>
-            <th><a href="{{ route('dienstplan.admin.kontakte', ['page'=> intval(request('page')), 'by' => 'ort', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}">Ort</a></th>
+            <th><a
+                    href="{{ route('dienstplan.admin.kontakte', ['page' => intval(request('page')), 'by' => 'strasse', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}">Stra&szlig;e</a>
+            </th>
+            <th><a
+                    href="{{ route('dienstplan.admin.kontakte', ['page' => intval(request('page')), 'by' => 'plz', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}">PLZ</a>
+            </th>
+            <th><a
+                    href="{{ route('dienstplan.admin.kontakte', ['page' => intval(request('page')), 'by' => 'ort', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}">Ort</a>
+            </th>
             <th>Telefon</th>
             <th>Telefon priv.</th>
             <th>Mobil</th>
@@ -166,7 +183,7 @@
                 <td><a href="tel:{{ $contact->notmobil }}">{{ $contact->notmobil }}</a></td>
                 <td><a href="{{ route('dienstplan.kontakte.edit', $contact->id) }}">bearbeiten</a></td>
                 <td>
-                    <form action="{{ route('dienstplan.kontakte.delete',$contact->id) }}" method="post">
+                    <form action="{{ route('dienstplan.kontakte.delete', $contact->id) }}" method="post">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="usrdltbtn">l&ouml;schen</button>

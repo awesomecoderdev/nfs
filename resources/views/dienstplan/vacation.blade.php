@@ -40,11 +40,11 @@
             }
 
             /*
-                        #dienstplan_vacation #addvacationbox
-                        {
-                        margin-top: 20px;
-                        clear:both;
-                        }*/
+                            #dienstplan_vacation #addvacationbox
+                            {
+                            margin-top: 20px;
+                            clear:both;
+                            }*/
 
             #dienstplan_vacation .interactionBox {
                 padding-top: 20px;
@@ -84,13 +84,13 @@
     @endsection
 
     <div id="dienstplan_vacation">
-        @if(session()->has('alert'))
+        @if (session()->has('alert'))
             <div class="error">
                 <img src="{{ asset('img/critical.png') }}" alt="Error">
                 <div class="errortext">{{ session('alert') }}</div>
             </div>
         @endif
-        @if(session()->has('success'))
+        @if (session()->has('success'))
             <div class="error">
                 <img src="{{ asset('img/okay.png') }}" alt="Success">
                 <div class="errortext">{{ session('success') }}</div>
@@ -100,8 +100,8 @@
 
 
     <div id="dienstplan_vacation">
-            
-        @can("isAdmin")    
+
+        @can('isAdmin')
             @if (isset($users))
                 <script type="text/javascript">
                     function changeUser(id) {
@@ -121,14 +121,14 @@
                 </div>
             @endif
         @endcan
-            
-    
+
+
         <table
             style=" border-collapse:collapse; caption-side:bottom; border: solid 1px #000; padding: 10px; margin-top:10px;">
-           
+
             <div class="vacation_overview">
 
-                @if(!count($vacations))
+                @if (!count($vacations))
                     <span>Keine aktuellen Urlaubszeiten festgelegt.</span>
                     <br>
                 @else
@@ -159,23 +159,25 @@
                                 <td style="border: solid 1px #000;padding: 10px;">{{ $ends }}</td>
                                 <td style="border: solid 1px #000;padding: 10px;">{{ $duration }}</td>
                                 <td style="border: solid 1px #000;padding: 10px;">
-                                    <form class="dltform" action="{{ route('dienstplan.vacation.delete', $v) }}" method="POST">
+                                    <form class="dltform" action="{{ route('dienstplan.vacation.delete', $v) }}"
+                                        method="POST">
                                         @csrf
                                         @method('DELETE')
 
                                         <button class="dltbtn" type="submit">
-                                            <img src="{{ asset('img/cancel.png') }}" alt="Cancel" style="pointer-events: none;">
+                                            <img src="{{ asset('img/cancel.png') }}" alt="Cancel"
+                                                style="pointer-events: none;">
                                         </button>
                                     </form>
                                 </td>
                             </tr>
                         @endforeach
-                    @endif
+                @endif
             </div>
             <!--urlaub end here-->
 
             <div class="vacation_overview">
-                @if(!count($outtimes))
+                @if (!count($outtimes))
                     <span>Keine aktuellen Auszeiten festgelegt.</span>
                     <br>
                 @else
@@ -196,11 +198,13 @@
                             <td style="border: solid 1px #000;padding: 10px;">{{ $ends }}</td>
                             <td style="border: solid 1px #000;padding: 10px;">{{ $duration }}</td>
                             <td style="border: solid 1px #000;padding: 10px;">
-                                <form class="dltform" action="{{ route('dienstplan.vacation.delete', $v) }}" method="POST">
+                                <form class="dltform" action="{{ route('dienstplan.vacation.delete', $v) }}"
+                                    method="POST">
                                     @csrf
                                     @method('DELETE')
                                     <button class="dltbtn" type="submit">
-                                        <img src="{{ asset('img/cancel.png') }}" alt="Cancel" style="pointer-events: none;">
+                                        <img src="{{ asset('img/cancel.png') }}" alt="Cancel"
+                                            style="pointer-events: none;">
                                     </button>
                                 </form>
                             </td>
@@ -211,7 +215,7 @@
             <!--Auszeit end here-->
 
             <div class="vacation_overview">
-                @if(!count($fortbildungs))
+                @if (!count($fortbildungs))
                     <span>Keine aktuellen Fortbildung festgelegt.</span>
                     <br>
                 @else
@@ -232,23 +236,25 @@
                             <td style="border: solid 1px #000;padding: 10px;">{{ $ends }}</td>
                             <td style="border: solid 1px #000;padding: 10px;">{{ $duration }}</td>
                             <td style="border: solid 1px #000;padding: 10px;">
-                                    <form class="dltform" action="{{ route('dienstplan.vacation.delete', $v) }}" method="POST">
-                                        @csrf
-                                        @method('DELETE')
+                                <form class="dltform" action="{{ route('dienstplan.vacation.delete', $v) }}"
+                                    method="POST">
+                                    @csrf
+                                    @method('DELETE')
 
-                                        <button class="dltbtn" type="submit">
-                                            <img src="{{ asset('img/cancel.png') }}" alt="Cancel" style="pointer-events: none;">
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
+                                    <button class="dltbtn" type="submit">
+                                        <img src="{{ asset('img/cancel.png') }}" alt="Cancel"
+                                            style="pointer-events: none;">
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
                     @endforeach
                 @endif
             </div>
             <!--Fortbildung end here-->
 
             <div class="vacation_overview">
-                @if(!count($kranks))
+                @if (!count($kranks))
                     <span>Keine aktuellen krank festgelegt.</span>
                     <br>
                 @else
@@ -269,23 +275,25 @@
                             <td style="border: solid 1px #000;padding: 10px;">{{ $ends }}</td>
                             <td style="border: solid 1px #000;padding: 10px;">{{ $duration }}</td>
                             <td style="border: solid 1px #000;padding: 10px;">
-                                    <form class="dltform" action="{{ route('dienstplan.vacation.delete', $v) }}" method="POST">
-                                        @csrf
-                                        @method('DELETE')
+                                <form class="dltform" action="{{ route('dienstplan.vacation.delete', $v) }}"
+                                    method="POST">
+                                    @csrf
+                                    @method('DELETE')
 
-                                        <button class="dltbtn" type="submit">
-                                            <img src="{{ asset('img/cancel.png') }}" alt="Cancel" style="pointer-events: none;">
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
+                                    <button class="dltbtn" type="submit">
+                                        <img src="{{ asset('img/cancel.png') }}" alt="Cancel"
+                                            style="pointer-events: none;">
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
                     @endforeach
                 @endif
             </div>
             <!--kranks end here-->
-            
+
             <div class="vacation_overview">
-                @if(!count($sonstiges))
+                @if (!count($sonstiges))
                     <span>Keine aktuellen sonstige festgelegt.</span>
                     <br>
                 @else
@@ -306,12 +314,14 @@
                             <td style="border: solid 1px #000;padding: 10px;">{{ $ends }}</td>
                             <td style="border: solid 1px #000;padding: 10px;">{{ $duration }}</td>
                             <td style="border: solid 1px #000;padding: 10px;">
-                                <form class="dltform" action="{{ route('dienstplan.vacation.delete', $v) }}" method="POST">
+                                <form class="dltform" action="{{ route('dienstplan.vacation.delete', $v) }}"
+                                    method="POST">
                                     @csrf
                                     @method('DELETE')
 
                                     <button class="dltbtn" type="submit">
-                                        <img src="{{ asset('img/cancel.png') }}" alt="Cancel" style="pointer-events: none;">
+                                        <img src="{{ asset('img/cancel.png') }}" alt="Cancel"
+                                            style="pointer-events: none;">
                                     </button>
                                 </form>
                             </td>
@@ -328,11 +338,12 @@
         <div id="addvacationbox" class="interactionBox settings">
             <b>Abwesenheit hinzufügen</b>
             <div class="hidden">
-                <form action="{{route('dienstplan.vacation.store')}}" id="DienstplanVacationVacationForm" method="POST" accept-charset="utf-8">
+                <form action="{{ route('dienstplan.vacation.store') }}" id="DienstplanVacationVacationForm"
+                    method="POST" accept-charset="utf-8">
                     @csrf
-                    <input type="hidden" name="user_id" value="{{$uid}}">
-                    <input type="hidden" name="webmodul_id" value="{{ request('wid',439) }}">
-                    
+                    <input type="hidden" name="user_id" value="{{ $uid }}">
+                    <input type="hidden" name="webmodul_id" value="{{ request('wid', 439) }}">
+
                     <div class="input select">
                         <label for="DienstplanVacationType">Typ</label>
                         <select name="type" id="DienstplanVacationType">
@@ -344,15 +355,17 @@
                         </select>
                     </div>
                     <div class="input text"><label for="DienstplanVacationStart">Beginn</label>
-                        <input name="start" class="datepicker hasDatepicker" value="{{ old('start') }}" maxlength="11" type="date" id="DienstplanVacationStart">
+                        <input name="start" class="datepicker hasDatepicker" value="{{ old('start') }}"
+                            maxlength="11" type="date" id="DienstplanVacationStart">
                     </div>
-                    @error("start")
+                    @error('start')
                         <p style="color:red;"> {{ __($message) }} </p>
                     @enderror
                     <div class="input text"><label for="DienstplanVacationEnd">Ende</label>
-                        <input name="end" class="datepicker hasDatepicker" value="{{ old('end') }}" type="date" id="DienstplanVacationEnd">
+                        <input name="end" class="datepicker hasDatepicker" value="{{ old('end') }}"
+                            type="date" id="DienstplanVacationEnd">
                     </div>
-                    @error("end")
+                    @error('end')
                         <p style="color:red;"> {{ __($message) }} </p>
                     @enderror
                     <div class="submit">
@@ -365,18 +378,19 @@
         <div id="show_vacation_overview" class="interactionBox settings">
             <b>Abwesenheit Übersicht anzeigen</b>
             <form method="GET" action="{{ route('dienstplan.queryvacation') }}">
-                
+
                 <table>
                     <tr>
                         <th>Von</th>
                         <td>
-                            <input value="{{ old('start', date('Y-m-d',strtotime('-1 month'))) }}" name="start" type="date">
+                            <input value="{{ old('start', date('Y-m-d', strtotime('-1 month'))) }}" name="start"
+                                type="date">
                         </td>
                     </tr>
                     <tr>
                         <th>Bis</th>
                         <td>
-                            <input value="{{  old('end', date('Y-m-d')) }}" name="end" type="date">
+                            <input value="{{ old('end', date('Y-m-d')) }}" name="end" type="date">
                         </td>
                     </tr>
                     <tr>
@@ -419,4 +433,3 @@
     </div>
 
 </x-app-layout>
-

@@ -82,21 +82,21 @@
                 </a>
             </th>
             <th>
-            <a href="javascript:void(0);">
-                 Bis
-            </a>
+                <a href="javascript:void(0);">
+                    Bis
+                </a>
             </th>
             <th>
-            <a href="javascript:void(0);">
-                Typ
-            </a>
+                <a href="javascript:void(0);">
+                    Typ
+                </a>
             </th>
 
         </tr>
 
         @foreach ($vacations as $vacation)
             <tr>
-                <td>{{ $vacation->user ? $vacation->user->fullname() : "Unknown" }}</td>
+                <td>{{ $vacation->user ? $vacation->user->fullname() : 'Unknown' }}</td>
                 <td>{{ date('d.m.Y', $vacation->start) }}</td>
                 <td>{{ date('d.m.Y', $vacation->duration + $vacation->start) }}</td>
                 <td>

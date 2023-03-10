@@ -40,11 +40,11 @@
             }
 
             /*
-                            #dienstplan_vacation #addvacationbox
-                            {
-                            margin-top: 20px;
-                            clear:both;
-                            }*/
+                                #dienstplan_vacation #addvacationbox
+                                {
+                                margin-top: 20px;
+                                clear:both;
+                                }*/
 
             #dienstplan_vacation .interactionBox {
                 padding-top: 20px;
@@ -95,77 +95,75 @@
             }
 
             .form-label {
-                position:relative;
-                display:block;
-                clear:both;
-            /*     width:400px; */
-            max-width:500px;   
+                position: relative;
+                display: block;
+                clear: both;
+                /*     width:400px; */
+                max-width: 500px;
             }
 
-            label {  
-            -webkit-transform: translateY(50%);
-            -moz-transform: translateY(-50%);
-            -ms-transform: translateY(-50%);
-            -o-transform: translateY(-50%);
-            transform: translateY(50%);
-            -webkit-transition: all 0.2s ease-in-out;
-            -moz-transition: all 0.2s ease-in-out;
-            transition: all 0.2s ease-in-out;
-            position: absolute;
-            top: 3%;
-            left: 1em;
-            background:none;
-            color: #b3b3b3;
-            font-weight: normal;
-            cursor: text;
-            pointer-events: none;
-            font-family: sans-serif;
+            label {
+                -webkit-transform: translateY(50%);
+                -moz-transform: translateY(-50%);
+                -ms-transform: translateY(-50%);
+                -o-transform: translateY(-50%);
+                transform: translateY(50%);
+                -webkit-transition: all 0.2s ease-in-out;
+                -moz-transition: all 0.2s ease-in-out;
+                transition: all 0.2s ease-in-out;
+                position: absolute;
+                top: 3%;
+                left: 1em;
+                background: none;
+                color: #b3b3b3;
+                font-weight: normal;
+                cursor: text;
+                pointer-events: none;
+                font-family: sans-serif;
             }
 
             input {
-                
-            display:block;
-            -webkit-border-radius: 3px;
-            -moz-border-radius: 3px;
-            border-radius: 3px;
-            -webkit-transition: border-color;
-            -moz-transition: border-color;
-            transition: border-color;
-            box-sizing: border-box;
-            background-color: white;
-            border-radius: 3px;
-            border: 1px solid #DDD;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);
-            font-family: sans-serif;
-            font-size: 1em;
-            margin-right: 0;
-            margin-bottom: 0.75em;
-            padding: 0.5em 0.5em;
-            padding:1em;
-            width: 100%;
+
+                display: block;
+                -webkit-border-radius: 3px;
+                -moz-border-radius: 3px;
+                border-radius: 3px;
+                -webkit-transition: border-color;
+                -moz-transition: border-color;
+                transition: border-color;
+                box-sizing: border-box;
+                background-color: white;
+                border-radius: 3px;
+                border: 1px solid #DDD;
+                box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06);
+                font-family: sans-serif;
+                font-size: 1em;
+                margin-right: 0;
+                margin-bottom: 0.75em;
+                padding: 0.5em 0.5em;
+                padding: 1em;
+                width: 100%;
             }
 
             input:focus~label,
-            input.hascontent~label
+            input.hascontent~label {
 
-            {
-                
                 top: -45%;
                 font-size: .8em;
                 padding: 0 .3em;
-                background:#F9F9F9;
-                
+                background: #F9F9F9;
+
             }
 
             input:focus,
-            input.hascontent
-            {
+            input.hascontent {
                 outline: none;
                 border: 2px solid #00519e;
             }
 
             .btn {
-                background-color: #4CAF50; /* Green */
+                background-color: #4CAF50;
+                /* Green */
                 border: none;
                 color: white;
                 padding: 15px 32px;
@@ -208,79 +206,87 @@
         </div>
     </div>
 
-    <form  action="{{ route('dienstplan.kontakte.update', $kontakte->id) }}" id="DienstplanContactCreateContactForm" method="post" accept-charset="utf-8">
+    <form action="{{ route('dienstplan.kontakte.update', $kontakte->id) }}" id="DienstplanContactCreateContactForm"
+        method="post" accept-charset="utf-8">
         @csrf
-        <span class="form-label"> 
-            <input name="vorname" value="{{ old('vorname', $kontakte->vorname) }}" maxlength="255" type="text" id="DienstplanContactVorname"
-            class="{{ old('vorname',$kontakte->vorname ?? '') == null ?: 'hascontent'}}">
+        <span class="form-label">
+            <input name="vorname" value="{{ old('vorname', $kontakte->vorname) }}" maxlength="255" type="text"
+                id="DienstplanContactVorname"
+                class="{{ old('vorname', $kontakte->vorname ?? '') == null ?: 'hascontent' }}">
             <label for="DienstplanContactVorname">Vorname</label>
         </span>
 
         <span class="form-label">
-            <input name="nachname"  value="{{ old('nachname', $kontakte->nachname) }}" maxlength="255" type="text" id="DienstplanContactNachname"
-            class="{{ old('nachname',$kontakte->nachname ?? '') == null ?: 'hascontent'}}">
-            
+            <input name="nachname" value="{{ old('nachname', $kontakte->nachname) }}" maxlength="255" type="text"
+                id="DienstplanContactNachname"
+                class="{{ old('nachname', $kontakte->nachname ?? '') == null ?: 'hascontent' }}">
+
             <label for="DienstplanContactNachname">Nachname</label>
         </span>
 
         <span class="form-label">
-            <input name="funktion"  value="{{ old('funktion',$kontakte->funktion) }}" maxlength="255" type="text" id="DienstplanContactFunktion"
-            class="{{ old('funktion',$kontakte->funktion ?? '') == null ?: 'hascontent'}}">
+            <input name="funktion" value="{{ old('funktion', $kontakte->funktion) }}" maxlength="255" type="text"
+                id="DienstplanContactFunktion"
+                class="{{ old('funktion', $kontakte->funktion ?? '') == null ?: 'hascontent' }}">
             <label for="DienstplanContactFunktion">Funktion</label>
         </span>
 
         <span class="form-label">
-            <input name="email" maxlength="255"  value="{{ old('email',$kontakte->email) }}" type="email" id="DienstplanContactEmail"
-            class="{{ old('email',$kontakte->email ?? '') == null ?: 'hascontent'}}">
+            <input name="email" maxlength="255" value="{{ old('email', $kontakte->email) }}" type="email"
+                id="DienstplanContactEmail" class="{{ old('email', $kontakte->email ?? '') == null ?: 'hascontent' }}">
             <label for="DienstplanContactEmail">Email</label>
         </span>
 
         <span class="form-label">
-            <input name="strasse"  value="{{ old('strasse',$kontakte->strasse) }}" maxlength="255" type="text" id="DienstplanContactStrasse"
-            class="{{ old('strasse',$kontakte->strasse ?? '') == null ?: 'hascontent'}}">
+            <input name="strasse" value="{{ old('strasse', $kontakte->strasse) }}" maxlength="255" type="text"
+                id="DienstplanContactStrasse"
+                class="{{ old('strasse', $kontakte->strasse ?? '') == null ?: 'hascontent' }}">
             <label for="DienstplanContactStrasse">Straße/Hausnummer</label>
         </span>
 
         <span class="form-label">
-            <input name="plz" type="number"  value="{{ old('plz',$kontakte->plz) }}" id="DienstplanContactPlz"
-            class="{{ old('plz',$kontakte->plz ?? '') == null ?: 'hascontent'}}">
+            <input name="plz" type="number" value="{{ old('plz', $kontakte->plz) }}" id="DienstplanContactPlz"
+                class="{{ old('plz', $kontakte->plz ?? '') == null ?: 'hascontent' }}">
             <label for="DienstplanContactPlz">Postleitzahl</label>
         </span>
 
         <span class="form-label">
-            <input name="ort" maxlength="255" type="text"  value="{{ old('ort',$kontakte->ort) }}" id="DienstplanContactOrt"
-            class="{{ old('ort',$kontakte->ort ?? '') == null ?: 'hascontent'}}">
+            <input name="ort" maxlength="255" type="text" value="{{ old('ort', $kontakte->ort) }}"
+                id="DienstplanContactOrt" class="{{ old('ort', $kontakte->ort ?? '') == null ?: 'hascontent' }}">
             <label for="DienstplanContactOrt">Ort</label>
         </span>
 
         <span class="form-label">
-            <input name="telefon" value="{{ old('telefon',$kontakte->telefon) }}" maxlength="255" type="text" id="DienstplanContactTelefon"
-            class="{{ old('telefon',$kontakte->telefon ?? '') == null ?: 'hascontent'}}">
+            <input name="telefon" value="{{ old('telefon', $kontakte->telefon) }}" maxlength="255" type="text"
+                id="DienstplanContactTelefon"
+                class="{{ old('telefon', $kontakte->telefon ?? '') == null ?: 'hascontent' }}">
             <label for="DienstplanContactTelefon">Telefon</label>
         </span>
 
         <span class="form-label">
-            <input name="telefon_priv"  value="{{ old('telefon_priv',$kontakte->telefon_priv) }}" maxlength="255" type="text" id="DienstplanContactTelefonPriv"
-            class="{{ old('telefon_priv',$kontakte->telefon_priv ?? '') == null ?: 'hascontent'}}">
+            <input name="telefon_priv" value="{{ old('telefon_priv', $kontakte->telefon_priv) }}" maxlength="255"
+                type="text" id="DienstplanContactTelefonPriv"
+                class="{{ old('telefon_priv', $kontakte->telefon_priv ?? '') == null ?: 'hascontent' }}">
             <label for="DienstplanContactTelefonPriv">Telefon priv</label>
         </span>
 
         <span class="form-label">
-        <input  name="mobil"  value="{{ old('mobil',$kontakte->mobil) }}" maxlength="255" type="text" id="DienstplanContactMobil"
-            class="{{ old('mobil',$kontakte->mobil ?? '') == null ?: 'hascontent'}}">
-            
-        <label for="DienstplanContactMobil">Mobil</label>
+            <input name="mobil" value="{{ old('mobil', $kontakte->mobil) }}" maxlength="255" type="text"
+                id="DienstplanContactMobil" class="{{ old('mobil', $kontakte->mobil ?? '') == null ?: 'hascontent' }}">
+
+            <label for="DienstplanContactMobil">Mobil</label>
         </span>
 
         <span class="form-label">
-            <input name="notmobil"  value="{{ old('notmobil',$kontakte->notmobil) }}" maxlength="255" type="text" id="DienstplanContactNotmobil"
-            class="{{ old('notmobil',$kontakte->notmobil ?? '') == null ?: 'hascontent'}}">
+            <input name="notmobil" value="{{ old('notmobil', $kontakte->notmobil) }}" maxlength="255" type="text"
+                id="DienstplanContactNotmobil"
+                class="{{ old('notmobil', $kontakte->notmobil ?? '') == null ?: 'hascontent' }}">
 
             <label for="DienstplanContactNotmobil">Notfallhandy</label>
         </span>
         <br>
         <div class="submit">
             <button type="submit" class="btn btn-primary">Submit</button>
-            </div>
+        </div>
     </form>
 </x-app-layout>

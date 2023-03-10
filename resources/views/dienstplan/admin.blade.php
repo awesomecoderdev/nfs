@@ -40,11 +40,11 @@
             }
 
             /*
-                        #dienstplan_vacation #addvacationbox
-                        {
-                        margin-top: 20px;
-                        clear:both;
-                        }*/
+                            #dienstplan_vacation #addvacationbox
+                            {
+                            margin-top: 20px;
+                            clear:both;
+                            }*/
 
             #dienstplan_vacation .interactionBox {
                 padding-top: 20px;
@@ -80,28 +80,29 @@
         .even td {
             background: #DDDDDD;
         }
-        svg{
+
+        svg {
             height: 0.5rem;
             width: 0.5rem;
         }
     </style>
-    
+
     <div class="column-6 push-1 bgcolored">
         <h1>Benutzerübersicht</h1>
     </div>
-    
+
 
     @section('content')
         <div class="container">
             <div class="row">
                 <div id="dienstplan_vacation">
-                    @if(session()->has('alert'))
+                    @if (session()->has('alert'))
                         <div class="error">
                             <img src="{{ asset('img/critical.png') }}" alt="Error">
                             <div class="errortext">{{ session('alert') }}</div>
                         </div>
                     @endif
-                    @if(session()->has('success'))
+                    @if (session()->has('success'))
                         <div class="error">
                             <img src="{{ asset('img/okay.png') }}" alt="Success">
                             <div class="errortext">{{ session('success') }}</div>
@@ -118,38 +119,40 @@
                     <table class="readable">
                         <tr>
                             <th><a
-                                    href="{{ route('dienstplan.admin', ['page'=> intval(request('page')), 'by' => 'last_name', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}">Nachname</a>
+                                    href="{{ route('dienstplan.admin', ['page' => intval(request('page')), 'by' => 'last_name', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}">Nachname</a>
                             </th>
                             <th><a
-                                    href="{{ route('dienstplan.admin', ['page'=> intval(request('page')), 'by' => 'first_name', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}">Vorname</a>
+                                    href="{{ route('dienstplan.admin', ['page' => intval(request('page')), 'by' => 'first_name', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}">Vorname</a>
                             </th>
                             <th><a
-                                    href="{{ route('dienstplan.admin', ['page'=> intval(request('page')), 'by' => 'username', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}">Benutzername</a>
+                                    href="{{ route('dienstplan.admin', ['page' => intval(request('page')), 'by' => 'username', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}">Benutzername</a>
                             </th>
                             <th>Passwort</th>
                             <th><a
-                                    href="{{ route('dienstplan.admin', ['page'=> intval(request('page')), 'by' => 'email', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}">Email</a>
+                                    href="{{ route('dienstplan.admin', ['page' => intval(request('page')), 'by' => 'email', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}">Email</a>
                             </th>
-                            @if (request('wid',441) != 441)
-                                <th><a href="{{ route('dienstplan.admin', ['page'=> intval(request('page')), 'by' => 'funktion', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}>">Funktion</a></th>
+                            @if (request('wid', 441) != 441)
+                                <th><a
+                                        href="{{ route('dienstplan.admin', ['page' => intval(request('page')), 'by' => 'funktion', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}>">Funktion</a>
+                                </th>
                             @endif
                             <th><a
-                                    href="{{ route('dienstplan.admin', ['page'=> intval(request('page')), 'by' => 'strasse', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}">Stra&szlig;e</a>
+                                    href="{{ route('dienstplan.admin', ['page' => intval(request('page')), 'by' => 'strasse', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}">Stra&szlig;e</a>
                             </th>
                             <th><a
-                                    href="{{ route('dienstplan.admin', ['page'=> intval(request('page')), 'by' => 'plz', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}>">PLZ</a>
+                                    href="{{ route('dienstplan.admin', ['page' => intval(request('page')), 'by' => 'plz', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}>">PLZ</a>
                             </th>
                             <th><a
-                                    href="{{ route('dienstplan.admin', ['page'=> intval(request('page')), 'by' => 'ort', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}>">Ort</a>
+                                    href="{{ route('dienstplan.admin', ['page' => intval(request('page')), 'by' => 'ort', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}>">Ort</a>
                             </th>
                             <th><a
-                                    href="{{ route('dienstplan.admin', ['page'=> intval(request('page')), 'by' => 'telephone', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}">Telefon</a>
+                                    href="{{ route('dienstplan.admin', ['page' => intval(request('page')), 'by' => 'telephone', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}">Telefon</a>
                             </th>
                             <th><a
-                                    href="{{ route('dienstplan.admin', ['page'=> intval(request('page')), 'by' => 'pager', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}">Pager</a>
+                                    href="{{ route('dienstplan.admin', ['page' => intval(request('page')), 'by' => 'pager', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}">Pager</a>
                             </th>
                             <th><a
-                                    href="{{ route('dienstplan.admin', ['page'=> intval(request('page')), 'by' => 'mobile', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}">Mobil</a>
+                                    href="{{ route('dienstplan.admin', ['page' => intval(request('page')), 'by' => 'mobile', 'sort' => request('sort', 'asc') == 'asc' ? 'desc' : 'asc']) }}">Mobil</a>
                             </th>
                             <td></td>
                             <td></td>
@@ -164,13 +167,13 @@
                                 <td>{{ $user->plain }}</td>
                                 <td>{{ $user->email }}</td>
                                 @if (request('wid') != 441)
-                                    <td>{{ $user->props->funktion ?? "" }}</td>
+                                    <td>{{ $user->props->funktion ?? '' }}</td>
                                 @endif
                                 <td>{{ $user->strasse }} {{ $user->hausnummer }}</td>
                                 <td>{{ $user->plz }}</td>
                                 <td>{{ $user->ort }}</td>
                                 <td><a href="tel:{{ $user->telephone }}">{{ $user->telephone }}</a></td>
-                                <td>{{ $user->props->pager ?? "" }}</td>
+                                <td>{{ $user->props->pager ?? '' }}</td>
                                 <td><a href="tel:{{ $user->mobile }}">{{ $user->mobile }}</a></td>
                                 <td><a href="{{ route('dienstplan.edit', $user->id) }}">bearbeiten</a></td>
                                 <td>
