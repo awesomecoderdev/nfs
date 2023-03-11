@@ -26,6 +26,7 @@ import {
 } from "date-fns";
 import axios from "axios";
 import { scheduleJson } from "./Data";
+import Popup from "./Popup";
 
 const classNames = (...classes) => {
     return classes.filter(Boolean).join(" ");
@@ -91,14 +92,7 @@ const Time = () => {
 
     useEffect(() => {
         console.log("selectedSchedule", selectedSchedule);
-        console.log("first", selectedSchedule[0]?.substr(0, 10));
     }, [selectedSchedule, setSchedule]);
-
-    const processSubmit = () => {
-        console.log("====================================");
-        console.log(selectedSchedule);
-        console.log("====================================");
-    };
 
     const without440 = [
         // {
@@ -213,6 +207,11 @@ const Time = () => {
         setSchedule(scheduleKey);
     };
 
+    const [showPopup, setShowPopup] = useState(true);
+    const handleClose = () => {
+        setShowPopup(true);
+    };
+
     return (
         <Fragment>
             <div className="timeheadings">
@@ -250,7 +249,6 @@ const Time = () => {
                                 {({ open }) => (
                                     <>
                                         <Popover.Button
-                                            // onClick={processSubmit}
                                             className={`calendarbtn`}
                                         >
                                             <svg
@@ -405,6 +403,66 @@ const Time = () => {
                 <div className="timeheading rightcontentss"></div>
             </div>
 
+            {!showPopup && (
+                <Popup title="Bereitschaftszeit anlegen" onClose={handleClose}>
+                    <div className="thepopcontainer">
+                        <form className="timetableform" action="" method="get">
+                            <div>
+                                <b>Tag:</b> adfd
+                            </div>
+                            <div>
+                                <b>Start: </b> adfadf{" "}
+                            </div>
+                            <div>
+                                <b>Dauer:</b> dfdf
+                            </div>
+                            <div>
+                                <b>Mitarbeiter:</b>
+                            </div>
+                            <select name="user" id="user">
+                                {Object.keys(users)?.map((id) => {
+                                    const user = users[id];
+                                    return (
+                                        <option key={id} value={id}>
+                                            {user}
+                                        </option>
+                                    );
+                                })}
+                            </select>
+                            {/* <div className="selectedgroup">
+                                {groupA
+                                    .sort((a, b) => {
+                                        const aLast4 = parseInt(a.substr(-4));
+                                        const bLast4 = parseInt(b.substr(-4));
+
+                                        if (aLast4 < bLast4) {
+                                            return -1;
+                                        } else if (aLast4 > bLast4) {
+                                            return 1;
+                                        } else {
+                                            return 0;
+                                        }
+                                    })
+                                    .map((item) => {
+                                        return <p>{item}</p>;
+                                    })}
+                            </div> */}
+                            <div className="flexbtn">
+                                <input
+                                    type="hidden"
+                                    name="_token"
+                                    value={token}
+                                />
+                                <button onClick={(e) => setShowPopup(true)}>
+                                    Ja
+                                </button>
+                                <button type="submit">Nein</button>
+                            </div>
+                        </form>
+                    </div>
+                </Popup>
+            )}
+
             <div className="timetables">
                 {breackdown && breackdown !== "sm" ? (
                     <Fragment>
@@ -440,23 +498,6 @@ const Time = () => {
                                                             }
                                                             type="button"
                                                             onClick={(e) => {
-                                                                // const scheduleKey = `${
-                                                                //     timetable.group
-                                                                // }-${format(
-                                                                //     hour,
-                                                                //     "MM-dd-yyyy"
-                                                                // )}-${getHours(
-                                                                //     hour
-                                                                // )}`;
-                                                                // setSelectedHour(
-                                                                //     scheduleKey
-                                                                // );
-                                                                // setSchedule(
-                                                                //     scheduleKey
-                                                                // );
-                                                                console.log(
-                                                                    timetable.group
-                                                                );
                                                                 const scheduleKey = `${format(
                                                                     hour,
                                                                     "MM-dd-yyyy"
@@ -468,6 +509,15 @@ const Time = () => {
                                                                     scheduleKey,
                                                                     timetable.group
                                                                 );
+
+                                                                if (
+                                                                    selectedSchedule.length !=
+                                                                    0
+                                                                ) {
+                                                                    setShowPopup(
+                                                                        false
+                                                                    );
+                                                                }
                                                             }}
                                                             className={classNames(
                                                                 `hour`,
@@ -643,29 +693,102 @@ const Time = () => {
                                                             }
                                                             type="button"
                                                             onClick={(e) => {
-                                                                const scheduleKey = `${
-                                                                    timetable.group
-                                                                }-${format(
+                                                                const scheduleKey = `${format(
                                                                     hour,
                                                                     "MM-dd-yyyy"
-                                                                )}-${getHours(
+                                                                )} ${getHours(
                                                                     hour
-                                                                )}`;
-                                                                setSelectedHour(
-                                                                    scheduleKey
+                                                                )}:00`;
+
+                                                                selectByGroup(
+                                                                    scheduleKey,
+                                                                    timetable.group
                                                                 );
-                                                                setSchedule(
-                                                                    scheduleKey
-                                                                );
+
+                                                                if (
+                                                                    selectedSchedule.length !=
+                                                                    0
+                                                                ) {
+                                                                    setShowPopup(
+                                                                        false
+                                                                    );
+                                                                }
                                                             }}
                                                             className={classNames(
-                                                                "hour",
-                                                                hrIndex == 6 &&
-                                                                    "space",
-                                                                hrIndex == 12 &&
-                                                                    "space",
-                                                                hrIndex == 18 &&
-                                                                    "space"
+                                                                `hour`,
+                                                                groupA.includes(
+                                                                    `${format(
+                                                                        hour,
+                                                                        "MM-dd-yyyy"
+                                                                    )} ${getHours(
+                                                                        hour
+                                                                    )}:00`
+                                                                ) &&
+                                                                    `${
+                                                                        timetable.group ==
+                                                                        "a"
+                                                                            ? "a selected"
+                                                                            : "selected"
+                                                                    }`,
+                                                                groupB.includes(
+                                                                    `${format(
+                                                                        hour,
+                                                                        "MM-dd-yyyy"
+                                                                    )} ${getHours(
+                                                                        hour
+                                                                    )}:00`
+                                                                ) &&
+                                                                    `${
+                                                                        timetable.group ==
+                                                                        "b"
+                                                                            ? "b selected"
+                                                                            : "selected"
+                                                                    }`,
+                                                                groupD.includes(
+                                                                    `${format(
+                                                                        hour,
+                                                                        "MM-dd-yyyy"
+                                                                    )} ${getHours(
+                                                                        hour
+                                                                    )}:00`
+                                                                ) &&
+                                                                    `${
+                                                                        timetable.group ==
+                                                                        "d"
+                                                                            ? "d selected"
+                                                                            : "selected"
+                                                                    }`,
+                                                                groupH.includes(
+                                                                    `${format(
+                                                                        hour,
+                                                                        "MM-dd-yyyy"
+                                                                    )} ${getHours(
+                                                                        hour
+                                                                    )}:00`
+                                                                ) &&
+                                                                    `${
+                                                                        timetable.group ==
+                                                                        "h"
+                                                                            ? "h selected"
+                                                                            : "selected"
+                                                                    }`,
+                                                                [
+                                                                    6, 12, 18,
+                                                                ].includes(
+                                                                    hrIndex
+                                                                ) && "space",
+                                                                selectedSchedule.length !=
+                                                                    0 &&
+                                                                    format(
+                                                                        hour,
+                                                                        "MM-dd-yyyy"
+                                                                    ) !=
+                                                                        selectedSchedule[0].substr(
+                                                                            0,
+                                                                            10
+                                                                        )
+                                                                    ? "sameday"
+                                                                    : "diffday"
                                                             )}
                                                         >
                                                             <time
@@ -695,59 +818,6 @@ const Time = () => {
                         })()}
                     </Fragment>
                 )}
-            </div>
-
-            <div
-                className={classNames(
-                    "thepopup",
-                    selectedSchedule.length != 0 && "show"
-                )}
-            >
-                <div className="container">
-                    <div className="row">
-                        <div className="thepopcontainer">
-                            <form
-                                className="timetableform"
-                                action=""
-                                method="get"
-                            >
-                                <select name="user" id="user">
-                                    {Object.keys(users)?.map((id) => {
-                                        const user = users[id];
-                                        return (
-                                            <option key={id} value={id}>
-                                                {user}
-                                            </option>
-                                        );
-                                    })}
-                                </select>
-                                <div className="selectedgroup">
-                                    {groupA
-                                        .sort((a, b) => {
-                                            const aLast4 = parseInt(
-                                                a.substr(-4)
-                                            );
-                                            const bLast4 = parseInt(
-                                                b.substr(-4)
-                                            );
-
-                                            if (aLast4 < bLast4) {
-                                                return -1;
-                                            } else if (aLast4 > bLast4) {
-                                                return 1;
-                                            } else {
-                                                return 0;
-                                            }
-                                        })
-                                        .map((item) => {
-                                            return <p>{item}</p>;
-                                        })}
-                                </div>
-                                <button type="submit">Submit</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
             </div>
         </Fragment>
     );

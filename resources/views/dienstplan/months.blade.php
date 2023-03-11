@@ -28,6 +28,8 @@
         const request = @json(request()->all());
         const token = "{{ csrf_token() }}";
         const users = @json($users);
+        var ftop = (window.innerHeight / 2) - (320 / 2);
+        var fleft = (window.innerWidth / 2) - (320 / 2);
     </script>
 
     @section('content')

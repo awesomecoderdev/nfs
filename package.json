@@ -22,6 +22,6 @@
         "@headlessui/react": "^1.7.11",
         "@heroicons/react": "^2.0.16",
         "date-fns": "^2.29.3",
-        "react-dnd": "^16.0.1"
+        "react-draggable": "^4.4.5"
     }
 }
