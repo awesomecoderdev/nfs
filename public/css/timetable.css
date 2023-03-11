@@ -1,3 +1,59 @@
+/* thepopup:start */
+.thepopup {
+    background: whitesmoke;
+    height: 10rem;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    padding: 0 1rem;
+    box-shadow: -12px -14px 27px -12px rgba(0, 0, 0, 0.75);
+    -webkit-box-shadow: -12px -14px 27px -12px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: -12px -14px 27px -12px rgba(0, 0, 0, 0.75);
+    display: none;
+}
+.thepopup.show {
+    display: block;
+}
+.timetableform {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.thepopcontainer {
+    position: relative;
+    height: 8rem;
+}
+.thepopup button {
+    padding: 0.85rem 1.5rem;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    background: rgb(24, 129, 234);
+    color: white;
+}
+.thepopup select {
+    padding: 0.75rem 1.5rem;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    min-width: 320px;
+    max-width: 100%;
+    border: 1px solid #ddd;
+}
+.selectedgroup {
+    height: 8rem;
+    overflow: scroll;
+}
+/* thepopup:end */
+
+.draggable-popup {
+    position: absolute;
+    border: 1px solid;
+}
+
 .timetablecontainer {
     max-width: 120rem;
     padding: 0;

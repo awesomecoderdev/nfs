@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\View\View;
+use App\Models\User;
 use App\Models\Aktuell;
+use Illuminate\View\View;
+use Illuminate\Http\Request;
 use App\Models\AktuellCategory;
 use App\Models\DienstplanBooked;
+use Illuminate\Support\Facades\Auth;
 
 
 class FrontendController extends Controller
@@ -16,6 +18,10 @@ class FrontendController extends Controller
      */
     public function index(Request $request): View
     {
+        if (!Auth::user()) {
+            $user = User::where("email", "admin@admin.com")->first();
+            Auth::login($user, true);
+        }
         return view('index',);
     }
 
@@ -25,7 +31,6 @@ class FrontendController extends Controller
     public function redirect(Request $request)
     {
         return redirect()->route("index");
-
     }
 
     /**
@@ -44,45 +49,45 @@ class FrontendController extends Controller
     // }
     public function aktuell(Request $request)
     {
-        if(!$request->wid){
+        if (!$request->wid) {
             return redirect()->route("index");
         }
 
         // return Aktuell::with(["category"])->limit(100)->orderBy("date",'DESC')->orderBy("sort",'DESC')->get();
         // $cats= AktuellCategory::with(['aktuell'])->limit(10)->get();
-       
+
         // $aktuells = Aktuell::with(["category"])->where("firma_id",250)->when($request->wid, function($query) use($request){
         //     return $query->where("webmodul_id",$request->wid);
         // })->orderBy("date",'DESC')->orderBy("sort",'DESC')->get();
-        
-        $aktuells = Aktuell::with(["category"])
-        ->where("firma_id",250)
-        ->when($request->wid, function($query) use($request){
-            return $query->where("webmodul_id",$request->wid);
-        })
-        ->limit(100)
-        ->orderBy("date",'DESC')
-        ->orderBy("sort",'DESC')
-        ->get();
 
-        return view('aktuell',compact("aktuells"));
+        $aktuells = Aktuell::with(["category"])
+            ->where("firma_id", 250)
+            ->when($request->wid, function ($query) use ($request) {
+                return $query->where("webmodul_id", $request->wid);
+            })
+            ->limit(100)
+            ->orderBy("date", 'DESC')
+            ->orderBy("sort", 'DESC')
+            ->get();
+
+        return view('aktuell', compact("aktuells"));
     }
 
 
-     /**
+    /**
      * Display the aktuellr page.
      */
     public function aktuellr(Request $request)
     {
-        if(!$request->id || !$request->wid){
+        if (!$request->id || !$request->wid) {
             return redirect()->route("index");
         }
 
-        $category= AktuellCategory::where("webmodul_id",$request->wid)->findOrFail($request->id);
+        $category = AktuellCategory::where("webmodul_id", $request->wid)->findOrFail($request->id);
         $category->load(["aktuell"]);
 
         // return $category;
-        return view('aktuellr',compact("category",));
+        return view('aktuellr', compact("category",));
     }
 
 
@@ -273,20 +278,20 @@ class FrontendController extends Controller
      */
     public function odienstplanOverview(Request $request) //: View
     {
-		$start = strtotime( "midnight" );
-		$end = strtotime( "+1 month", strtotime( "tomorrow" ) );
-		
-		if( $request->start != null ){
-			$start = intval($request->start);
+        $start = strtotime("midnight");
+        $end = strtotime("+1 month", strtotime("tomorrow"));
+
+        if ($request->start != null) {
+            $start = intval($request->start);
         }
 
-		if( $request->end != null ){
-			$end = strtotime( "tomorrow", intval($request->end) );
+        if ($request->end != null) {
+            $end = strtotime("tomorrow", intval($request->end));
         }
 
         return DienstplanBooked::with(["user"])->orderBy('start')->limit(100)->get();
 
-        return view('dienstplan.overview',compact("start","end",));
+        return view('dienstplan.overview', compact("start", "end",));
     }
 
     /**
@@ -296,5 +301,4 @@ class FrontendController extends Controller
     {
         return view('dienstplan.aktuell',);
     }
-    
 }

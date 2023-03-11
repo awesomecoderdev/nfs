@@ -26,6 +26,8 @@
         const route = "{{ route('dienstplan.months') }}";
         const isAdmin = {{ auth()->user()->admin() }};
         const request = @json(request()->all());
+        const token = "{{ csrf_token() }}";
+        const users = @json($users);
     </script>
 
     @section('content')

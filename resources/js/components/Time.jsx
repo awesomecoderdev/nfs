@@ -91,6 +91,7 @@ const Time = () => {
 
     useEffect(() => {
         console.log("selectedSchedule", selectedSchedule);
+        console.log("first", selectedSchedule[0]?.substr(0, 10));
     }, [selectedSchedule, setSchedule]);
 
     const processSubmit = () => {
@@ -209,6 +210,7 @@ const Time = () => {
                     : [...prevState, scheduleKey]
             );
         }
+        setSchedule(scheduleKey);
     };
 
     return (
@@ -529,7 +531,19 @@ const Time = () => {
                                                                     6, 12, 18,
                                                                 ].includes(
                                                                     hrIndex
-                                                                ) && "space"
+                                                                ) && "space",
+                                                                selectedSchedule.length !=
+                                                                    0 &&
+                                                                    format(
+                                                                        day,
+                                                                        "MM-dd-yyyy"
+                                                                    ) !=
+                                                                        selectedSchedule[0].substr(
+                                                                            0,
+                                                                            10
+                                                                        )
+                                                                    ? "sameday"
+                                                                    : "diffday"
                                                             )}
                                                         >
                                                             <time
@@ -681,6 +695,59 @@ const Time = () => {
                         })()}
                     </Fragment>
                 )}
+            </div>
+
+            <div
+                className={classNames(
+                    "thepopup",
+                    selectedSchedule.length != 0 && "show"
+                )}
+            >
+                <div className="container">
+                    <div className="row">
+                        <div className="thepopcontainer">
+                            <form
+                                className="timetableform"
+                                action=""
+                                method="get"
+                            >
+                                <select name="user" id="user">
+                                    {Object.keys(users)?.map((id) => {
+                                        const user = users[id];
+                                        return (
+                                            <option key={id} value={id}>
+                                                {user}
+                                            </option>
+                                        );
+                                    })}
+                                </select>
+                                <div className="selectedgroup">
+                                    {groupA
+                                        .sort((a, b) => {
+                                            const aLast4 = parseInt(
+                                                a.substr(-4)
+                                            );
+                                            const bLast4 = parseInt(
+                                                b.substr(-4)
+                                            );
+
+                                            if (aLast4 < bLast4) {
+                                                return -1;
+                                            } else if (aLast4 > bLast4) {
+                                                return 1;
+                                            } else {
+                                                return 0;
+                                            }
+                                        })
+                                        .map((item) => {
+                                            return <p>{item}</p>;
+                                        })}
+                                </div>
+                                <button type="submit">Submit</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
         </Fragment>
     );

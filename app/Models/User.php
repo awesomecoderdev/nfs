@@ -83,20 +83,31 @@ class User extends Authenticatable // implements MustVerifyEmail
      */
     public function admin(): bool
     {
-        return ($this->isAdmin != null && $this->isAdmin == 1) ? true : $this->props->is_admin ?? false ;
+        return ($this->isAdmin != null && $this->isAdmin == 1) ? true : $this->props->is_admin ?? false;
     }
 
-     /**
+    /**
      * Return the user full name.
      *
      * @return string
      */
     public function fullname()
     {
-        return ucfirst($this->first_name != null ? ( $this->last_name != null ? "$this->first_name $this->last_name" : "$this->first_name") : $this->username);
+        return ucfirst($this->first_name != null ? ($this->last_name != null ? "$this->first_name $this->last_name" : "$this->first_name") : $this->username);
     }
 
-     /**
+    /**
+     * Return the user full name.
+     *
+     * @return string
+     */
+    public function getNameAttribute()
+    {
+        return $this->attributes['first_name'] . ' ' . $this->attributes['last_name'];
+    }
+
+
+    /**
      * The user has props.
      *
      * @return  \App\Models\DienstplanUserProps
@@ -107,16 +118,13 @@ class User extends Authenticatable // implements MustVerifyEmail
     }
 
 
-      /**
+    /**
      * Return the user wid name.
      *
      * @return string
      */
     public function getWidAttribute($value)
     {
-       return $value ?? ($this->props->wid ?? $value);
+        return $value ?? ($this->props->wid ?? $value);
     }
-
-
-
 }
