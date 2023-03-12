@@ -105,10 +105,13 @@
     max-width: 120rem;
     padding: 0;
 }
-button.hour.selected {
+button.hour.selected,
+button.hour.diffgroup,
+button.hour.diffday {
     pointer-events: none;
-    background: #a9a9a9;
+    /* background: #a9a9a9; */
 }
+
 button.hour.a.selected,
 button.hour.b.selected,
 button.hour.d.selected,

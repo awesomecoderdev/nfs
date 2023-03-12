@@ -1,6 +1,7 @@
 import React, { Component, Fragment, useState, useEffect } from "react";
 import { Menu, Transition, Tab, Popover } from "@headlessui/react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
+import { de } from "date-fns/locale";
 
 import {
     add,
@@ -23,6 +24,8 @@ import {
     startOfWeek,
     endOfWeek,
     startOfMonth,
+    formatRelative,
+    subDays,
 } from "date-fns";
 import axios from "axios";
 import { scheduleJson } from "./Data";
@@ -58,6 +61,76 @@ const Time = () => {
     const [groupB, setGroupB] = useState([]);
     const [groupH, setGroupH] = useState([]);
     const [groupD, setGroupD] = useState([]);
+    const [firstSelect, setFirstSelect] = useState(null);
+    const [endSelect, setEndSelect] = useState(null);
+    const [selectedTheGroup, setSelectedTheGroup] = useState("");
+
+    const [showPopup, setShowPopup] = useState(true);
+    const handleClose = () => {
+        setShowPopup(true);
+    };
+    const without440 = [
+        // {
+        //   title: "Bereitschaftszeit A-Dienst",
+        //   group: "a",
+        // },
+        // {
+        //   title: "Bereitschaftszeit B-Dienst",
+        //   group: "b",
+        // },
+        // {
+        //   title: "Bereitschaftszeit H-Dienst",
+        //   group: "h",
+        // },
+        {
+            title: "A-Dienst",
+            group: "a",
+        },
+        {
+            title: "B-Dienst",
+            group: "b",
+        },
+        {
+            title: "H-Dienst",
+            group: "h",
+        },
+    ];
+    const with440 = [
+        {
+            title: "A-Dienst",
+            group: "a",
+        },
+        {
+            title: "B-Dienst",
+            group: "b",
+        },
+        {
+            title: "H-Dienst",
+            group: "h",
+        },
+        {
+            title: "D-Dienst",
+            group: "d",
+        },
+    ];
+    const timeTables = wid == 440 ? with440 : without440;
+    const tabs = [
+        {
+            id: "menu",
+            title: "Menu",
+            component: "Menu",
+        },
+        {
+            id: "urlaub",
+            title: "Urlaub/Auszeit",
+            component: "Urlaub/Auszeit",
+        },
+        {
+            id: "pinnwand",
+            title: "Pinnwand",
+            component: "Pinnwand",
+        },
+    ];
 
     const days = eachDayOfInterval({
         start: startOfWeek(startOfMonth(startCalendar)),
@@ -93,80 +166,6 @@ const Time = () => {
     useEffect(() => {
         console.log("selectedSchedule", selectedSchedule);
     }, [selectedSchedule, setSchedule]);
-
-    const without440 = [
-        // {
-        //   title: "Bereitschaftszeit A-Dienst",
-        //   group: "a",
-        // },
-        // {
-        //   title: "Bereitschaftszeit B-Dienst",
-        //   group: "b",
-        // },
-        // {
-        //   title: "Bereitschaftszeit H-Dienst",
-        //   group: "h",
-        // },
-        {
-            title: "A-Dienst",
-            group: "a",
-        },
-        {
-            title: "B-Dienst",
-            group: "b",
-        },
-        {
-            title: "H-Dienst",
-            group: "h",
-        },
-    ];
-
-    const with440 = [
-        {
-            title: "A-Dienst",
-            group: "a",
-        },
-        {
-            title: "B-Dienst",
-            group: "b",
-        },
-        {
-            title: "H-Dienst",
-            group: "h",
-        },
-        {
-            title: "D-Dienst",
-            group: "d",
-        },
-    ];
-
-    const timeTables = wid == 440 ? with440 : without440;
-
-    const tabs = [
-        {
-            id: "menu",
-            title: "Menu",
-            component: "Menu",
-        },
-        {
-            id: "urlaub",
-            title: "Urlaub/Auszeit",
-            component: "Urlaub/Auszeit",
-        },
-        {
-            id: "pinnwand",
-            title: "Pinnwand",
-            component: "Pinnwand",
-        },
-    ];
-
-    const processNeinAction = () => {
-        alert("cancled");
-    };
-
-    const processJaAction = () => {
-        alert("Submited");
-    };
 
     function previousMonth() {
         console.log("previousMonth");
@@ -207,10 +206,25 @@ const Time = () => {
         setSchedule(scheduleKey);
     };
 
-    const [showPopup, setShowPopup] = useState(true);
-    const handleClose = () => {
-        setShowPopup(true);
-    };
+    {
+        /* <div className="selectedgroup">
+            {groupA
+                .sort((a, b) => {
+                    const aLast4 = parseInt(a.substr(-4));
+                    const bLast4 = parseInt(b.substr(-4));
+                    if (aLast4 < bLast4) {
+                        return -1;
+                    } else if (aLast4 > bLast4) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                })
+                .map((item) => {
+                    return <p>{item}</p>;
+                })}
+        </div> */
+    }
 
     return (
         <Fragment>
@@ -239,9 +253,13 @@ const Time = () => {
                 </div>
                 <div className="timeheading centercontents">
                     <p className="centerdate">
-                        {format(startOfWeek(today), "d.MMM") +
+                        {format(startOfWeek(today), "d.MMM", {
+                            locale: de,
+                        }) +
                             "-" +
-                            format(endOfWeek(today), "d.MMM")}
+                            format(endOfWeek(today), "d.MMM", {
+                                locale: de,
+                            })}
                     </p>
                     <div className="centercalendar">
                         <div className="week_container">
@@ -282,7 +300,10 @@ const Time = () => {
                                                                 <span className="calendar_h2 tac">
                                                                     {format(
                                                                         startCalendar,
-                                                                        "MMMM yyyy"
+                                                                        "MMMM yyyy",
+                                                                        {
+                                                                            locale: de,
+                                                                        }
                                                                     )}
                                                                 </span>
                                                                 <button
@@ -411,10 +432,13 @@ const Time = () => {
                                 <b>Tag:</b> adfd
                             </div>
                             <div>
-                                <b>Start: </b> adfadf{" "}
+                                <b>Start: </b>{" "}
+                                {getHours(firstSelect) < 10
+                                    ? "0" + getHours(firstSelect) + ":00"
+                                    : getHours(firstSelect) + ":00"}
                             </div>
                             <div>
-                                <b>Dauer:</b> dfdf
+                                <b>Dauer:</b> 1 Stunden
                             </div>
                             <div>
                                 <b>Mitarbeiter:</b>
@@ -429,34 +453,21 @@ const Time = () => {
                                     );
                                 })}
                             </select>
-                            {/* <div className="selectedgroup">
-                                {groupA
-                                    .sort((a, b) => {
-                                        const aLast4 = parseInt(a.substr(-4));
-                                        const bLast4 = parseInt(b.substr(-4));
-
-                                        if (aLast4 < bLast4) {
-                                            return -1;
-                                        } else if (aLast4 > bLast4) {
-                                            return 1;
-                                        } else {
-                                            return 0;
-                                        }
-                                    })
-                                    .map((item) => {
-                                        return <p>{item}</p>;
-                                    })}
-                            </div> */}
                             <div className="flexbtn">
                                 <input
                                     type="hidden"
                                     name="_token"
                                     value={token}
                                 />
-                                <button onClick={(e) => setShowPopup(true)}>
+                                <button onClick={(e) => e.preventDefault()}>
                                     Ja
                                 </button>
-                                <button type="submit">Nein</button>
+                                <button
+                                    type="submit"
+                                    onClick={(e) => setShowPopup(true)}
+                                >
+                                    Nein
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -505,17 +516,96 @@ const Time = () => {
                                                                     hour
                                                                 )}:00`;
 
-                                                                selectByGroup(
-                                                                    scheduleKey,
-                                                                    timetable.group
-                                                                );
+                                                                if (
+                                                                    !firstSelect
+                                                                ) {
+                                                                    setFirstSelect(
+                                                                        hour
+                                                                    );
+                                                                    setSelectedTheGroup(
+                                                                        timetable.group
+                                                                    );
+                                                                } else {
+                                                                    setEndSelect(
+                                                                        hour
+                                                                    );
+
+                                                                    // console.log(
+                                                                    //     "firstSelect",
+                                                                    //     firstSelect,
+                                                                    //     endSelect
+                                                                    // );
+                                                                }
 
                                                                 if (
-                                                                    selectedSchedule.length !=
-                                                                    0
+                                                                    firstSelect
                                                                 ) {
+                                                                    const selectedHours =
+                                                                        eachHourOfInterval(
+                                                                            {
+                                                                                start: firstSelect,
+                                                                                end: hour,
+                                                                            }
+                                                                        );
+
+                                                                    const selectedArr =
+                                                                        selectedHours?.map(
+                                                                            (
+                                                                                item
+                                                                            ) =>
+                                                                                `${format(
+                                                                                    item,
+                                                                                    "MM-dd-yyyy"
+                                                                                )} ${getHours(
+                                                                                    item
+                                                                                )}:00`
+                                                                        );
+
+                                                                    setSelectedSchedule(
+                                                                        selectedArr
+                                                                    );
+
+                                                                    console.log(
+                                                                        "selectedArr",
+                                                                        selectedArr
+                                                                    );
+
+                                                                    if (
+                                                                        timetable.group ==
+                                                                        "a"
+                                                                    ) {
+                                                                        setGroupA(
+                                                                            selectedArr
+                                                                        );
+                                                                    } else if (
+                                                                        timetable.group ==
+                                                                        "b"
+                                                                    ) {
+                                                                        setGroupB(
+                                                                            selectedArr
+                                                                        );
+                                                                    } else if (
+                                                                        timetable.group ==
+                                                                        "d"
+                                                                    ) {
+                                                                        setGroupD(
+                                                                            selectedArr
+                                                                        );
+                                                                    } else if (
+                                                                        timetable.group ==
+                                                                        "h"
+                                                                    ) {
+                                                                        setGroupH(
+                                                                            selectedArr
+                                                                        );
+                                                                    }
                                                                     setShowPopup(
                                                                         false
+                                                                    );
+                                                                } else {
+                                                                    selectByGroup(
+                                                                        scheduleKey,
+                                                                        timetable.group
                                                                     );
                                                                 }
                                                             }}
@@ -582,18 +672,54 @@ const Time = () => {
                                                                 ].includes(
                                                                     hrIndex
                                                                 ) && "space",
-                                                                selectedSchedule.length !=
-                                                                    0 &&
+                                                                // selectedSchedule.length !=
+                                                                //     0 &&
+                                                                // format(
+                                                                //     day,
+                                                                //     "MM-dd-yyyy"
+                                                                // ) !=
+                                                                //     selectedSchedule[0].substr(
+                                                                //         0,
+                                                                //         10
+                                                                //     )
+                                                                // ? "sameday"
+                                                                // : "diffday",
+                                                                // selectedTheGroup !=
+                                                                //     "" &&
+                                                                //     selectedTheGroup ==
+                                                                //         timetable.group
+                                                                //     ? `${selectedTheGroup} selected`
+                                                                //     : `${timetable.group} selected`
+                                                                firstSelect &&
                                                                     format(
-                                                                        day,
+                                                                        firstSelect,
+                                                                        "MM-dd-yyyy"
+                                                                    ) ==
+                                                                        format(
+                                                                            day,
+                                                                            "MM-dd-yyyy"
+                                                                        ) &&
+                                                                    "sameday",
+                                                                firstSelect &&
+                                                                    format(
+                                                                        firstSelect,
                                                                         "MM-dd-yyyy"
                                                                     ) !=
-                                                                        selectedSchedule[0].substr(
-                                                                            0,
-                                                                            10
-                                                                        )
-                                                                    ? "sameday"
-                                                                    : "diffday"
+                                                                        format(
+                                                                            day,
+                                                                            "MM-dd-yyyy"
+                                                                        ) &&
+                                                                    "diffday",
+                                                                selectedTheGroup !=
+                                                                    "" &&
+                                                                    selectedTheGroup ==
+                                                                        timetable.group &&
+                                                                    "samegroup",
+                                                                selectedTheGroup !=
+                                                                    "" &&
+                                                                    selectedTheGroup !=
+                                                                        timetable.group &&
+                                                                    "diffgroup"
                                                             )}
                                                         >
                                                             <time
