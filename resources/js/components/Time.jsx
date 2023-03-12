@@ -429,16 +429,22 @@ const Time = () => {
                     <div className="thepopcontainer">
                         <form className="timetableform" action="" method="get">
                             <div>
-                                <b>Tag:</b> adfd
+                                <b>Tag:</b>{" "}
+                                {format(firstSelect, "eee dd.MM", {
+                                    locale: de,
+                                })}
                             </div>
                             <div>
-                                <b>Start: </b>{" "}
-                                {getHours(firstSelect) < 10
-                                    ? "0" + getHours(firstSelect) + ":00"
-                                    : getHours(firstSelect) + ":00"}
+                                <b>Start: </b>
+                                {selectedSchedule[0].substr(-5)} Uhr
+                                {/* {parseInt(selectedSchedule[0].substr(-5, 2)) >
+                                12
+                                    ? " PM"
+                                    : " Bin"} */}
                             </div>
                             <div>
-                                <b>Dauer:</b> 1 Stunden
+                                <b>Dauer: </b>
+                                {selectedSchedule.length - 1 + " Stunden"}
                             </div>
                             <div>
                                 <b>Mitarbeiter:</b>
@@ -543,8 +549,16 @@ const Time = () => {
                                                                     const selectedHours =
                                                                         eachHourOfInterval(
                                                                             {
-                                                                                start: firstSelect,
-                                                                                end: hour,
+                                                                                start:
+                                                                                    firstSelect <
+                                                                                    hour
+                                                                                        ? firstSelect
+                                                                                        : hour,
+                                                                                end:
+                                                                                    firstSelect >
+                                                                                    hour
+                                                                                        ? firstSelect
+                                                                                        : hour,
                                                                             }
                                                                         );
 
@@ -565,10 +579,10 @@ const Time = () => {
                                                                         selectedArr
                                                                     );
 
-                                                                    console.log(
-                                                                        "selectedArr",
-                                                                        selectedArr
-                                                                    );
+                                                                    // console.log(
+                                                                    //     "selectedArr",
+                                                                    //     selectedArr
+                                                                    // );
 
                                                                     if (
                                                                         timetable.group ==
