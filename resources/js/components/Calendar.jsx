@@ -1,4 +1,5 @@
 import React, { Component, Fragment, useState, useEffect } from "react";
+import { de } from "date-fns/locale";
 import { Menu, Transition } from "@headlessui/react";
 // import { DotsVerticalIcon } from "@heroicons/react/outline";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
@@ -82,7 +83,9 @@ const Calendar = () => {
                                             )}
 
                                             <span className="calendar_h2">
-                                                {format(month, "MMMM yyyy")}
+                                                {format(month, "MMMM yyyy", {
+                                                    locale: de,
+                                                })}
                                             </span>
 
                                             {monthIndex == 4 && (

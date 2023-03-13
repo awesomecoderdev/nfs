@@ -75,9 +75,69 @@ class DienstplanController extends Controller
             $users = User::select("first_name", "last_name", "id")->where("id", Auth::user()->id)->get();
         }
         $users = $users->pluck("name", "id");
-        return view('dienstplan.months', compact("users"));
+
+        $bookedArr = [];
+        $bookedStaticArr = [];
+        $bookings = DienstplanBooked::select("id", "col", "start", "duration", "maintainer")
+            ->where("start", ">", strtotime("-1 week"))
+            ->whereRaw('start + duration < ?', [strtotime("+1 week")])
+            ->get();
+
+        foreach ($bookings as $key => $booking) {
+            $start = date("m-d-Y H:i", $booking->start);
+            $end = date("m-d-Y H:i", $booking->start +  $booking->duration);
+            $hours = $this->getHoursArray($start, $end);
+
+            foreach ($hours as $hour) {
+                $hour = str_replace("00:00", "24:00", $hour);
+                $key = "$booking->col $hour";
+
+                $bookedArr[$key] = [
+                    "id" => $booking->id,
+                    "col" => $booking->col,
+                    "user" => $booking->maintainer,
+                    "start" => $start,
+                    "end" => $end,
+                    "hours" => (count($hours) - 1)
+                ];
+
+                $statickey = "$hour";
+
+                $bookedStaticArr[$statickey] = [
+                    "id" => $booking->id,
+                    "col" => $booking->col,
+                    "user" => $booking->maintainer,
+                    "start" => $start,
+                    "end" => $end,
+                    "hours" => (count($hours) - 1)
+                ];
+            }
+        }
+
+
+
+        return view('dienstplan.months', compact("users", "bookedArr", "bookedStaticArr"));
     }
 
+    /**
+     * Display the months page.
+     */
+    function getHoursArray($start, $end)
+    {
+        $hours = [];
+
+        // Convert start and end times to DateTime objects
+        $startTime =  DateTime::createFromFormat('m-d-Y h:i', $start);
+        $endTime = DateTime::createFromFormat('m-d-Y h:i', $end);
+
+        // Iterate over the hours between the start and end times
+        while ($startTime <= $endTime) {
+            $hours[] = $startTime->format('m-d-Y H:i');
+            $startTime->modify('+1 hour');
+        }
+
+        return $hours;
+    }
     /**
      * Display the vacation page.
      */
@@ -821,5 +881,83 @@ class DienstplanController extends Controller
         $tbl = array_values($tbl);
 
         return view('dienstplan.houroverview', compact('sort', 'tbl', 'start', 'end', 'wid'));
+    }
+
+
+    public function bookdienstplan(Request $request)
+    {
+        $hours = $request->hours;
+        $col = $request->col;
+        $maintainer = $request->user;
+
+        try {
+            $start = current($hours);
+            $start = str_replace("24:00", "00:00", $start);
+            $end = end($hours);
+
+            $start = DateTime::createFromFormat('m-d-Y h:i', "$start")->getTimestamp();
+            $end = DateTime::createFromFormat('m-d-Y h:i', "$end")->getTimestamp();
+
+            $duration = $end - $start;
+            $total = $start + $duration;
+            $total = date("d-m-Y h:i:s A", $total);
+
+
+            try {
+                if (Auth::user()->admin()) {
+                    $user = DienstplanBooked::create([
+                        "wid" => $this->wid,
+                        "col" => $col,
+                        "start" => $start,
+                        "duration" => $duration,
+                        "maintainer" => $maintainer,
+                        "creator_id" => Auth::user()->id,
+                        "created" => Carbon::now(),
+                        "modified" =>  Carbon::now(),
+                    ]);
+                } else {
+                    $user = DienstplanBooked::create([
+                        "wid" => $this->wid,
+                        "col" => $col,
+                        "start" => $start,
+                        "duration" => $duration,
+                        "maintainer" => Auth::user()->id,
+                        "creator_id" => Auth::user()->id,
+                        "created" => Carbon::now(),
+                        "modified" => Carbon::now(),
+                    ]);
+                }
+                return redirect()->route('dienstplan.months', ["start" => request("start", date("d-m-yyyy"))])->with(
+                    "success",
+                    "Der Urlaub wurde erfolgreich gespeichert."
+                );
+            } catch (\Exception $e) {
+                // throw $e;
+                return redirect()->route('dienstplan.months', ["start" => request("start", date("d-m-yyyy"))])->withErrors(
+                    ["alert" => "Der buchbare Bereich konnte nicht in die Datenbank übertragen werden."]
+                );
+            }
+
+            dd($request->all(), $start, $end, $duration, $total);
+        } catch (\Exception $e) {
+            // throw $e;
+            return redirect()->route('dienstplan.months', ["start" => request("start", date("d-m-yyyy"))])->withErrors(
+                ["alert" => "Es kam zu Überschneidungen mit anderen Bereitschafts- oder Urlaubszeiten. Die Bereitschaftszeit wurde nicht angelegt."]
+            );
+        }
+
+
+
+        // foreach ($request->hours as $key => $hour) {
+        //     echo "<pre>";
+        //     print_r(DateTime::createFromFormat('m-d-Y h:i', $hour)->getTimestamp());
+        //     echo "</pre>";
+        // }
+
+
+        die;
+        // dd($request->all());
+
+        // $user = DienstplanBooked::create($request->all());
     }
 }

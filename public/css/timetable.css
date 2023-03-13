@@ -75,6 +75,7 @@
     cursor: pointer;
     max-width: 100%;
     border: 1px solid #ddd;
+    min-width: 100%;
 }
 .popup.react-draggable {
     background: white;

@@ -64,6 +64,10 @@ const Time = () => {
     const [firstSelect, setFirstSelect] = useState(null);
     const [endSelect, setEndSelect] = useState(null);
     const [selectedTheGroup, setSelectedTheGroup] = useState("");
+    const [alreadyBooked, setAlreadyBooked] = useState(bookings ?? []);
+    const [alreadyStaticBooked, setAlreadyStaticBooked] = useState(
+        staticBookings ?? []
+    );
 
     const [showPopup, setShowPopup] = useState(true);
     const handleClose = () => {
@@ -427,7 +431,16 @@ const Time = () => {
             {!showPopup && (
                 <Popup title="Bereitschaftszeit anlegen" onClose={handleClose}>
                     <div className="thepopcontainer">
-                        <form className="timetableform" action="" method="get">
+                        <form
+                            className="timetableform"
+                            action={bookdienstplan}
+                            method="POST"
+                        >
+                            <input
+                                type="hidden"
+                                name="start"
+                                value={request.start ?? ""}
+                            />
                             <div>
                                 <b>Tag:</b>{" "}
                                 {format(firstSelect, "eee dd.MM", {
@@ -446,6 +459,18 @@ const Time = () => {
                                 <b>Dauer: </b>
                                 {selectedSchedule.length - 1 + " Stunden"}
                             </div>
+                            {selectedSchedule?.map((item) => (
+                                <input
+                                    type="hidden"
+                                    name="hours[]"
+                                    value={item}
+                                />
+                            ))}
+                            <input
+                                type="hidden"
+                                name="col"
+                                value={selectedTheGroup}
+                            />
                             <div>
                                 <b>Mitarbeiter:</b>
                             </div>
@@ -465,9 +490,7 @@ const Time = () => {
                                     name="_token"
                                     value={token}
                                 />
-                                <button onClick={(e) => e.preventDefault()}>
-                                    Ja
-                                </button>
+                                <button type="submit">Ja</button>
                                 <button
                                     type="submit"
                                     onClick={(e) => setShowPopup(true)}
@@ -507,6 +530,23 @@ const Time = () => {
                                                     {timetable.group.toUpperCase()}
                                                 </button>
                                                 {hours.map((hour, hrIndex) => {
+                                                    const inAlreadyBooking =
+                                                        alreadyBooked[
+                                                            `${
+                                                                timetable.group
+                                                            } ${format(
+                                                                hour,
+                                                                "MM-d-yyyy kk:mm"
+                                                            )}`
+                                                        ];
+                                                    const inAlreadyStaticBooked =
+                                                        alreadyStaticBooked[
+                                                            `${format(
+                                                                hour,
+                                                                "MM-d-yyyy kk:mm"
+                                                            )}`
+                                                        ];
+
                                                     return (
                                                         <button
                                                             key={
@@ -517,10 +557,8 @@ const Time = () => {
                                                             onClick={(e) => {
                                                                 const scheduleKey = `${format(
                                                                     hour,
-                                                                    "MM-dd-yyyy"
-                                                                )} ${getHours(
-                                                                    hour
-                                                                )}:00`;
+                                                                    "MM-dd-yyyy kk:mm"
+                                                                )}`;
 
                                                                 if (
                                                                     !firstSelect
@@ -569,10 +607,8 @@ const Time = () => {
                                                                             ) =>
                                                                                 `${format(
                                                                                     item,
-                                                                                    "MM-dd-yyyy"
-                                                                                )} ${getHours(
-                                                                                    item
-                                                                                )}:00`
+                                                                                    "MM-dd-yyyy kk:mm"
+                                                                                )}`
                                                                         );
 
                                                                     setSelectedSchedule(
@@ -628,10 +664,8 @@ const Time = () => {
                                                                 groupA.includes(
                                                                     `${format(
                                                                         hour,
-                                                                        "MM-dd-yyyy"
-                                                                    )} ${getHours(
-                                                                        hour
-                                                                    )}:00`
+                                                                        "MM-dd-yyyy kk:mm"
+                                                                    )}`
                                                                 ) &&
                                                                     `${
                                                                         timetable.group ==
@@ -642,10 +676,8 @@ const Time = () => {
                                                                 groupB.includes(
                                                                     `${format(
                                                                         hour,
-                                                                        "MM-dd-yyyy"
-                                                                    )} ${getHours(
-                                                                        hour
-                                                                    )}:00`
+                                                                        "MM-dd-yyyy kk:mm"
+                                                                    )}`
                                                                 ) &&
                                                                     `${
                                                                         timetable.group ==
@@ -656,10 +688,8 @@ const Time = () => {
                                                                 groupD.includes(
                                                                     `${format(
                                                                         hour,
-                                                                        "MM-dd-yyyy"
-                                                                    )} ${getHours(
-                                                                        hour
-                                                                    )}:00`
+                                                                        "MM-dd-yyyy kk:mm"
+                                                                    )}`
                                                                 ) &&
                                                                     `${
                                                                         timetable.group ==
@@ -670,10 +700,8 @@ const Time = () => {
                                                                 groupH.includes(
                                                                     `${format(
                                                                         hour,
-                                                                        "MM-dd-yyyy"
-                                                                    )} ${getHours(
-                                                                        hour
-                                                                    )}:00`
+                                                                        "MM-dd-yyyy kk:mm"
+                                                                    )}`
                                                                 ) &&
                                                                     `${
                                                                         timetable.group ==
@@ -686,24 +714,6 @@ const Time = () => {
                                                                 ].includes(
                                                                     hrIndex
                                                                 ) && "space",
-                                                                // selectedSchedule.length !=
-                                                                //     0 &&
-                                                                // format(
-                                                                //     day,
-                                                                //     "MM-dd-yyyy"
-                                                                // ) !=
-                                                                //     selectedSchedule[0].substr(
-                                                                //         0,
-                                                                //         10
-                                                                //     )
-                                                                // ? "sameday"
-                                                                // : "diffday",
-                                                                // selectedTheGroup !=
-                                                                //     "" &&
-                                                                //     selectedTheGroup ==
-                                                                //         timetable.group
-                                                                //     ? `${selectedTheGroup} selected`
-                                                                //     : `${timetable.group} selected`
                                                                 firstSelect &&
                                                                     format(
                                                                         firstSelect,
@@ -733,7 +743,12 @@ const Time = () => {
                                                                     "" &&
                                                                     selectedTheGroup !=
                                                                         timetable.group &&
-                                                                    "diffgroup"
+                                                                    "diffgroup",
+                                                                inAlreadyBooking &&
+                                                                    `${inAlreadyBooking.col} selected`,
+                                                                !isAdmin &&
+                                                                    inAlreadyStaticBooked &&
+                                                                    `diffgroup`
                                                             )}
                                                         >
                                                             <time
@@ -859,10 +874,8 @@ const Time = () => {
                                                                 groupA.includes(
                                                                     `${format(
                                                                         hour,
-                                                                        "MM-dd-yyyy"
-                                                                    )} ${getHours(
-                                                                        hour
-                                                                    )}:00`
+                                                                        "MM-dd-yyyy kk:mm"
+                                                                    )}`
                                                                 ) &&
                                                                     `${
                                                                         timetable.group ==
@@ -873,10 +886,8 @@ const Time = () => {
                                                                 groupB.includes(
                                                                     `${format(
                                                                         hour,
-                                                                        "MM-dd-yyyy"
-                                                                    )} ${getHours(
-                                                                        hour
-                                                                    )}:00`
+                                                                        "MM-dd-yyyy kk:mm"
+                                                                    )}`
                                                                 ) &&
                                                                     `${
                                                                         timetable.group ==
@@ -887,10 +898,8 @@ const Time = () => {
                                                                 groupD.includes(
                                                                     `${format(
                                                                         hour,
-                                                                        "MM-dd-yyyy"
-                                                                    )} ${getHours(
-                                                                        hour
-                                                                    )}:00`
+                                                                        "MM-dd-yyyy kk:mm"
+                                                                    )}`
                                                                 ) &&
                                                                     `${
                                                                         timetable.group ==
@@ -901,10 +910,8 @@ const Time = () => {
                                                                 groupH.includes(
                                                                     `${format(
                                                                         hour,
-                                                                        "MM-dd-yyyy"
-                                                                    )} ${getHours(
-                                                                        hour
-                                                                    )}:00`
+                                                                        "MM-dd-yyyy kk:mm"
+                                                                    )}`
                                                                 ) &&
                                                                     `${
                                                                         timetable.group ==
