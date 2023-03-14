@@ -940,6 +940,8 @@ const Time = () => {
                                                                 inAlreadyBooking &&
                                                                     `${inAlreadyBooking.col} selected`,
                                                                 !isAdmin &&
+                                                                    popoverData.user ==
+                                                                        currentUser.id &&
                                                                     inAlreadyStaticBooked &&
                                                                     `diffgroup`
                                                             )}
