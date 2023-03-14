@@ -78,6 +78,7 @@ const Time = () => {
         id: null,
         name: null,
     });
+    const [theClickedUser, setTheClickedUser] = useState({});
     const [popoverData, setPopoverData] = useState([]);
     const handleMouseMove = (event) => {
         const element = event.target;
@@ -481,9 +482,11 @@ const Time = () => {
                             </svg>
                         </button>
                         <p>
-                            {popoverUser.name &&
-                                popoverUser.name.substr(0, 25) +
-                                    `${popoverUser.name.length > 25 && "..."}`}
+                            {theClickedUser.name &&
+                                theClickedUser.name.substr(0, 25) +
+                                    `${
+                                        theClickedUser.name.length > 25 && "..."
+                                    }`}
                         </p>
                         <p>
                             <b>Start : </b>
@@ -762,10 +765,23 @@ const Time = () => {
                                                                         ] ??
                                                                         false;
                                                                 }
+                                                                const theScheduledUser =
+                                                                    users[
+                                                                        `${inAlreadyBooking.user}`
+                                                                    ] ?? false;
 
+                                                                setTheClickedUser(
+                                                                    inAlreadyBooking
+                                                                );
                                                                 setPopoverData(
                                                                     inAlreadyBooking
                                                                 );
+                                                                setPopoverUser({
+                                                                    id: inAlreadyBooking.user,
+                                                                    name:
+                                                                        theScheduledUser.name ??
+                                                                        theScheduledUser,
+                                                                });
 
                                                                 if (
                                                                     inAlreadyBooking
@@ -773,11 +789,6 @@ const Time = () => {
                                                                     handleMouseMove(
                                                                         e
                                                                     );
-                                                                    const theScheduledUser =
-                                                                        users[
-                                                                            `${inAlreadyBooking.user}`
-                                                                        ] ??
-                                                                        false;
 
                                                                     if (
                                                                         theScheduledUser
@@ -785,7 +796,9 @@ const Time = () => {
                                                                         setPopoverUser(
                                                                             {
                                                                                 id: inAlreadyBooking.user,
-                                                                                name: theScheduledUser,
+                                                                                name:
+                                                                                    theScheduledUser.name ??
+                                                                                    theScheduledUser,
                                                                             }
                                                                         );
                                                                     }

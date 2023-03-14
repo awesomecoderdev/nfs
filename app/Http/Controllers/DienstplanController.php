@@ -78,7 +78,7 @@ class DienstplanController extends Controller
 
         $bookedArr = [];
         $bookedStaticArr = [];
-        $bookings = DienstplanBooked::select("id", "col", "start", "duration", "maintainer")
+        $bookings = DienstplanBooked::with(["user"])->select("id", "col", "start", "duration", "maintainer")
             ->where("start", ">", strtotime("-1 week"))
             ->whereRaw('start + duration < ?', [strtotime("+1 week")])
             ->get();
@@ -100,7 +100,8 @@ class DienstplanController extends Controller
                     "user" => $booking->maintainer,
                     "start" => $start,
                     "end" => $end,
-                    "hours" => (count($hours) - 1)
+                    "hours" => (count($hours) - 1),
+                    "name" => $booking->user->name,
                 ];
 
                 $statickey = "$hour";
@@ -111,7 +112,8 @@ class DienstplanController extends Controller
                     "user" => $booking->maintainer,
                     "start" => $start,
                     "end" => $end,
-                    "hours" => (count($hours) - 1)
+                    "hours" => (count($hours) - 1),
+                    "name" => $booking->user->name,
                 ];
             }
         }
