@@ -68,6 +68,17 @@ const Time = () => {
     const [alreadyStaticBooked, setAlreadyStaticBooked] = useState(
         staticBookings ?? []
     );
+    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+    const [popover, setPopover] = useState(false);
+    const [popoverUser, setPopoverUser] = useState({
+        id: null,
+        name: null,
+        data: {},
+    });
+    console.log("popoverUser", popoverUser);
+    const handleMouseMove = (event) => {
+        setMousePosition({ x: event.clientX, y: event.clientY });
+    };
 
     const [showPopup, setShowPopup] = useState(true);
     const handleClose = () => {
@@ -427,6 +438,31 @@ const Time = () => {
                 </div>
                 <div className="timeheading rightcontentss"></div>
             </div>
+            {popover && (
+                <div
+                    className="thepopover"
+                    style={{
+                        top: mousePosition.y,
+                        left: mousePosition.x + 30,
+                    }}
+                >
+                    <p>
+                        {popoverUser.name &&
+                            popoverUser.name.substr(0, 25) +
+                                `${popoverUser.name.length > 25 && "..."}`}
+                    </p>
+                    <p>
+                        <b>Start : </b>
+                        {popoverUser.data.start &&
+                            popoverUser.data.start.substr(-5)}
+                    </p>
+                    <p>
+                        <b>End : </b>
+                        {popoverUser.data.end &&
+                            popoverUser.data.end.substr(-5)}
+                    </p>
+                </div>
+            )}
 
             {!showPopup && (
                 <Popup title="Bereitschaftszeit anlegen" onClose={handleClose}>
@@ -561,104 +597,163 @@ const Time = () => {
                                                                 )}`;
 
                                                                 if (
-                                                                    !firstSelect
+                                                                    !inAlreadyBooking
                                                                 ) {
-                                                                    setFirstSelect(
-                                                                        hour
-                                                                    );
-                                                                    setSelectedTheGroup(
-                                                                        timetable.group
-                                                                    );
-                                                                } else {
-                                                                    setEndSelect(
-                                                                        hour
-                                                                    );
-
-                                                                    // console.log(
-                                                                    //     "firstSelect",
-                                                                    //     firstSelect,
-                                                                    //     endSelect
-                                                                    // );
-                                                                }
-
-                                                                if (
-                                                                    firstSelect
-                                                                ) {
-                                                                    const selectedHours =
-                                                                        eachHourOfInterval(
-                                                                            {
-                                                                                start:
-                                                                                    firstSelect <
-                                                                                    hour
-                                                                                        ? firstSelect
-                                                                                        : hour,
-                                                                                end:
-                                                                                    firstSelect >
-                                                                                    hour
-                                                                                        ? firstSelect
-                                                                                        : hour,
-                                                                            }
+                                                                    if (
+                                                                        !firstSelect
+                                                                    ) {
+                                                                        setFirstSelect(
+                                                                            hour
+                                                                        );
+                                                                        setSelectedTheGroup(
+                                                                            timetable.group
+                                                                        );
+                                                                    } else {
+                                                                        setEndSelect(
+                                                                            hour
                                                                         );
 
-                                                                    const selectedArr =
-                                                                        selectedHours?.map(
-                                                                            (
-                                                                                item
-                                                                            ) =>
-                                                                                `${format(
-                                                                                    item,
-                                                                                    "MM-dd-yyyy kk:mm"
-                                                                                )}`
-                                                                        );
-
-                                                                    setSelectedSchedule(
-                                                                        selectedArr
-                                                                    );
-
-                                                                    // console.log(
-                                                                    //     "selectedArr",
-                                                                    //     selectedArr
-                                                                    // );
+                                                                        // console.log(
+                                                                        //     "firstSelect",
+                                                                        //     firstSelect,
+                                                                        //     endSelect
+                                                                        // );
+                                                                    }
 
                                                                     if (
-                                                                        timetable.group ==
-                                                                        "a"
+                                                                        firstSelect
                                                                     ) {
-                                                                        setGroupA(
+                                                                        const selectedHours =
+                                                                            eachHourOfInterval(
+                                                                                {
+                                                                                    start:
+                                                                                        firstSelect <
+                                                                                        hour
+                                                                                            ? firstSelect
+                                                                                            : hour,
+                                                                                    end:
+                                                                                        firstSelect >
+                                                                                        hour
+                                                                                            ? firstSelect
+                                                                                            : hour,
+                                                                                }
+                                                                            );
+
+                                                                        const selectedArr =
+                                                                            selectedHours?.map(
+                                                                                (
+                                                                                    item
+                                                                                ) =>
+                                                                                    `${format(
+                                                                                        item,
+                                                                                        "MM-dd-yyyy kk:mm"
+                                                                                    )}`
+                                                                            );
+
+                                                                        setSelectedSchedule(
                                                                             selectedArr
                                                                         );
-                                                                    } else if (
-                                                                        timetable.group ==
-                                                                        "b"
-                                                                    ) {
-                                                                        setGroupB(
-                                                                            selectedArr
+
+                                                                        // console.log(
+                                                                        //     "selectedArr",
+                                                                        //     selectedArr
+                                                                        // );
+
+                                                                        if (
+                                                                            timetable.group ==
+                                                                            "a"
+                                                                        ) {
+                                                                            setGroupA(
+                                                                                selectedArr
+                                                                            );
+                                                                        } else if (
+                                                                            timetable.group ==
+                                                                            "b"
+                                                                        ) {
+                                                                            setGroupB(
+                                                                                selectedArr
+                                                                            );
+                                                                        } else if (
+                                                                            timetable.group ==
+                                                                            "d"
+                                                                        ) {
+                                                                            setGroupD(
+                                                                                selectedArr
+                                                                            );
+                                                                        } else if (
+                                                                            timetable.group ==
+                                                                            "h"
+                                                                        ) {
+                                                                            setGroupH(
+                                                                                selectedArr
+                                                                            );
+                                                                        }
+                                                                        setShowPopup(
+                                                                            false
                                                                         );
-                                                                    } else if (
-                                                                        timetable.group ==
-                                                                        "d"
-                                                                    ) {
-                                                                        setGroupD(
-                                                                            selectedArr
-                                                                        );
-                                                                    } else if (
-                                                                        timetable.group ==
-                                                                        "h"
-                                                                    ) {
-                                                                        setGroupH(
-                                                                            selectedArr
+                                                                    } else {
+                                                                        selectByGroup(
+                                                                            scheduleKey,
+                                                                            timetable.group
                                                                         );
                                                                     }
-                                                                    setShowPopup(
-                                                                        false
-                                                                    );
                                                                 } else {
-                                                                    selectByGroup(
-                                                                        scheduleKey,
-                                                                        timetable.group
+                                                                    const theScheduledUser =
+                                                                        users[
+                                                                            `${inAlreadyBooking.user}`
+                                                                        ] ??
+                                                                        false;
+                                                                    console.log(
+                                                                        theScheduledUser
                                                                     );
                                                                 }
                                                             }}
+                                                            onMouseOver={(
+                                                                e
+                                                            ) => {
+                                                                if (
+                                                                    inAlreadyBooking
+                                                                ) {
+                                                                    handleMouseMove(
+                                                                        e
+                                                                    );
+                                                                    const theScheduledUser =
+                                                                        users[
+                                                                            `${inAlreadyBooking.user}`
+                                                                        ] ??
+                                                                        false;
+
+                                                                    if (
+                                                                        theScheduledUser
+                                                                    ) {
+                                                                        setPopoverUser(
+                                                                            {
+                                                                                id: inAlreadyBooking.user,
+                                                                                name: theScheduledUser,
+                                                                                data: inAlreadyBooking,
+                                                                            }
+                                                                        );
+                                                                    }
+                                                                    console.log(
+                                                                        "inAlreadyBooking",
+                                                                        inAlreadyBooking
+                                                                    );
+
+                                                                    setPopover(
+                                                                        true
+                                                                    );
+                                                                }
+                                                            }}
+                                                            // onMouseOut={(e) => {
+                                                            //     setTimeout(
+                                                            //         () => {
+                                                            //             setPopover(
+                                                            //                 false
+                                                            //             );
+                                                            //         },
+                                                            //         1000
+                                                            //     );
+                                                            // }}
                                                             className={classNames(
                                                                 `hour`,
                                                                 groupA.includes(

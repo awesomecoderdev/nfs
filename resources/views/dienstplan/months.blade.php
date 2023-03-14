@@ -40,11 +40,11 @@
             }
 
             /*
-                                    #dienstplan_vacation #addvacationbox
-                                    {
-                                    margin-top: 20px;
-                                    clear:both;
-                                    }*/
+                                        #dienstplan_vacation #addvacationbox
+                                        {
+                                        margin-top: 20px;
+                                        clear:both;
+                                        }*/
 
             #dienstplan_vacation .interactionBox {
                 padding-top: 20px;
@@ -105,6 +105,7 @@
         const bookdienstplan = "{{ route('dienstplan.bookdienstplan') }}";
         const bookings = @json($bookedArr);
         const staticBookings = @json($bookedStaticArr);
+        const currentUser = @json($currentUser);
     </script>
 
 

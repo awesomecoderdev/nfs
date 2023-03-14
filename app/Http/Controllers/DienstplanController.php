@@ -82,6 +82,7 @@ class DienstplanController extends Controller
             ->where("start", ">", strtotime("-1 week"))
             ->whereRaw('start + duration < ?', [strtotime("+1 week")])
             ->get();
+        $currentUser = User::select("first_name", "last_name", "id")->where("id", Auth::user()->id)->get();
 
         foreach ($bookings as $key => $booking) {
             $start = date("m-d-Y H:i", $booking->start);
@@ -114,9 +115,7 @@ class DienstplanController extends Controller
             }
         }
 
-
-
-        return view('dienstplan.months', compact("users", "bookedArr", "bookedStaticArr"));
+        return view('dienstplan.months', compact("users", "bookedArr", "bookedStaticArr", "currentUser"));
     }
 
     /**
