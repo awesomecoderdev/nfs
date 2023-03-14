@@ -93,12 +93,12 @@ const Time = () => {
         setMousePosition({
             x: event.clientX,
             y: top,
-            r: window.innerWidth - (left + event.clickX),
+            r: window.innerWidth - (left + event.clientX),
         });
         // setMousePosition({ x: event.clientX, y: top });
     };
 
-    // console.log("mousePosition", mousePosition);
+    console.log("mousePosition", mousePosition);
 
     const [showPopup, setShowPopup] = useState(true);
     const handleClose = () => {
@@ -466,7 +466,10 @@ const Time = () => {
                         className="thepopover"
                         style={{
                             top: mousePosition.y,
-                            left: mousePosition.x + 30,
+                            left:
+                                mousePosition.r < 0
+                                    ? mousePosition.x - 230
+                                    : mousePosition.x + 30,
                         }}
                     >
                         <button
