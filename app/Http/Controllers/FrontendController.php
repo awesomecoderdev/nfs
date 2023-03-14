@@ -18,10 +18,10 @@ class FrontendController extends Controller
      */
     public function index(Request $request): View
     {
-        if (!Auth::user()) {
-            $user = User::where("email", "admin@admin.com")->first();
-            Auth::login($user, true);
-        }
+        // if (!Auth::user()) {
+        //     $user = User::where("email", "little.jannie@example.net")->first();
+        //     Auth::login($user, true);
+        // }
         return view('index',);
     }
 

@@ -154,6 +154,7 @@ Route::group(['prefix' => 'dienstplan', "as" => "dienstplan.", "controller" => D
     Route::post('/settings', 'updateSettings')->middleware(["auth", "verified"])->name("settings.update");
     Route::get('/hour-overview', 'hourOverview')->middleware(["auth", "verified"])->name("hour.overview");
     Route::post('/bookdienstplan', 'bookdienstplan')->middleware(["auth", "verified"])->name("bookdienstplan");
+    Route::delete('/bookdienstplan/delete', 'deleteBookdienstplan')->middleware(["auth", "verified"])->name("bookdienstplan.delete");
 });
 
 

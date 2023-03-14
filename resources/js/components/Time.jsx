@@ -1,6 +1,10 @@
 import React, { Component, Fragment, useState, useEffect } from "react";
 import { Menu, Transition, Tab, Popover } from "@headlessui/react";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
+import {
+    ChevronLeftIcon,
+    ChevronRightIcon,
+    TrashIcon,
+} from "@heroicons/react/24/solid";
 import { de } from "date-fns/locale";
 
 import {
@@ -73,11 +77,18 @@ const Time = () => {
     const [popoverUser, setPopoverUser] = useState({
         id: null,
         name: null,
-        data: {},
     });
-    console.log("popoverUser", popoverUser);
+    const [popoverData, setPopoverData] = useState([]);
     const handleMouseMove = (event) => {
-        setMousePosition({ x: event.clientX, y: event.clientY });
+        const element = event.target;
+        const { top, left } = element.getBoundingClientRect();
+        // console.log(`Element position: ${top}px from top, ${left}px from left`);
+        // console.log(
+        //     `Element position: ${event.clientX}px from top, ${event.clientY}px from left`
+        // );
+        // setMousePosition({ x: left, y: top });
+        // setMousePosition({ x: event.clientX, y: event.clientY });
+        setMousePosition({ x: event.clientX, y: top });
     };
 
     const [showPopup, setShowPopup] = useState(true);
@@ -179,7 +190,7 @@ const Time = () => {
     }
 
     useEffect(() => {
-        console.log("selectedSchedule", selectedSchedule);
+        // console.log("selectedSchedule", selectedSchedule);
     }, [selectedSchedule, setSchedule]);
 
     function previousMonth() {
@@ -438,29 +449,76 @@ const Time = () => {
                 </div>
                 <div className="timeheading rightcontentss"></div>
             </div>
-            {popover && (
-                <div
-                    className="thepopover"
-                    style={{
-                        top: mousePosition.y,
-                        left: mousePosition.x + 30,
-                    }}
-                >
-                    <p>
-                        {popoverUser.name &&
-                            popoverUser.name.substr(0, 25) +
-                                `${popoverUser.name.length > 25 && "..."}`}
-                    </p>
-                    <p>
-                        <b>Start : </b>
-                        {popoverUser.data.start &&
-                            popoverUser.data.start.substr(-5)}
-                    </p>
-                    <p>
-                        <b>End : </b>
-                        {popoverUser.data.end &&
-                            popoverUser.data.end.substr(-5)}
-                    </p>
+
+            {((popover && isAdmin) ||
+                (popover && popoverData.user == currentUser.id)) && (
+                <div className="thepopoveroverlay">
+                    <div
+                        className="thepopover"
+                        style={{
+                            top: mousePosition.y,
+                            left: mousePosition.x + 30,
+                        }}
+                    >
+                        <button
+                            className="closethepopup"
+                            onClick={(e) => {
+                                setPopover(false);
+                            }}
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                                aria-hidden="true"
+                                className="cicon"
+                            >
+                                <path
+                                    fillRule="evenodd"
+                                    d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z"
+                                    clipRule="evenodd"
+                                ></path>
+                            </svg>
+                        </button>
+                        <p>
+                            {popoverUser.name &&
+                                popoverUser.name.substr(0, 25) +
+                                    `${popoverUser.name.length > 25 && "..."}`}
+                        </p>
+                        <p>
+                            <b>Start : </b>
+                            {popoverData.start
+                                ? popoverData.start.substr(-5)
+                                : "Loading"}
+                        </p>
+                        <p>
+                            <b>End : </b>
+                            {popoverData.end
+                                ? popoverData.end.substr(-5)
+                                : "Loading"}
+                        </p>
+                        <form action={deleteBookdienstplan} method="post">
+                            <input
+                                type="hidden"
+                                name="start"
+                                value={request?.start}
+                            />
+                            <input
+                                type="hidden"
+                                name="id"
+                                value={popoverData.id}
+                            />
+                            <input type="hidden" name="_token" value={token} />
+                            <input
+                                type="hidden"
+                                name="_method"
+                                value="DELETE"
+                            />
+                            <button type="submit">
+                                <TrashIcon className="trashicon" />
+                            </button>
+                        </form>
+                    </div>
                 </div>
             )}
 
@@ -703,14 +761,12 @@ const Time = () => {
                                                                             `${inAlreadyBooking.user}`
                                                                         ] ??
                                                                         false;
-                                                                    console.log(
-                                                                        theScheduledUser
-                                                                    );
                                                                 }
-                                                            }}
-                                                            onMouseOver={(
-                                                                e
-                                                            ) => {
+
+                                                                setPopoverData(
+                                                                    inAlreadyBooking
+                                                                );
+
                                                                 if (
                                                                     inAlreadyBooking
                                                                 ) {
@@ -730,20 +786,49 @@ const Time = () => {
                                                                             {
                                                                                 id: inAlreadyBooking.user,
                                                                                 name: theScheduledUser,
-                                                                                data: inAlreadyBooking,
                                                                             }
                                                                         );
                                                                     }
-                                                                    console.log(
-                                                                        "inAlreadyBooking",
-                                                                        inAlreadyBooking
-                                                                    );
 
                                                                     setPopover(
                                                                         true
                                                                     );
                                                                 }
                                                             }}
+                                                            // onMouseOver={(
+                                                            //     e
+                                                            // ) => {
+                                                            //     if (
+                                                            //         inAlreadyBooking
+                                                            //     ) {
+                                                            //         handleMouseMove(
+                                                            //             e
+                                                            //         );
+                                                            //         const theScheduledUser =
+                                                            //             users[
+                                                            //                 `${inAlreadyBooking.user}`
+                                                            //             ] ??
+                                                            //             false;
+
+                                                            //         if (
+                                                            //             theScheduledUser
+                                                            //         ) {
+                                                            //             setPopoverUser(
+                                                            //                 {
+                                                            //                     id: inAlreadyBooking.user,
+                                                            //                     name: theScheduledUser,
+                                                            //                 }
+                                                            //             );
+                                                            //             setPopoverData(
+                                                            //                 inAlreadyBooking
+                                                            //             );
+                                                            //         }
+
+                                                            //         setPopover(
+                                                            //             true
+                                                            //         );
+                                                            //     }
+                                                            // }}
                                                             // onMouseOut={(e) => {
                                                             //     setTimeout(
                                                             //         () => {

@@ -40,11 +40,11 @@
             }
 
             /*
-                                        #dienstplan_vacation #addvacationbox
-                                        {
-                                        margin-top: 20px;
-                                        clear:both;
-                                        }*/
+                                                        #dienstplan_vacation #addvacationbox
+                                                        {
+                                                        margin-top: 20px;
+                                                        clear:both;
+                                                        }*/
 
             #dienstplan_vacation .interactionBox {
                 padding-top: 20px;
@@ -103,11 +103,12 @@
         var ftop = (window.innerHeight / 2) - (320 / 2);
         var fleft = (window.innerWidth / 2) - (320 / 2);
         const bookdienstplan = "{{ route('dienstplan.bookdienstplan') }}";
+        const deleteBookdienstplan = "{{ route('dienstplan.bookdienstplan.delete') }}";
+
         const bookings = @json($bookedArr);
         const staticBookings = @json($bookedStaticArr);
         const currentUser = @json($currentUser);
     </script>
-
 
     <div class="container">
         <div class="row">

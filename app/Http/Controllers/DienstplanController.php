@@ -82,11 +82,12 @@ class DienstplanController extends Controller
             ->where("start", ">", strtotime("-1 week"))
             ->whereRaw('start + duration < ?', [strtotime("+1 week")])
             ->get();
-        $currentUser = User::select("first_name", "last_name", "id")->where("id", Auth::user()->id)->get();
+        $currentUser = User::select("first_name", "last_name", "id")->where("id", Auth::user()->id)->first();
 
         foreach ($bookings as $key => $booking) {
-            $start = date("m-d-Y H:i", $booking->start);
-            $end = date("m-d-Y H:i", $booking->start +  $booking->duration);
+            $start = date("M-d-Y H:i", $booking->start);
+            $end = date("M-d-Y H:i", $booking->start +  $booking->duration);
+
             $hours = $this->getHoursArray($start, $end);
 
             foreach ($hours as $hour) {
@@ -126,8 +127,8 @@ class DienstplanController extends Controller
         $hours = [];
 
         // Convert start and end times to DateTime objects
-        $startTime =  DateTime::createFromFormat('m-d-Y h:i', $start);
-        $endTime = DateTime::createFromFormat('m-d-Y h:i', $end);
+        $startTime =  DateTime::createFromFormat('M-d-Y H:i', $start);
+        $endTime = DateTime::createFromFormat('M-d-Y H:i', $end);
 
         // Iterate over the hours between the start and end times
         while ($startTime <= $endTime) {
@@ -888,14 +889,34 @@ class DienstplanController extends Controller
         $hours = $request->hours;
         $col = $request->col;
         $maintainer = $request->user;
+        $months = array(
+            '01' => 'Jan',
+            '02' => 'Feb',
+            '03' => 'Mar',
+            '04' => 'Apr',
+            '05' => 'May',
+            '06' => 'Jun',
+            '07' => 'Jul',
+            '08' => 'Aug',
+            '09' => 'Sep',
+            '10' => 'Oct',
+            '11' => 'Nov',
+            '12' => 'Dec'
+        );
+
 
         try {
             $start = current($hours);
             $start = str_replace("24:00", "00:00", $start);
             $end = end($hours);
+            $endexpload = explode("-", $end);
+            $endmonth = $months[$endexpload[0]];
+            $end = substr($end, 2);
+            $endofmonth = "$endmonth$end";
 
-            $start = DateTime::createFromFormat('m-d-Y h:i', "$start")->getTimestamp();
-            $end = DateTime::createFromFormat('m-d-Y h:i', "$end")->getTimestamp();
+
+            $start = DateTime::createFromFormat('m-d-Y H:i', "$start")->getTimestamp();
+            $end = DateTime::createFromFormat('M-d-Y H:i', "$endofmonth")->getTimestamp();
 
             $duration = $end - $start;
             $total = $start + $duration;
@@ -944,19 +965,32 @@ class DienstplanController extends Controller
                 ["alert" => "Es kam zu Überschneidungen mit anderen Bereitschafts- oder Urlaubszeiten. Die Bereitschaftszeit wurde nicht angelegt."]
             );
         }
+    }
 
-
-
-        // foreach ($request->hours as $key => $hour) {
-        //     echo "<pre>";
-        //     print_r(DateTime::createFromFormat('m-d-Y h:i', $hour)->getTimestamp());
-        //     echo "</pre>";
-        // }
-
-
-        die;
-        // dd($request->all());
-
-        // $user = DienstplanBooked::create($request->all());
+    public function deleteBookdienstplan(Request $request)
+    {
+        try {
+            $booking = DienstplanBooked::where("id", $request->id)->first();
+            if (Auth::user()->admin()) {
+                $booking->delete();
+            } else {
+                if ($booking->maintainer == Auth::user()->id) {
+                    $booking->delete();
+                } else {
+                    return redirect()->route('dienstplan.months', ["start" => request("start", date("d-m-yyyy"))])->withErrors(
+                        ["alert" => "Etwas ist schief gelaufen, bitte versuchen Sie es nach einiger Zeit erneut."]
+                    );
+                }
+            }
+            return redirect()->route('dienstplan.months', ["start" => request("start", date("d-m-yyyy"))])->with(
+                "success",
+                "Buchung erfolgreich gelöscht."
+            );
+        } catch (\Exception $e) {
+            // throw $e;
+            return redirect()->route('dienstplan.months', ["start" => request("start", date("d-m-yyyy"))])->withErrors(
+                ["alert" => "Etwas ist schief gelaufen, bitte versuchen Sie es nach einiger Zeit erneut."]
+            );
+        }
     }
 }
