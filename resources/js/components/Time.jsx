@@ -72,7 +72,7 @@ const Time = () => {
     const [alreadyStaticBooked, setAlreadyStaticBooked] = useState(
         staticBookings ?? []
     );
-    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0, r: 0 });
     const [popover, setPopover] = useState(false);
     const [popoverUser, setPopoverUser] = useState({
         id: null,
@@ -82,15 +82,23 @@ const Time = () => {
     const [popoverData, setPopoverData] = useState([]);
     const handleMouseMove = (event) => {
         const element = event.target;
-        const { top, left } = element.getBoundingClientRect();
+        const { top, left, right } = element.getBoundingClientRect();
         // console.log(`Element position: ${top}px from top, ${left}px from left`);
         // console.log(
         //     `Element position: ${event.clientX}px from top, ${event.clientY}px from left`
         // );
         // setMousePosition({ x: left, y: top });
         // setMousePosition({ x: event.clientX, y: event.clientY });
-        setMousePosition({ x: event.clientX, y: top });
+
+        setMousePosition({
+            x: event.clientX,
+            y: top,
+            r: window.innerWidth - (left + event.clickX),
+        });
+        // setMousePosition({ x: event.clientX, y: top });
     };
+
+    // console.log("mousePosition", mousePosition);
 
     const [showPopup, setShowPopup] = useState(true);
     const handleClose = () => {
@@ -761,13 +769,13 @@ const Time = () => {
                                                                 } else {
                                                                     const theScheduledUser =
                                                                         users[
-                                                                            `${inAlreadyBooking.user}`
+                                                                            `${inAlreadyBooking?.user}`
                                                                         ] ??
                                                                         false;
                                                                 }
                                                                 const theScheduledUser =
                                                                     users[
-                                                                        `${inAlreadyBooking.user}`
+                                                                        `${inAlreadyBooking?.user}`
                                                                     ] ?? false;
 
                                                                 setTheClickedUser(
@@ -777,7 +785,7 @@ const Time = () => {
                                                                     inAlreadyBooking
                                                                 );
                                                                 setPopoverUser({
-                                                                    id: inAlreadyBooking.user,
+                                                                    id: inAlreadyBooking?.user,
                                                                     name:
                                                                         theScheduledUser.name ??
                                                                         theScheduledUser,
@@ -795,7 +803,7 @@ const Time = () => {
                                                                     ) {
                                                                         setPopoverUser(
                                                                             {
-                                                                                id: inAlreadyBooking.user,
+                                                                                id: inAlreadyBooking?.user,
                                                                                 name:
                                                                                     theScheduledUser.name ??
                                                                                     theScheduledUser,
@@ -808,50 +816,6 @@ const Time = () => {
                                                                     );
                                                                 }
                                                             }}
-                                                            // onMouseOver={(
-                                                            //     e
-                                                            // ) => {
-                                                            //     if (
-                                                            //         inAlreadyBooking
-                                                            //     ) {
-                                                            //         handleMouseMove(
-                                                            //             e
-                                                            //         );
-                                                            //         const theScheduledUser =
-                                                            //             users[
-                                                            //                 `${inAlreadyBooking.user}`
-                                                            //             ] ??
-                                                            //             false;
-
-                                                            //         if (
-                                                            //             theScheduledUser
-                                                            //         ) {
-                                                            //             setPopoverUser(
-                                                            //                 {
-                                                            //                     id: inAlreadyBooking.user,
-                                                            //                     name: theScheduledUser,
-                                                            //                 }
-                                                            //             );
-                                                            //             setPopoverData(
-                                                            //                 inAlreadyBooking
-                                                            //             );
-                                                            //         }
-
-                                                            //         setPopover(
-                                                            //             true
-                                                            //         );
-                                                            //     }
-                                                            // }}
-                                                            // onMouseOut={(e) => {
-                                                            //     setTimeout(
-                                                            //         () => {
-                                                            //             setPopover(
-                                                            //                 false
-                                                            //             );
-                                                            //         },
-                                                            //         1000
-                                                            //     );
-                                                            // }}
                                                             className={classNames(
                                                                 `hour`,
                                                                 groupA.includes(
