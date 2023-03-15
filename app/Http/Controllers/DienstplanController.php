@@ -76,11 +76,19 @@ class DienstplanController extends Controller
         }
         $users = $users->pluck("name", "id");
 
+        $start = strtotime(request("start", "now"));
+        $start = $start ?? strtotime("now");
+        $startOfMonth = $start - (30 * 86000);
+        $endOfMonth = $start + (30 * 86000);
+
+        // dd(date("d-m-Y", $start), date("d-m-Y", $endOfMonth), date("d-m-Y", $startOfMonth),);
+
         $bookedArr = [];
         $bookedStaticArr = [];
         $bookings = DienstplanBooked::with(["user"])->select("id", "col", "start", "duration", "maintainer")
-            ->where("start", ">", strtotime("-1 week"))
-            ->whereRaw('start + duration < ?', [strtotime("+1 week")])
+            ->where("start", ">", $startOfMonth)
+            ->whereRaw('start + duration < ?', [$endOfMonth])
+            // ->toSql();
             ->get();
         $currentUser = User::select("first_name", "last_name", "id")->where("id", Auth::user()->id)->first();
 
@@ -101,7 +109,7 @@ class DienstplanController extends Controller
                     "start" => $start,
                     "end" => $end,
                     "hours" => (count($hours) - 1),
-                    "name" => $booking->user->name,
+                    "name" => $booking->user->fullname(),
                 ];
 
                 $statickey = "$hour";
@@ -113,7 +121,7 @@ class DienstplanController extends Controller
                     "start" => $start,
                     "end" => $end,
                     "hours" => (count($hours) - 1),
-                    "name" => $booking->user->name,
+                    "name" => $booking->user->fullname(),
                 ];
             }
         }
@@ -949,13 +957,13 @@ class DienstplanController extends Controller
                         "modified" => Carbon::now(),
                     ]);
                 }
-                return redirect()->route('dienstplan.months', ["start" => request("start", date("d-m-yyyy"))])->with(
+                return redirect()->route('dienstplan.months', ["start" => request("start", date("d-m-yyyy")), "wid" => $this->wid])->with(
                     "success",
                     "Der Urlaub wurde erfolgreich gespeichert."
                 );
             } catch (\Exception $e) {
                 // throw $e;
-                return redirect()->route('dienstplan.months', ["start" => request("start", date("d-m-yyyy"))])->withErrors(
+                return redirect()->route('dienstplan.months', ["start" => request("start", date("d-m-yyyy")), "wid" => $this->wid])->withErrors(
                     ["alert" => "Der buchbare Bereich konnte nicht in die Datenbank übertragen werden."]
                 );
             }
@@ -963,7 +971,7 @@ class DienstplanController extends Controller
             dd($request->all(), $start, $end, $duration, $total);
         } catch (\Exception $e) {
             // throw $e;
-            return redirect()->route('dienstplan.months', ["start" => request("start", date("d-m-yyyy"))])->withErrors(
+            return redirect()->route('dienstplan.months', ["start" => request("start", date("d-m-yyyy")), "wid" => $this->wid])->withErrors(
                 ["alert" => "Es kam zu Überschneidungen mit anderen Bereitschafts- oder Urlaubszeiten. Die Bereitschaftszeit wurde nicht angelegt."]
             );
         }
@@ -979,18 +987,18 @@ class DienstplanController extends Controller
                 if ($booking->maintainer == Auth::user()->id) {
                     $booking->delete();
                 } else {
-                    return redirect()->route('dienstplan.months', ["start" => request("start", date("d-m-yyyy"))])->withErrors(
+                    return redirect()->route('dienstplan.months', ["start" => request("start", date("d-m-yyyy")), "wid" => $this->wid])->withErrors(
                         ["alert" => "Etwas ist schief gelaufen, bitte versuchen Sie es nach einiger Zeit erneut."]
                     );
                 }
             }
-            return redirect()->route('dienstplan.months', ["start" => request("start", date("d-m-yyyy"))])->with(
+            return redirect()->route('dienstplan.months', ["start" => request("start", date("d-m-yyyy")), "wid" => $this->wid])->with(
                 "success",
                 "Buchung erfolgreich gelöscht."
             );
         } catch (\Exception $e) {
             // throw $e;
-            return redirect()->route('dienstplan.months', ["start" => request("start", date("d-m-yyyy"))])->withErrors(
+            return redirect()->route('dienstplan.months', ["start" => request("start", date("d-m-yyyy")), "wid" => $this->wid])->withErrors(
                 ["alert" => "Etwas ist schief gelaufen, bitte versuchen Sie es nach einiger Zeit erneut."]
             );
         }
