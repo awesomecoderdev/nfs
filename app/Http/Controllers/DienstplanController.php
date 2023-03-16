@@ -15,6 +15,8 @@ use App\Models\DienstplanConfig;
 use App\Models\DienstplanUserProps;
 use Illuminate\Validation\Rule;
 use App\Models\User;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Http\Response as JsonResponse;
 use Carbon\Carbon;
 use DateTime;
 
@@ -51,10 +53,229 @@ class DienstplanController extends Controller
             $end = strtotime("tomorrow", intval($request->end));
         }
 
-        return DienstplanBooked::with(["user"])->orderBy('start')->limit(100)->get();
+        // return DienstplanBooked::with(["user"])->orderBy('start')->limit(100)->get();
 
         return view('dienstplan.overview', compact("start", "end",));
     }
+
+    public function overview($_start = null, $_end = null, $_currentUserOnly = false)
+    {
+        $this->workerOnly();
+        $this->includeJs('jquery/jquery1.10.2/jquery');
+        $this->includeJs('jquery/ui-1.11.4/jquery-ui.min');
+        $this->includeCss('jquery/jquery-ui-1.11.4.custom/jquery-ui.min');
+        $this->includeCss('jquery/jquery-ui-1.11.4.custom/jquery-ui.structure.min');
+        $this->includeCss('jquery/jquery-ui-1.11.4.custom/jquery-ui.theme.min');
+
+        $start = strtotime("midnight");
+        $end = strtotime("+1 month", strtotime("tomorrow"));
+
+        if ($_start != null)
+            $start = intval($_start);
+        if ($_end != null)
+            $end = strtotime("tomorrow", intval($_end));
+
+        $config = $this->DienstplanConfig->find('first', array('conditions' => array('id' => $this->webmodul_id)));
+        //$atom = intval($config['DienstplanConfig']['dienst_time_h'])*60*60;
+
+        $startStamp = $start;
+        $endStamp = $end;
+
+        $userIds = array();
+        $cols = array();
+        $table = array();
+
+        $conds = array(
+            'OR' => array(
+                array(
+                    'OR' => array(
+                        array(
+                            array('start >=' => $startStamp),
+                            array('start <=' => $endStamp)
+                        ),
+                        array(
+                            array('end >=' => $startStamp),
+                            array('end <=' => $endStamp)
+                        )
+                    )
+                ),
+                array(
+                    array('start <=' => $startStamp),
+                    array('end >=' => $endStamp)
+                )
+            ),
+            'wid' => $this->webmodul_id
+        );
+        if ($_currentUserOnly && $this->webmodul_id == 441)
+            $conds['maintainer'] = $this->Session->read('User.id');
+
+        $userId = $this->Session->read('User.id');
+
+        $eventsRaw = $this->DienstplanBooked->find('all', array(
+            'conditions' => $conds,
+            'order' => array('start')
+        ));
+
+        $events = $this->splitEventsByDays($eventsRaw, $startStamp, $endStamp);
+
+        // events zusammenfassen
+        $cmpEvents = array();
+        $prevEvents = array('0' => null, '1' => null, '2' => null, '3' => null);
+        foreach ($events as $event) {
+            if ($prevEvents[$event['DienstplanBooked']['col']]) {
+                $prevEvent = $prevEvents[$event['DienstplanBooked']['col']];
+                $centerPre = $prevEvent['DienstplanBooked']['start'] + ($prevEvent['DienstplanBooked']['duration'] / 2);
+                $centerEv = $event['DienstplanBooked']['start'] + ($event['DienstplanBooked']['duration'] / 2);
+                if (
+                    $prevEvent['DienstplanBooked']['maintainer'] == $event['DienstplanBooked']['maintainer'] &&
+                    $prevEvent['DienstplanBooked']['end'] == $event['DienstplanBooked']['start'] &&
+                    date('d', $centerPre) == date('d', $centerEv)
+                ) {
+                    $prevEvent['DienstplanBooked']['end'] = $event['DienstplanBooked']['end'];
+                    $prevEvents[$event['DienstplanBooked']['col']] = $prevEvent;
+                } else {
+                    $cmpEvents[] = $prevEvents[$event['DienstplanBooked']['col']];
+                    $prevEvents[$event['DienstplanBooked']['col']] = null;
+                }
+            }
+
+            if (!$prevEvents[$event['DienstplanBooked']['col']])
+                $prevEvents[$event['DienstplanBooked']['col']] = $event;
+        }
+        foreach ($prevEvents as $key => $event) {
+            $cmpEvents[] = $event;
+        }
+
+        // events für view vorbereiten
+        $localWeekDay = array('1' => 'Mo', '2' => 'Di', '3' => 'Mi', '4' => 'Do', '5' => 'Fr', '6' => 'Sa', '7' => 'So');
+        foreach ($cmpEvents as $event) {
+            $startDate = $event['DienstplanBooked']['start'];
+            $endDate = $event['DienstplanBooked']['end'];
+
+            if ($startDate == "")
+                continue;
+
+            $timeKey = strtotime('midnight', $startDate);
+            $keyInformation = array();
+            if (!isset($table[$timeKey])) {
+                $keyInformation['date'] = $localWeekDay[date('N', $startDate)] . date(' d.m', $startDate);
+            }
+            $timeTo = date('H:i', $endDate);
+            if ($timeTo == '00:00')
+                $timeTo = '24:00';
+            $time = date('H:i', $startDate) . ' - ' . $timeTo;
+            $user = $this->DienstplanUser->findById($event['DienstplanBooked']['maintainer']);
+            if ($user != false) {
+                $telInfo = '';
+                $conTyp = '';
+                if ($user['DienstplanProps']['pager'] != '') {
+                    $telInfo = $user['DienstplanProps']['pager'];
+                    $contTyp = 'Pager';
+                } else if ($user['DienstplanUser']['mobil'] != '') {
+                    $telInfo = $user['DienstplanUser']['mobil'];
+                    $contTyp = 'Mobil';
+                } else {
+                    $telInfo = $user['DienstplanUser']['telefon'];
+                    $contTyp = 'Telefon';
+                }
+
+                if (!isset($table[$timeKey])) {
+                    $keyInformation[$event['DienstplanBooked']['col']][$time]['start'] = $startDate;
+                    $keyInformation[$event['DienstplanBooked']['col']][$time]['end'] = $endDate;
+                    $keyInformation[$event['DienstplanBooked']['col']][$time]['id'] = $user['DienstplanUser']['id'];
+                    $keyInformation[$event['DienstplanBooked']['col']][$time]['name'] = $user['DienstplanUser']['nachname'] . ', ' . $user['DienstplanUser']['vorname'];
+                    $keyInformation[$event['DienstplanBooked']['col']][$time]['tel'] = $telInfo;
+                    $keyInformation[$event['DienstplanBooked']['col']][$time]['cont_typ'] = $contTyp;
+                } else {
+                    $table[$timeKey][$event['DienstplanBooked']['col']][$time]['start'] = $startDate;
+                    $table[$timeKey][$event['DienstplanBooked']['col']][$time]['end'] = $endDate;
+                    $table[$timeKey][$event['DienstplanBooked']['col']][$time]['id'] = $user['DienstplanUser']['id'];
+                    $table[$timeKey][$event['DienstplanBooked']['col']][$time]['name'] = $user['DienstplanUser']['nachname'] . ', ' . $user['DienstplanUser']['vorname'];
+                    $table[$timeKey][$event['DienstplanBooked']['col']][$time]['tel'] = $telInfo;
+                    $table[$timeKey][$event['DienstplanBooked']['col']][$time]['cont_typ'] = $contTyp;
+                }
+            }
+
+            if ($user != false) {
+                if (!isset($table[$timeKey]))
+                    $table[$timeKey] = $keyInformation;
+            }
+        }
+
+        // Filter rows without current user
+        if ($_currentUserOnly && $this->webmodul_id != 441) {
+            foreach ($table as $timekey => &$day) {
+                $usertimepairs = array();
+                foreach ($day as &$col) {
+                    foreach ($col as &$timeOnCol) {
+                        if ($timeOnCol['id'] == $userId)
+                            $usertimepairs[] = array($timeOnCol['start'], $timeOnCol['end']);
+                    }
+                }
+                if (count($usertimepairs) > 0) {
+                    foreach ($day as &$col) {
+                        foreach ($col as $timekey => &$timeOnCol) {
+                            if ($timeOnCol['id'] != $userId) {
+                                $inUserTime = false;
+                                foreach ($usertimepairs as $pair) {
+                                    if (
+                                        $pair[0] < $timeOnCol['start'] && $timeOnCol['start'] < $pair[1] ||
+                                        $pair[0] < $timeOnCol['end'] && $timeOnCol['start'] < $pair[1] ||
+                                        $timeOnCol['start'] < $pair[0] && $pair[0] < $timeOnCol['end'] ||
+                                        $timeOnCol['start'] < $pair[1] && $pair[1] < $timeOnCol['end'] ||
+                                        $timeOnCol['start'] == $pair[0] && $pair[1] == $timeOnCol['end']
+                                    ) {
+                                        $inUserTime = true;
+                                        break;
+                                    }
+                                }
+                                if (!$inUserTime) {
+                                    unset($col[$timekey]);
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    unset($table[$timekey]);
+                }
+            }
+        }
+
+        ksort($table);
+
+        $r1Set = false;
+        $r2Set = false;
+        $r3Set = false;
+        $r4Set = false;
+        if ($config['DienstplanConfig']['col_a'] == 1)
+            $r1Set = true;
+        if ($config['DienstplanConfig']['col_b'] == 1)
+            $r2Set = true;
+        if ($config['DienstplanConfig']['col_c'] == 1)
+            $r3Set = true;
+        if ($config['DienstplanConfig']['col_d'] == 1)
+            $r4Set = true;
+
+        $this->set('r1Set', $r1Set);
+        $this->set('r2Set', $r2Set);
+        $this->set('r3Set', $r3Set);
+        $this->set('r4Set', $r4Set);
+
+        // echo '<pre>';
+        // print_r($table);
+        // echo '</pre>';
+        // die;
+        $this->set('table', $table);
+        $this->set('start', $start);
+        $this->set('end', $end);
+        $this->set('currentUserOnly', $_currentUserOnly);
+
+        // Extrawurst für Bergstrasse
+        if ($this->webmodul_id == 441) {
+            $body = $this->render('overview_bergstrasse');
+        }
+    }
+
 
     /**
      * Display the dienstplanAktuell page.
@@ -70,9 +291,9 @@ class DienstplanController extends Controller
     public function months(Request $request) //: View
     {
         if (Auth::user()->admin()) {
-            $users = User::select("first_name", "last_name", "id")->whereNot("id", Auth::user()->id)->get();
+            $users = User::select("first_name", "last_name", "username", "id")->whereNot("id", Auth::user()->id)->get();
         } else {
-            $users = User::select("first_name", "last_name", "id")->where("id", Auth::user()->id)->get();
+            $users = User::select("first_name", "last_name", "username", "id")->where("id", Auth::user()->id)->get();
         }
         $users = $users->pluck("name", "id");
 
@@ -81,14 +302,11 @@ class DienstplanController extends Controller
         $startOfMonth = $start - (30 * 86000);
         $endOfMonth = $start + (30 * 86000);
 
-        // dd(date("d-m-Y", $start), date("d-m-Y", $endOfMonth), date("d-m-Y", $startOfMonth),);
-
         $bookedArr = [];
         $bookedStaticArr = [];
         $bookings = DienstplanBooked::with(["user"])->select("id", "col", "start", "duration", "maintainer")
             ->where("start", ">", $startOfMonth)
             ->whereRaw('start + duration < ?', [$endOfMonth])
-            // ->toSql();
             ->get();
         $currentUser = User::select("first_name", "last_name", "id")->where("id", Auth::user()->id)->first();
 
@@ -109,7 +327,7 @@ class DienstplanController extends Controller
                     "start" => $start,
                     "end" => $end,
                     "hours" => (count($hours) - 1),
-                    "name" => $booking->user->fullname(),
+                    "name" => $booking->user ? $booking->user->fullname() : "Unknown",
                 ];
 
                 $statickey = "$hour";
@@ -121,11 +339,10 @@ class DienstplanController extends Controller
                     "start" => $start,
                     "end" => $end,
                     "hours" => (count($hours) - 1),
-                    "name" => $booking->user->fullname(),
+                    "name" => $booking->user ? $booking->user->fullname() : "Unknown",
                 ];
             }
         }
-
         return view('dienstplan.months', compact("users", "bookedArr", "bookedStaticArr", "currentUser"));
     }
 
@@ -222,7 +439,7 @@ class DienstplanController extends Controller
             'end.different' => 'Das Enddatum muss sich vom Startdatum unterscheiden.',
         ]);
 
-        dd($validatedData);
+        // dd($request->all());
 
         $user_id = Auth::user()->admin() ? intval($request->input("user_id", Auth::user()->id)) : Auth::user()->id;
 
@@ -238,53 +455,18 @@ class DienstplanController extends Controller
 
         $start = $pStart->getTimestamp();
         $end = $pEnd->getTimestamp();
-        $wid = $request->input("webmodul_id", 439);
+        $wid = $request->input("webmodul_id", $this->wid);
         $duration = $end - $start;
 
-
-
-        if (1 == 1) {
-
-
-            //     $vacation = $this->data;
-            //     $pStart = DateTime::createFromFormat('Y-m-d', $vacation['DienstplanVacation']['start']);
-            //     $pEnd = DateTime::createFromFormat('Y-m-d', $vacation['DienstplanVacation']['end']);
-            //     if ($pStart->getTimestamp() > $pEnd->getTimestamp()) {
-            //         $t = $pStart;
-            //         $pStart = $pEnd;
-            //         $pEnd = $t;
-            //     }
-            //     $pStart->setTime(0, 0, 0);
-            //     $pEnd->setTime(23, 59, 59);
-            //     $vacation['DienstplanVacation']['start'] = $pStart->getTimestamp();
-            //     $vacation['DienstplanVacation']['end'] = $pEnd->getTimestamp();
-
-            //     $vacation['DienstplanVacation']['user_id'] = $uid;
-            //     $vacation['DienstplanVacation']['wid'] = $this->webmodul_id;
-            //     $duration = $vacation['DienstplanVacation']['end'] - $vacation['DienstplanVacation']['start'];
-            //     $vacation['DienstplanVacation']['duration'] = $duration;
-
-            //     // echo '<pre>';
-            //     // print_r($vacation);
-            //     // var_dump($this->DienstplanVacation->isBookable($vacation));
-            //     // echo '</pre>';
-            //     // die;
-        }
-
-        if (!$this->mergeWithExisting("")) {
-            return redirect()->back()->with("alert", 'Urlaub/Auszeit konnte nicht gespeichert werden');
-        }
-
-        if (!$this->isBookable("")) {
-            return redirect()->back()->with("alert", "Bei der gew&auml;hlten Urlaubszeit kommt es zu &Uuml;berschneidungen mit bereits gebuchten Bereitschaftszeiten.");
+        if (!$this->isBookable($start, $end, $wid)) {
+            return redirect()->route("dienstplan.vacation")->with("alert", "Bei der gew&auml;hlten Urlaubszeit kommt es zu &Uuml;berschneidungen mit bereits gebuchten Bereitschaftszeiten.");
         } else {
-            if (!$this->mergeWithExisting("")) {
-                return redirect()->back()->with("alert", 'Abwesenheit konnte nicht gespeichert werden');
+            if (!$this->mergeWithExisting($start, $end, $wid, $request)) {
+                return redirect()->route("dienstplan.vacation")->with("alert", 'Abwesenheit konnte nicht gespeichert werden');
+            } else {
+                return redirect()->route("dienstplan.vacation")->with("success", 'Abwesenheit ist gespeichert.');
             }
         }
-
-
-        dd(compact("user_id", "start", "end", "duration", "wid"));
     }
 
 
@@ -328,10 +510,22 @@ class DienstplanController extends Controller
      *
      * @return  boolval
      */
-    public function isBookable($data)
+    public function isBookable($start, $end, $wid)
     {
-        return true;
-        return false;
+
+        $theVacations = DienstplanVacation::where("wid", $wid)
+            ->where("start", ">=", $start)
+            ->where("wid", $wid)
+            ->whereRaw('start + duration < ?', [$end])
+            ->get();
+
+        return $theVacations->isEmpty();
+
+
+
+
+
+
         // $DienstplanBooked = ClassRegistry::init('DienstplanBooked');
         // $start = $data['DienstplanVacation']['start'];
         // $end = $data['DienstplanVacation']['end']+1;
@@ -381,70 +575,66 @@ class DienstplanController extends Controller
     // 	) );
     // 	return $events;
     // }
-    public function mergeWithExisting($data)
+
+
+
+    public function mergeWithExisting($start, $end, $wid, $request)
     {
-        return false;
+        $duration = $end - $start;
+
+        $events = DienstplanVacation::with(["user"])
+            ->where("wid", $wid)
+            ->where("user_id", $request->user_id)
+            ->where("type", $request->type)
+            ->where("start", ">=", $start)
+            ->whereRaw('start + duration < ?', [$end])
+            ->get();
+
+        if (!empty($events)) {
+            $minstart = $start;
+            $maxend = $end;
+            foreach ($events as $event) {
+                $minstart = min($minstart, $event->start);
+                $maxend = max($maxend, $event->start + $event->duration);
+            }
+
+            foreach ($events as $event) {
+                $event->delete();
+            }
+
+            try {
+                $newVacation = new DienstplanVacation();
+                $newVacation->user_id = $request->user_id;
+                $newVacation->type = $request->type;
+                $newVacation->start = $minstart;
+                $newVacation->duration = $maxend - $minstart;
+                $newVacation->wid = $wid;
+                $newVacation->created = Carbon::now();
+                $newVacation->modified = Carbon::now();
+                $newVacation->save();
+                return true;
+            } catch (\Exception $e) {
+                // throw $e;
+                return false;
+            }
+        } else {
+            try {
+                $newVacation = new DienstplanVacation();
+                $newVacation->user_id = $request->user_id;
+                $newVacation->type = $request->type;
+                $newVacation->start = $start;
+                $newVacation->duration = $duration;
+                $newVacation->wid = $wid;
+                $newVacation->created = Carbon::now();
+                $newVacation->modified = Carbon::now();
+                $newVacation->save();
+                return true;
+            } catch (\Exception $e) {
+                throw $e;
+                return false;
+            }
+        }
     }
-
-
-    // public function mergeWithExisting($data)
-    // {
-    // 	$start = $data['DienstplanVacation']['start'];
-    // 	$end = $data['DienstplanVacation']['end']+1;
-
-    // 	$events = $this->find( 'all', array(
-    // 		'conditions' => array(
-    // 			'OR' => array(
-    // 				array('AND' => array(
-    // 					array('start <=' => $start),
-    // 					array('end >=' => $start)
-    // 				)),
-    // 				array('AND' => array(
-    // 					array('start <=' => $end),
-    // 					array('end >=' => $end)
-    // 				)),
-    // 				array('AND' => array(
-    // 					array('start >=' => $start),
-    // 					array('start <=' => $end)
-    // 				)),
-    // 				array('AND' => array(
-    // 					array('end >=' => $start),
-    // 					array('end <=' => $end)
-    // 				)),
-    // 				array('AND' => array(
-    // 					array('start' => $start),
-    // 					array('end' => $end)
-    // 				)),
-    // 			),
-    // 			'wid' => $data['DienstplanVacation']['wid'],
-    // 			'user_id' => $data['DienstplanVacation']['user_id'],
-    // 			'type' => $data['DienstplanVacation']['type']
-    // 		)
-    // 	) );
-
-    // 	// this is debug
-    // 	// echo 'events<pre>';
-    // 	// print_r($events);
-    // 	// echo '</pre>';
-
-
-    // 	if( !empty($events) )
-    // 	{
-    // 		$minstart = $start;
-    // 		$maxend = $data['DienstplanVacation']['end'];
-    // 		foreach( $events as $e )
-    // 		{
-    // 			$minstart = min( $minstart, $e['DienstplanVacation']['start'] );
-    // 			$maxend = max( $maxend, $e['DienstplanVacation']['end'] );
-    // 		}
-    // 		$data['DienstplanVacation']['start'] = $minstart;
-    // 		$data['DienstplanVacation']['duration'] = $maxend-$minstart;
-    // 		foreach( $events as $e )
-    // 			$this->delete($e['DienstplanVacation']['id']);
-    // 	}
-
-    // 	return $this->save($data);
-    // }
 
 
 
@@ -914,7 +1104,6 @@ class DienstplanController extends Controller
             '12' => 'Dec'
         );
 
-
         try {
             $start = current($hours);
             $start = str_replace("24:00", "00:00", $start);
@@ -931,6 +1120,8 @@ class DienstplanController extends Controller
             $duration = $end - $start;
             $total = $start + $duration;
             $total = date("d-m-Y h:i:s A", $total);
+
+
 
 
             try {
@@ -957,23 +1148,92 @@ class DienstplanController extends Controller
                         "modified" => Carbon::now(),
                     ]);
                 }
-                return redirect()->route('dienstplan.months', ["start" => request("start", date("d-m-yyyy")), "wid" => $this->wid])->with(
-                    "success",
-                    "Der Urlaub wurde erfolgreich gespeichert."
-                );
+                // return redirect()->route('dienstplan.months', ["start" => request("start", date("d-m-yyyy")), "wid" => $this->wid])->with(
+                //     "success",
+                //     "Der Urlaub wurde erfolgreich gespeichert."
+                // );
+
+
+                if (Auth::user()->admin()) {
+                    $users = User::select("first_name", "last_name", "username", "id")->whereNot("id", Auth::user()->id)->get();
+                } else {
+                    $users = User::select("first_name", "last_name", "username", "id")->where("id", Auth::user()->id)->get();
+                }
+                $users = $users->pluck("name", "id");
+
+                $start = strtotime(request("start", "now"));
+                $start = $start ?? strtotime("now");
+                $startOfMonth = $start - (30 * 86000);
+                $endOfMonth = $start + (30 * 86000);
+
+                $bookedArr = [];
+                $bookedStaticArr = [];
+                $bookings = DienstplanBooked::with(["user"])->select("id", "col", "start", "duration", "maintainer")
+                    ->where("start", ">", $startOfMonth)
+                    ->whereRaw('start + duration < ?', [$endOfMonth])
+                    ->get();
+
+                foreach ($bookings as $key => $booking) {
+                    $start = date("M-d-Y H:i", $booking->start);
+                    $end = date("M-d-Y H:i", $booking->start +  $booking->duration);
+
+                    $hours = $this->getHoursArray($start, $end);
+
+                    foreach ($hours as $hour) {
+                        $hour = str_replace("00:00", "24:00", $hour);
+                        $key = "$booking->col $hour";
+
+                        $bookedArr[$key] = [
+                            "id" => $booking->id,
+                            "col" => $booking->col,
+                            "user" => $booking->maintainer,
+                            "start" => $start,
+                            "end" => $end,
+                            "hours" => (count($hours) - 1),
+                            "name" => $booking->user ? $booking->user->fullname() : "Unknown",
+                        ];
+
+                        $statickey = "$hour";
+
+                        $bookedStaticArr[$statickey] = [
+                            "id" => $booking->id,
+                            "col" => $booking->col,
+                            "user" => $booking->maintainer,
+                            "start" => $start,
+                            "end" => $end,
+                            "hours" => (count($hours) - 1),
+                            "name" => $booking->user ? $booking->user->fullname() : "Unknown",
+                        ];
+                    }
+                }
+                return Response::json([
+                    "success" => true,
+                    'status'    => JsonResponse::HTTP_CREATED,
+                    "message" => "Der Urlaub wurde erfolgreich gespeichert.",
+                    "bookedArr" => $bookedArr,
+                    "bookedStaticArr" => $bookedStaticArr,
+                ], JsonResponse::HTTP_OK);
             } catch (\Exception $e) {
                 // throw $e;
-                return redirect()->route('dienstplan.months', ["start" => request("start", date("d-m-yyyy")), "wid" => $this->wid])->withErrors(
-                    ["alert" => "Der buchbare Bereich konnte nicht in die Datenbank übertragen werden."]
-                );
+                // return redirect()->route('dienstplan.months', ["start" => request("start", date("d-m-yyyy")), "wid" => $this->wid])->withErrors(
+                //     ["alert" => "Der buchbare Bereich konnte nicht in die Datenbank übertragen werden."]
+                // );
+                return Response::json([
+                    "success" => false,
+                    'status'    => JsonResponse::HTTP_NOT_MODIFIED,
+                    "message" => "Der buchbare Bereich konnte nicht in die Datenbank übertragen werden.",
+                ], JsonResponse::HTTP_OK);
             }
-
-            dd($request->all(), $start, $end, $duration, $total);
         } catch (\Exception $e) {
             // throw $e;
-            return redirect()->route('dienstplan.months', ["start" => request("start", date("d-m-yyyy")), "wid" => $this->wid])->withErrors(
-                ["alert" => "Es kam zu Überschneidungen mit anderen Bereitschafts- oder Urlaubszeiten. Die Bereitschaftszeit wurde nicht angelegt."]
-            );
+            // return redirect()->route('dienstplan.months', ["start" => request("start", date("d-m-yyyy")), "wid" => $this->wid])->withErrors(
+            //     ["alert" => "Es kam zu Überschneidungen mit anderen Bereitschafts- oder Urlaubszeiten. Die Bereitschaftszeit wurde nicht angelegt."]
+            // );
+            return Response::json([
+                "success" => false,
+                'status'    => JsonResponse::HTTP_NOT_MODIFIED,
+                "message" => "Es kam zu Überschneidungen mit anderen Bereitschafts- oder Urlaubszeiten. Die Bereitschaftszeit wurde nicht angelegt.",
+            ], JsonResponse::HTTP_OK);
         }
     }
 

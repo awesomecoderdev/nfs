@@ -6,7 +6,6 @@ import {
     TrashIcon,
 } from "@heroicons/react/24/solid";
 import { de } from "date-fns/locale";
-
 import {
     add,
     startOfDay,
@@ -101,9 +100,7 @@ const Time = () => {
     // console.log("mousePosition", mousePosition);
 
     const [showPopup, setShowPopup] = useState(true);
-    const handleClose = () => {
-        setShowPopup(true);
-    };
+
     const without440 = [
         // {
         //   title: "Bereitschaftszeit A-Dienst",
@@ -260,6 +257,58 @@ const Time = () => {
                 })}
         </div> */
     }
+
+    const [bookingStatus, setBookingStatus] = useState(null);
+    const [bookingStatusMsg, setBookingStatusMsg] = useState(
+        "Etwas ist schief gelaufen, bitte versuchen Sie es nach einiger Zeit erneut."
+    );
+
+    const handleSubmitAddBookingFrom = (e) => {
+        e.preventDefault();
+        let formData = new FormData(e.target);
+        let data = {};
+        formData.forEach(function (value, key) {
+            data[key] = value;
+        });
+
+        axios({
+            method: "post",
+            url: bookdienstplan,
+            data: data,
+            headers: { "Content-Type": "multipart/form-data" },
+        })
+            .then(function (data) {
+                const response = data.data;
+                console.log("response", response);
+                if (response.success) {
+                    setBookingStatus(true);
+                    setBookingStatusMsg(response.message);
+                    setAlreadyBooked(response.bookedArr ?? []);
+                    setAlreadyStaticBooked(response.bookedStaticArr ?? []);
+                } else {
+                    setBookingStatus(false);
+                    setBookingStatusMsg(response.message);
+                }
+            })
+            .catch(function (response) {
+                setBookingStatus(false);
+                setBookingStatusMsg(
+                    "Etwas ist schief gelaufen, bitte versuchen Sie es nach einiger Zeit erneut."
+                );
+            });
+    };
+
+    const handleClose = () => {
+        setShowPopup(true);
+        setFirstSelect(null);
+        setEndSelect(null);
+        setBookingStatus(null);
+        setGroupA([]);
+        setGroupB([]);
+        setGroupD([]);
+        setGroupH([]);
+        setSelectedTheGroup("");
+    };
 
     return (
         <Fragment>
@@ -544,77 +593,130 @@ const Time = () => {
             {!showPopup && (
                 <Popup title="Bereitschaftszeit anlegen" onClose={handleClose}>
                     <div className="thepopcontainer">
-                        <form
-                            className="timetableform"
-                            action={bookdienstplan}
-                            method="POST"
-                        >
-                            <input
-                                type="hidden"
-                                name="start"
-                                value={request.start ?? ""}
-                            />
-                            <input type="hidden" name="wid" value={wid} />
+                        {bookingStatus == null && (
+                            <form
+                                className="timetableform"
+                                // action={bookdienstplan}
+                                onSubmit={(e) => handleSubmitAddBookingFrom(e)}
+                                method="POST"
+                            >
+                                <input
+                                    type="hidden"
+                                    name="start"
+                                    value={request.start ?? ""}
+                                />
+                                <input type="hidden" name="wid" value={wid} />
 
-                            <div>
-                                <b>Tag:</b>{" "}
-                                {format(firstSelect, "eee dd.MM", {
-                                    locale: de,
-                                })}
-                            </div>
-                            <div>
-                                <b>Start: </b>
-                                {selectedSchedule[0].substr(-5)} Uhr
-                                {/* {parseInt(selectedSchedule[0].substr(-5, 2)) >
+                                <div>
+                                    <b>Tag:</b>{" "}
+                                    {format(firstSelect, "eee dd.MM", {
+                                        locale: de,
+                                    })}
+                                </div>
+                                <div>
+                                    <b>Start: </b>
+                                    {selectedSchedule[0].substr(-5)} Uhr
+                                    {/* {parseInt(selectedSchedule[0].substr(-5, 2)) >
                                 12
                                     ? " PM"
                                     : " Bin"} */}
-                            </div>
-                            <div>
-                                <b>Dauer: </b>
-                                {selectedSchedule.length - 1 + " Stunden"}
-                            </div>
-                            {selectedSchedule?.map((item) => (
-                                <input
-                                    key={item.toString()}
-                                    type="hidden"
-                                    name="hours[]"
-                                    value={item}
-                                />
-                            ))}
-                            <input
-                                type="hidden"
-                                name="col"
-                                value={selectedTheGroup}
-                            />
-                            <div>
-                                <b>Mitarbeiter:</b>
-                            </div>
-                            <select name="user" id="user">
-                                {Object.keys(users)?.map((id) => {
-                                    const user = users[id];
-                                    return (
-                                        <option key={id} value={id}>
-                                            {user}
-                                        </option>
-                                    );
-                                })}
-                            </select>
-                            <div className="flexbtn">
+                                </div>
+                                <div>
+                                    <b>Dauer: </b>
+                                    {selectedSchedule.length - 1 + " Stunden"}
+                                </div>
+                                {selectedSchedule?.map((item, index) => (
+                                    <input
+                                        key={item.toString()}
+                                        type="hidden"
+                                        name={`hours[${index}]`}
+                                        value={item}
+                                    />
+                                ))}
                                 <input
                                     type="hidden"
-                                    name="_token"
-                                    value={token}
+                                    name="col"
+                                    value={selectedTheGroup}
                                 />
-                                <button type="submit">Ja</button>
-                                <button
-                                    type="submit"
-                                    onClick={(e) => setShowPopup(true)}
-                                >
-                                    Nein
-                                </button>
+                                <div>
+                                    <b>Mitarbeiter:</b>
+                                </div>
+                                <select name="user" id="user">
+                                    {Object.keys(users)?.map((id) => {
+                                        const user = users[id];
+                                        return (
+                                            <option key={id} value={id}>
+                                                {user}
+                                            </option>
+                                        );
+                                    })}
+                                </select>
+                                <div className="flexbtn">
+                                    <input
+                                        type="hidden"
+                                        name="_token"
+                                        value={token}
+                                    />
+                                    <button type="submit">Ja</button>
+                                    <button
+                                        type="submit"
+                                        onClick={(e) => setShowPopup(true)}
+                                    >
+                                        Nein
+                                    </button>
+                                </div>
+                            </form>
+                        )}
+
+                        {bookingStatus == true ? (
+                            <div className="timetableform alrtcontainer">
+                                <div>
+                                    <div className="iconbox">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            strokeWidth="1.5"
+                                            stroke="currentColor"
+                                            className="success"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                            />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <span>{bookingStatusMsg}</span>
+                                    </div>
+                                </div>
                             </div>
-                        </form>
+                        ) : (
+                            <div className="timetableform alrtcontainer">
+                                <div>
+                                    <div className="iconbox">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            strokeWidth="1.5"
+                                            stroke="currentColor"
+                                            className="error"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"
+                                            />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <span>{bookingStatusMsg}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </Popup>
             )}

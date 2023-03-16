@@ -12,6 +12,27 @@
     -moz-box-shadow: -12px -14px 27px -12px rgba(0, 0, 0, 0.75);
     display: none;
 }
+.alrtcontainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+.alrtcontainer svg {
+    height: auto;
+    width: 60px;
+}
+.alrtcontainer svg.success {
+    color: #2b8a3e;
+}
+.alrtcontainer svg.error {
+    color: red;
+}
+.iconbox {
+    display: flex;
+    justify-content: center;
+}
+
 .closethepopup {
     height: 20px;
     width: 20px;
