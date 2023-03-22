@@ -56,7 +56,8 @@ class DienstplanBooked extends Model
      */
     public function user()
     {
-        return $this->belongsTo(User::class, 'maintainer')->select("id", "first_name", "last_name");
+        // return $this->belongsTo(User::class, 'maintainer');
+        return $this->belongsTo(User::class, 'maintainer')->select("id", "first_name", "last_name", "username", "mobile", "telephone");
     }
 
 
@@ -75,44 +76,35 @@ class DienstplanBooked extends Model
      */
     protected function col(): Attribute
     {
+        $reverse = [
+            "a" => 0,
+            "b" => 1,
+            "h" => 2,
+            "d" => 3,
+        ];
+
+        $modify = [
+            0 => "a",
+            1 => "b",
+            2 => "h",
+            3 => "d",
+        ];
+
         return Attribute::make(
-            set: fn (string $value) => $this->modifyCol($value),
-            get: fn (string $value) => $this->reverseModifyCol($value),
+            set: fn (string $value) => $reverse[$value] ?? $value,
+            get: fn (string $value) => $modify[$value] ?? $value,
         );
     }
 
     /**
-     * Modify the col.
+     * Return the user full name.
+     *
+     * @return string
      */
-    protected function modifyCol($value = null)
-    {
-        if ($value == "a") {
-            return 0;
-        } elseif ($value == "b") {
-            return 1;
-        } elseif ($value == "h") {
-            return 3;
-        } elseif ($value == "d") {
-            return 4;
-        }
-    }
-
-
-    /**
-     * Reverse the col.
-     */
-    protected function reverseModifyCol($value = null)
-    {
-        if ($value == 0) {
-            return "a";
-        } elseif ($value == 1) {
-            return "b";
-        } elseif ($value == 3) {
-            return "h";
-        } elseif ($value == 4) {
-            return "d";
-        }
-    }
+    // public function getEndAttribute()
+    // {
+    //     return  $this->start;
+    // }
 
 
     // /**

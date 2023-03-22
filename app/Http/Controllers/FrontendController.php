@@ -8,8 +8,10 @@ use Illuminate\View\View;
 use Illuminate\Http\Request;
 use App\Models\AktuellCategory;
 use App\Models\DienstplanBooked;
+use App\Models\Contact;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Session;
+use Gregwar\Captcha\CaptchaBuilder;
 
 class FrontendController extends Controller
 {
@@ -301,4 +303,70 @@ class FrontendController extends Controller
     {
         return view('dienstplan.aktuell',);
     }
+
+    
+    /**
+     * Display the contact page.
+     */
+    public function contact(Request $request) //: View
+    {
+        $captcha = new CaptchaBuilder;
+        $captcha->build();
+        Session::put('captcha', $captcha->getPhrase());
+        return view('contact', compact('captcha'));
+    }
+
+    public function contactSubmit(Request $request)
+    {
+        $captcha = $request->captcha;
+        $validate = $request->validate([
+            // "themen"         => "required",
+            "betreff"        => "required",
+            "nachricht"      => "required",
+            // "anrede"         => "required",
+            "vorname"        => "required",
+            "nachname"       => "required",
+            // "unternehmen"    => "required",
+            // "strasse"        => "required",
+            // "ort"            => "required",
+            // "telefon"        => "required",
+            // "fax"            => "required",
+            "email"          => "required",
+            "datennutzung"   => "required",
+            "captcha"        => "required",
+        ], [
+            "captcha.required" => "Captcha darf nicht leer sein.",
+        ]);
+
+        $captchaPhrase = Session::get('captcha');
+        if ($captcha != $captchaPhrase) {
+            return redirect()->route("contact")->withInput()->withErrors(['captcha' => 'Captcha ist falsch.']);
+        }
+
+        
+        $request['webmodul_id'] = $request->wid ?? 439;
+        $request['created'] = now();
+        $request['modified'] = now();
+        $request ['themen' ] = implode("; ", $request['themen']);
+
+        try {
+            $contact = Contact::create($request->all());
+            return redirect()->route("contact", ["success" => true]);
+        } catch (\Throwable $th) {
+            // throw $th;
+            return redirect()->route("contact")->withInput()->withErrors(['contact' => 'Something went wrong.']);
+        }
+
+        // dd($captcha, $captchaPhrase,$request->all());
+    }
+
+    
+    /**
+     * Display the datenschutz page.
+     */
+    public function datenschutz(Request $request): View
+    {
+        return view('datenschutz');
+    }
+    
 }

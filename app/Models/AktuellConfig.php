@@ -33,4 +33,14 @@ class AktuellConfig extends Model
     //     return $this->belongsTo(AktuellCategory::class, 'aktuell_category_id');
     // }
 
+    /**
+     * The order belong to user.
+     *
+     * @return  \App\Models\User
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'filluser')->select("id", "first_name", "last_name","username","mobile","telephone");
+    }
+
 }

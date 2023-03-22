@@ -108,6 +108,7 @@
         const bookings = @json($bookedArr);
         const staticBookings = @json($bookedStaticArr);
         const currentUser = @json($currentUser);
+        const currentWid = {{$wid}};
     </script>
 
     <div class="container">
@@ -142,7 +143,6 @@
 
             <div id="timeTableDates"></div>
 
-            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
             <div style="padding: 10px;">
                 <table>
                     <tr>

@@ -190,13 +190,13 @@
                     </svg>
                 </span>
                 <ul class="sub " style="padding:0 !important;">
-                    <li><a style="color: red" href="{{ route('dienstplan.months') }}">Dienstplankonf.</a></li>
-                    <li><a style="color: red" href="{{ route('dienstplan.vacation') }}">Urlaub/Auszeit</a></li>
-                    <li><a style="color: red" href="{{ route('dienstplan.admin') }}">Benutzerübersicht</a></li>
-                    <li><a style="color: red" href="{{ route('dienstplan.user.create') }}">Benutzer anlegen</a></li>
-                    <li><a style="color: red" href="{{ route('dienstplan.admin.kontakte') }}">Kontakte</a></li>
-                    <li><a style="color: red" href="{{ route('dienstplan.settings') }}">Einstellungen</a></li>
-                    <li><a style="color: red" href="/dienstplan/hourOverview?wid=">Stundenübersicht</a></li>
+                    <li><a style="color: red" href="{{ route('dienstplan.months', ['wid' => request('wid')]) }}">Dienstplankonf.</a></li>
+                    <li><a style="color: red" href="{{ route('dienstplan.vacation', ['wid' => request('wid')]) }}">Urlaub/Auszeit</a></li>
+                    <li><a style="color: red" href="{{ route('dienstplan.admin', ['wid' => request('wid')]) }}">Benutzerübersicht</a></li>
+                    <li><a style="color: red" href="{{ route('dienstplan.user.create', ['wid' => request('wid')]) }}">Benutzer anlegen</a></li>
+                    <li><a style="color: red" href="{{ route('dienstplan.admin.kontakte', ['wid' => request('wid')]) }}">Kontakte</a></li>
+                    <li><a style="color: red" href="{{ route('dienstplan.settings', ['wid' => request('wid')]) }}">Einstellungen</a></li>
+                    <li><a style="color: red" href="{{ route('dienstplan.hour.overview') }}">Stundenübersicht</a></li>
                 </ul>
             </li>
         @else

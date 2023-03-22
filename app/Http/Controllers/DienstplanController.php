@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\View as ViewFacade;
 use App\Models\Aktuell;
 use App\Models\AktuellCategory;
 use App\Models\DienstplanBooked;
@@ -14,18 +16,22 @@ use App\Models\DienstplanContact;
 use App\Models\DienstplanConfig;
 use App\Models\DienstplanUserProps;
 use Illuminate\Validation\Rule;
-use App\Models\User;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Http\Response as JsonResponse;
+use App\Models\User;
 use Carbon\Carbon;
 use DateTime;
+use Mpdf\Mpdf;
 
 class DienstplanController extends Controller
 {
 
     public function __construct(public $wid = 439)
     {
-        $this->wid = request("wid", $this->wid);
+        $wid = request("wid", $wid);
+        $this->wid = Cache::rememberForever('wid', function () use ($wid) {
+            return $wid;
+        });
     }
 
     /**
@@ -44,28 +50,678 @@ class DienstplanController extends Controller
     {
         $start = strtotime("midnight");
         $end = strtotime("+1 month", strtotime("tomorrow"));
+        $wid = $request->wid ?? $this->wid;
+        $currentUserOnly = $request->onlyme ? true : false;
 
         if ($request->start != null) {
-            $start = intval($request->start);
+            $start = strtotime($request->start) ?? $start;
         }
 
         if ($request->end != null) {
-            $end = strtotime("tomorrow", intval($request->end));
+            $end = strtotime($request->end) ?? $end;
         }
 
-        // return DienstplanBooked::with(["user"])->orderBy('start')->limit(100)->get();
+        $config = DienstplanConfig::with(["user"])->where('id', $wid)->first();
 
-        return view('dienstplan.overview', compact("start", "end",));
+        $startStamp = $start;
+        $endStamp = $end;
+
+        $userIds = array();
+        $cols = array();
+        $table = array();
+        $userId = Auth::user()->id;
+
+
+        if (!Auth::user()->admin() && $wid == 441) {
+            $events = DienstplanBooked::with(["user"])->where("wid", $wid)
+                ->where("maintainer", Auth::user()->id)
+                ->where("start", ">=", $start)
+                ->whereRaw('start + duration < ?', [$end])
+                ->get();
+        } else {
+            $events = DienstplanBooked::with(["user"])->where("wid", $wid)
+                ->where("start", ">=", $start)
+                ->whereRaw('start + duration < ?', [$end])
+                ->get();
+        }
+
+        // $events = DienstplanBooked::with(["user"])
+        // ->where("wid", $wid)
+        // ->where("start", ">=", $start)
+        // ->whereRaw('start + duration < ?', [$end])
+        // ->get();
+        // $events = $this->splitEventsByDays($eventsRaw, $startStamp, $endStamp);
+
+        // events zusammenfassen
+        $cmpEvents = array();
+        $prevEvents = array('0' => null, '1' => null, '2' => null, '3' => null);
+        $reverse = [
+            "a" => 0,
+            "b" => 1,
+            "h" => 2,
+            "d" => 3,
+        ];
+
+        foreach ($events as $event) {
+            if ($prevEvents[$reverse[$event->col]]) {
+                $prevEvent = $prevEvents[$reverse[$event->col]];
+                $centerPre = $prevEvent->start + ($prevEvent->duration / 2);
+                $centerEv = $event->start + ($event->duration / 2);
+                if (
+                    $prevEvent->maintainer == $event->maintainer &&
+                    ($prevEvent->start + $prevEvent->ducation) == $event->start &&
+                    date('d', $centerPre) == date('d', $centerEv)
+                ) {
+                    $prevEvent->end = $prevEvent->start + $prevEvent->ducation;
+                    $prevEvents[$reverse[$event->col]] = $prevEvent;
+                } else {
+                    $cmpEvents[] = $prevEvents[$reverse[$event->col]];
+                    $prevEvents[$reverse[$event->col]] = null;
+                }
+            }
+
+            if (!$prevEvents[$reverse[$event->col]]) {
+                $prevEvents[$reverse[$event->col]] = $event;
+            }
+        }
+
+        foreach ($prevEvents as $key => $event) {
+            $cmpEvents[] = $event;
+        }
+
+
+        // events für view vorbereiten
+        $localWeekDay = array('1' => 'Mo', '2' => 'Di', '3' => 'Mi', '4' => 'Do', '5' => 'Fr', '6' => 'Sa', '7' => 'So');
+        foreach ($cmpEvents as $event) {
+
+            if (isset($event)) {
+                $startDate = $event->start;
+                $endDate = $event->start + $event->duration;
+
+                if ($startDate == "") {
+                    continue;
+                }
+
+                $timeKey = strtotime('midnight', $startDate);
+                $keyInformation = array();
+                if (!isset($table[$timeKey])) {
+                    $keyInformation['date'] = $localWeekDay[date('N', $startDate)] . date(' d.m', $startDate);
+                }
+                $timeTo = date('H:i', $endDate);
+                if ($timeTo == '00:00')
+                    $timeTo = '24:00';
+                $time = date('H:i', $startDate) . ' - ' . $timeTo;
+
+                $user = $event->user;
+
+                if ($user != false) {
+                    $telInfo = '';
+                    $conTyp = '';
+                    if ($user->props && $user->props->pager != '') {
+                        $telInfo = $user->props->pager;
+                        $contTyp = 'Pager';
+                    } elseif ($user->mobile != '') {
+                        $telInfo = $user->mobile;
+                        $contTyp = 'Mobil';
+                    } else {
+                        $telInfo = $user->telephone;
+                        $contTyp = 'Telefon';
+                    }
+
+
+                    if (!isset($table[$timeKey])) {
+                        $keyInformation[$event->col][$time]['start'] = $startDate;
+                        $keyInformation[$event->col][$time]['end'] = $endDate;
+                        $keyInformation[$event->col][$time]['id'] = $user->id;
+                        $keyInformation[$event->col][$time]['name'] = $user->fullname();
+                        $keyInformation[$event->col][$time]['tel'] = $telInfo;
+                        $keyInformation[$event->col][$time]['cont_typ'] = $contTyp;
+                    } else {
+                        $table[$timeKey][$event->col][$time]['start'] = $startDate;
+                        $table[$timeKey][$event->col][$time]['end'] = $endDate;
+                        $table[$timeKey][$event->col][$time]['id'] = $user->id;
+                        $table[$timeKey][$event->col][$time]['name'] = $user->fullname();
+                        $table[$timeKey][$event->col][$time]['tel'] = $telInfo;
+                        $table[$timeKey][$event->col][$time]['cont_typ'] = $contTyp;
+                    }
+                }
+
+                if ($user != false) {
+                    if (!isset($table[$timeKey])) {
+                        $table[$timeKey] = $keyInformation;
+                    }
+                }
+            }
+        }
+
+        // Filter rows without current user
+        if ($currentUserOnly && $wid != 441) {
+            foreach ($table as $timekey => &$day) {
+                $usertimepairs = array();
+
+                foreach ($day as &$col) {
+                    if (is_array($col)) {
+                        foreach ($col as $timekey => &$timeOnCol) {
+                            if ($timeOnCol['id'] == $userId) {
+                                $usertimepairs[] = array($timeOnCol['start'], $timeOnCol['end']);
+                            }
+                        }
+                    }
+                }
+
+                if (count($usertimepairs) > 0) {
+                    foreach ($day as &$col) {
+                        foreach ($col as $timekey => &$timeOnCol) {
+                            if ($timeOnCol['id'] != $userId) {
+                                $inUserTime = false;
+                                foreach ($usertimepairs as $pair) {
+                                    if (
+                                        $pair[0] < $timeOnCol['start'] && $timeOnCol['start'] < $pair[1] ||
+                                        $pair[0] < ($timeOnCol['start'] + $timeOnCol['duration']) && $timeOnCol['start'] < $pair[1] ||
+                                        $timeOnCol['start'] < $pair[0] && $pair[0] < ($timeOnCol['start'] + $timeOnCol['duration']) ||
+                                        $timeOnCol['start'] < $pair[1] && $pair[1] < ($timeOnCol['start'] + $timeOnCol['duration']) ||
+                                        $timeOnCol['start'] == $pair[0] && $pair[1] == ($timeOnCol['start'] + $timeOnCol['duration'])
+                                    ) {
+                                        $inUserTime = true;
+                                        break;
+                                    }
+                                }
+                                if (!$inUserTime) {
+                                    unset($col[$timekey]);
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    unset($table[$timekey]);
+                }
+            }
+        }
+
+        ksort($table);
+
+        $r1Set = false;
+        $r2Set = false;
+        $r3Set = false;
+        $r4Set = false;
+        if ($config->col_a == 1) {
+            $r1Set = true;
+        }
+        if ($config->col_b == 1) {
+            $r2Set = true;
+        }
+        if ($config->col_c == 1) {
+            $r3Set = true;
+        }
+        if ($config->col_d == 1) {
+            $r4Set = true;
+        }
+
+        return view('dienstplan.overview', compact("start", "end", "table", "r1Set", "r2Set", "r3Set", "r4Set", "currentUserOnly"));
     }
+
+    public function dienstplanOverviewPdf(Request $request)
+    {
+
+        $start = strtotime("midnight");
+        $end = strtotime("+1 month", strtotime("tomorrow"));
+        $wid = $request->wid ?? $this->wid;
+        $currentUserOnly = $request->onlyme ? true : false;
+
+        if ($request->start != null) {
+            $start = strtotime($request->start) ?? $start;
+        }
+
+        if ($request->end != null) {
+            $end = strtotime($request->end) ?? $end;
+        }
+
+        $config = DienstplanConfig::with(["user"])->where('id', $wid)->first();
+
+        $startStamp = $start;
+        $endStamp = $end;
+
+        $userIds = array();
+        $cols = array();
+        $table = array();
+        $userId = Auth::user()->id;
+
+
+        if (!Auth::user()->admin() && $wid == 441) {
+            $events = DienstplanBooked::with(["user"])->where("wid", $wid)
+                ->where("maintainer", Auth::user()->id)
+                ->where("start", ">=", $start)
+                ->whereRaw('start + duration < ?', [$end])
+                ->get();
+        } else {
+            $events = DienstplanBooked::with(["user"])->where("wid", $wid)
+                ->where("start", ">=", $start)
+                ->whereRaw('start + duration < ?', [$end])
+                ->get();
+        }
+
+        // $events = DienstplanBooked::with(["user"])
+        // ->where("wid", $wid)
+        // ->where("start", ">=", $start)
+        // ->whereRaw('start + duration < ?', [$end])
+        // ->get();
+        // $events = $this->splitEventsByDays($eventsRaw, $startStamp, $endStamp);
+
+        // events zusammenfassen
+        $cmpEvents = array();
+        $prevEvents = array('0' => null, '1' => null, '2' => null, '3' => null);
+        $reverse = [
+            "a" => 0,
+            "b" => 1,
+            "h" => 2,
+            "d" => 3,
+        ];
+
+        foreach ($events as $event) {
+            if ($prevEvents[$reverse[$event->col]]) {
+                $prevEvent = $prevEvents[$reverse[$event->col]];
+                $centerPre = $prevEvent->start + ($prevEvent->duration / 2);
+                $centerEv = $event->start + ($event->duration / 2);
+                if (
+                    $prevEvent->maintainer == $event->maintainer &&
+                    ($prevEvent->start + $prevEvent->ducation) == $event->start &&
+                    date('d', $centerPre) == date('d', $centerEv)
+                ) {
+                    $prevEvent->end = $prevEvent->start + $prevEvent->ducation;
+                    $prevEvents[$reverse[$event->col]] = $prevEvent;
+                } else {
+                    $cmpEvents[] = $prevEvents[$reverse[$event->col]];
+                    $prevEvents[$reverse[$event->col]] = null;
+                }
+            }
+
+            if (!$prevEvents[$reverse[$event->col]]) {
+                $prevEvents[$reverse[$event->col]] = $event;
+            }
+        }
+
+        foreach ($prevEvents as $key => $event) {
+            $cmpEvents[] = $event;
+        }
+
+
+        // events für view vorbereiten
+        $localWeekDay = array('1' => 'Mo', '2' => 'Di', '3' => 'Mi', '4' => 'Do', '5' => 'Fr', '6' => 'Sa', '7' => 'So');
+        foreach ($cmpEvents as $event) {
+
+            if (isset($event)) {
+                $startDate = $event->start;
+                $endDate = $event->start + $event->duration;
+
+                if ($startDate == "") {
+                    continue;
+                }
+
+                $timeKey = strtotime('midnight', $startDate);
+                $keyInformation = array();
+                if (!isset($table[$timeKey])) {
+                    $keyInformation['date'] = $localWeekDay[date('N', $startDate)] . date(' d.m', $startDate);
+                }
+                $timeTo = date('H:i', $endDate);
+                if ($timeTo == '00:00')
+                    $timeTo = '24:00';
+                $time = date('H:i', $startDate) . ' - ' . $timeTo;
+
+                $user = $event->user;
+
+                if ($user != false) {
+                    $telInfo = '';
+                    $conTyp = '';
+                    if ($user->props && $user->props->pager != '') {
+                        $telInfo = $user->props->pager;
+                        $contTyp = 'Pager';
+                    } elseif ($user->mobile != '') {
+                        $telInfo = $user->mobile;
+                        $contTyp = 'Mobil';
+                    } else {
+                        $telInfo = $user->telephone;
+                        $contTyp = 'Telefon';
+                    }
+
+
+                    if (!isset($table[$timeKey])) {
+                        $keyInformation[$event->col][$time]['start'] = $startDate;
+                        $keyInformation[$event->col][$time]['end'] = $endDate;
+                        $keyInformation[$event->col][$time]['id'] = $user->id;
+                        $keyInformation[$event->col][$time]['name'] = $user->fullname();
+                        $keyInformation[$event->col][$time]['tel'] = $telInfo;
+                        $keyInformation[$event->col][$time]['cont_typ'] = $contTyp;
+                    } else {
+                        $table[$timeKey][$event->col][$time]['start'] = $startDate;
+                        $table[$timeKey][$event->col][$time]['end'] = $endDate;
+                        $table[$timeKey][$event->col][$time]['id'] = $user->id;
+                        $table[$timeKey][$event->col][$time]['name'] = $user->fullname();
+                        $table[$timeKey][$event->col][$time]['tel'] = $telInfo;
+                        $table[$timeKey][$event->col][$time]['cont_typ'] = $contTyp;
+                    }
+                }
+
+                if ($user != false) {
+                    if (!isset($table[$timeKey])) {
+                        $table[$timeKey] = $keyInformation;
+                    }
+                }
+            }
+        }
+
+        // Filter rows without current user
+        if ($currentUserOnly && $wid != 441) {
+            foreach ($table as $timekey => &$day) {
+                $usertimepairs = array();
+
+                foreach ($day as &$col) {
+                    if (is_array($col)) {
+                        foreach ($col as $timekey => &$timeOnCol) {
+                            if ($timeOnCol['id'] == $userId) {
+                                $usertimepairs[] = array($timeOnCol['start'], $timeOnCol['end']);
+                            }
+                        }
+                    }
+                }
+
+                if (count($usertimepairs) > 0) {
+                    foreach ($day as &$col) {
+                        foreach ($col as $timekey => &$timeOnCol) {
+                            if ($timeOnCol['id'] != $userId) {
+                                $inUserTime = false;
+                                foreach ($usertimepairs as $pair) {
+                                    if (
+                                        $pair[0] < $timeOnCol['start'] && $timeOnCol['start'] < $pair[1] ||
+                                        $pair[0] < ($timeOnCol['start'] + $timeOnCol['duration']) && $timeOnCol['start'] < $pair[1] ||
+                                        $timeOnCol['start'] < $pair[0] && $pair[0] < ($timeOnCol['start'] + $timeOnCol['duration']) ||
+                                        $timeOnCol['start'] < $pair[1] && $pair[1] < ($timeOnCol['start'] + $timeOnCol['duration']) ||
+                                        $timeOnCol['start'] == $pair[0] && $pair[1] == ($timeOnCol['start'] + $timeOnCol['duration'])
+                                    ) {
+                                        $inUserTime = true;
+                                        break;
+                                    }
+                                }
+                                if (!$inUserTime) {
+                                    unset($col[$timekey]);
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    unset($table[$timekey]);
+                }
+            }
+        }
+
+        ksort($table);
+
+        $r1Set = false;
+        $r2Set = false;
+        $r3Set = false;
+        $r4Set = false;
+        if ($config->col_a == 1) {
+            $r1Set = true;
+        }
+        if ($config->col_b == 1) {
+            $r2Set = true;
+        }
+        if ($config->col_c == 1) {
+            $r3Set = true;
+        }
+        if ($config->col_d == 1) {
+            $r4Set = true;
+        }
+
+        // return view('dienstplan.overviewpdf', compact("start", "end", "table", "r1Set", "r2Set", "r3Set", "r4Set", "currentUserOnly"));
+
+        $pdf = new Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4', // A4, [400, 180], 'Legal',
+            'margin_left' => 10,
+            'margin_right' => 10,
+            'margin_top' => 10,
+            "margin_bottom" => 10,
+            'margin_header' => 0,
+            'margin_footer' => 0,
+        ]);
+        // $html = View::make('pdf.invoice', compact('invoice'));
+        $html = ViewFacade::make('dienstplan.overviewpdf', compact("start", "end", "table", "r1Set", "r2Set", "r3Set", "r4Set", "currentUserOnly"));
+        $html = $html->render();
+        $pdf->WriteHTML($html);
+        $pdf->Output("overview.pdf", "I");
+
+
+        // $PDF = new FPDF();
+
+        // $IN_BOX_FONT_SIZE = 9;
+        // $COL_NUMBER = 0;
+        // if ($r1Set)
+        //     $COL_NUMBER++;
+        // if ($r2Set)
+        //     $COL_NUMBER++;
+        // if ($r3Set)
+        //     $COL_NUMBER++;
+        // if ($r4Set)
+        //     $COL_NUMBER++;
+
+        // if ($COL_NUMBER > 3)
+        //     $IN_BOX_FONT_SIZE = 7;
+
+        // $EVENT_HEAD_WIDTH = 20;
+        // if ($COL_NUMBER > 3)
+        //     $EVENT_HEAD_WIDTH = 16;
+        // $TEXT_ROW_HEIGHT = 4;
+        // $COL_WIDTH = 190.0 / $COL_NUMBER;
+
+        // $PDF->AddPage();
+        // $pageHeight = $TEXT_ROW_HEIGHT;
+        // // $maxPageHeight = $PDF->h - 30;
+        // //echo "height:".$maxPageHeight;
+        // $PDF->SetFont('Arial', 'B', 9);
+        // if ($r1Set)
+        //     $PDF->Cell($COL_WIDTH, $TEXT_ROW_HEIGHT, 'A-Dienst');
+        // if ($r2Set)
+        //     $PDF->Cell($COL_WIDTH, $TEXT_ROW_HEIGHT, 'B-Dienst');
+        // if ($r3Set)
+        //     $PDF->Cell($COL_WIDTH, $TEXT_ROW_HEIGHT, 'Hintergrund-Dienst');
+        // if ($r4Set)
+        //     $PDF->Cell($COL_WIDTH, $TEXT_ROW_HEIGHT, 'Dienst-Absicherung');
+
+        // $PDF->ln();
+        // // foreach ($table as $row) {
+        // //     $h0 = 0;
+        // //     $h1 = 0;
+        // //     $h2 = 0;
+        // //     $h3 = 0;
+        // //     if (isset($row[0]))
+        // //         $h0 = count($row[0]);
+        // //     if (isset($row[1]))
+        // //         $h1 = count($row[1]);
+        // //     if (isset($row[2]))
+        // //         $h2 = count($row[2]);
+        // //     if (isset($row[3]))
+        // //         $h3 = count($row[3]);
+        // //     $maxColsInRow = max($h0, $h1, $h2, $h3);
+
+        // //     $pageHeight += 2 * $TEXT_ROW_HEIGHT + (($maxColsInRow) * 2 * $TEXT_ROW_HEIGHT);
+        // //     if ($pageHeight >= $maxPageHeight) {
+        // //         $PDF->AddPage();
+        // //         $PDF->SetFont('Arial', 'B', 9);
+        // //         if ($r1Set)
+        // //             $PDF->Cell($COL_WIDTH, $TEXT_ROW_HEIGHT, 'A-Dienst');
+        // //         if ($r2Set)
+        // //             $PDF->Cell($COL_WIDTH, $TEXT_ROW_HEIGHT, 'B-Dienst');
+        // //         if ($r3Set)
+        // //             $PDF->Cell($COL_WIDTH, $TEXT_ROW_HEIGHT, 'Hintergrund-Dienst');
+        // //         if ($r4Set)
+        // //             $PDF->Cell($COL_WIDTH, $TEXT_ROW_HEIGHT, 'Dienst-Absicherung');
+
+        // //         $PDF->ln();
+        // //         $pageHeight = ($TEXT_ROW_HEIGHT * 2) + ($maxColsInRow * 2 * $TEXT_ROW_HEIGHT);
+        // //     }
+        // //     $PDF->SetFont('Arial', 'B', 9);
+        // //     $PDF->Cell(0, $TEXT_ROW_HEIGHT, $row['date']);
+        // //     $PDF->ln();
+
+        // //     $keys = array(array(), array(), array());
+        // //     if (isset($row[0]))
+        // //         $keys[0] = array_keys($row[0]);
+        // //     if (isset($row[1]))
+        // //         $keys[1] = array_keys($row[1]);
+        // //     if (isset($row[2]))
+        // //         $keys[2] = array_keys($row[2]);
+        // //     if (isset($row[3]))
+        // //         $keys[3] = array_keys($row[3]);
+        // //     for ($i = 0; $i < $maxColsInRow; $i++) {
+        // //         // A-Dienst-Mitarbeiter-Col
+        // //         if ($r1Set) {
+        // //             $key = null;
+        // //             if (isset($keys[0][$i]))
+        // //                 $key = $keys[0][$i];
+        // //             $PDF->SetFillColor(255, 204, 0);
+        // //             $ma = '';
+        // //             $name = '';
+        // //             if ($key) {
+        // //                 $ma = $key;
+        // //                 $name = utf8_decode($row[0][$key]['name']);
+        // //             }
+        // //             $PDF->SetFont('Arial', 'B', $IN_BOX_FONT_SIZE);
+        // //             $PDF->Cell($EVENT_HEAD_WIDTH, $TEXT_ROW_HEIGHT, $ma, 0, 0, 'L', true);
+        // //             $PDF->SetFont('Arial', '', $IN_BOX_FONT_SIZE);
+        // //             $PDF->Cell($COL_WIDTH - $EVENT_HEAD_WIDTH, $TEXT_ROW_HEIGHT, $name, 0, 0, 'L', true);
+        // //         }
+        // //         // B-Dienst-Mitarbeiter-Col
+        // //         if ($r2Set) {
+        // //             $key = null;
+        // //             if (isset($keys[1][$i]))
+        // //                 $key = $keys[1][$i];
+        // //             $PDF->SetFillColor(255, 232, 136);
+        // //             $ma = '';
+        // //             $name = '';
+        // //             if ($key) {
+        // //                 $ma = $key;
+        // //                 $name = utf8_decode($row[1][$key]['name']);
+        // //             }
+        // //             $PDF->SetFont('Arial', 'B', $IN_BOX_FONT_SIZE);
+        // //             $PDF->Cell($EVENT_HEAD_WIDTH, $TEXT_ROW_HEIGHT, $ma, 0, 0, 'L', true);
+        // //             $PDF->SetFont('Arial', '', $IN_BOX_FONT_SIZE);
+        // //             $PDF->Cell($COL_WIDTH - $EVENT_HEAD_WIDTH, $TEXT_ROW_HEIGHT, $name, 0, 0, 'L', true);
+        // //         }
+        // //         // Hintergrund-Dienst-Mitarbeiter-Col
+        // //         if ($r3Set) {
+        // //             $key = null;
+        // //             if (isset($keys[2][$i]))
+        // //                 $key = $keys[2][$i];
+        // //             $PDF->SetFillColor(204, 204, 204);
+        // //             $ma = '';
+        // //             $name = '';
+        // //             if ($key) {
+        // //                 $ma = $key;
+        // //                 $name = utf8_decode($row[2][$key]['name']);
+        // //             }
+        // //             $PDF->SetFont('Arial', 'B', $IN_BOX_FONT_SIZE);
+        // //             $PDF->Cell($EVENT_HEAD_WIDTH, $TEXT_ROW_HEIGHT, $ma, 0, 0, 'L', true);
+        // //             $PDF->SetFont('Arial', '', $IN_BOX_FONT_SIZE);
+        // //             $PDF->Cell($COL_WIDTH - $EVENT_HEAD_WIDTH, $TEXT_ROW_HEIGHT, $name, 0, 0, 'L', true);
+        // //         }
+        // //         // Dienst-Absicherung-Mitarbeiter-Col
+        // //         if ($r4Set) {
+        // //             $key = null;
+        // //             if (isset($keys[3][$i]))
+        // //                 $key = $keys[3][$i];
+        // //             $PDF->SetFillColor(255, 255, 255);
+        // //             $ma = '';
+        // //             $name = '';
+        // //             if ($key) {
+        // //                 $ma = $key;
+        // //                 $name = utf8_decode($row[3][$key]['name']);
+        // //             }
+        // //             $PDF->SetFont('Arial', 'B', $IN_BOX_FONT_SIZE);
+        // //             $PDF->Cell($EVENT_HEAD_WIDTH, $TEXT_ROW_HEIGHT, $ma, 0, 0, 'L', true);
+        // //             $PDF->SetFont('Arial', '', $IN_BOX_FONT_SIZE);
+        // //             $PDF->Cell($COL_WIDTH - $EVENT_HEAD_WIDTH, $TEXT_ROW_HEIGHT, $name, 0, 0, 'L', true);
+        // //         }
+        // //         $PDF->ln();
+
+        // //         // A-Dienst-Pager-Col
+        // //         if ($r1Set) {
+        // //             $key = null;
+        // //             if (isset($keys[0][$i]))
+        // //                 $key = $keys[0][$i];
+        // //             $PDF->SetFillColor(255, 204, 0);
+        // //             $ma = '';
+        // //             $name = '';
+        // //             if ($key) {
+        // //                 $ma = '';
+        // //                 $name = utf8_decode($row[0][$key]['tel']) . ' (' . utf8_decode($row[0][$key]['cont_typ']) . ')';
+        // //             }
+        // //             $PDF->SetFont('Arial', 'B', $IN_BOX_FONT_SIZE);
+        // //             $PDF->Cell($EVENT_HEAD_WIDTH, $TEXT_ROW_HEIGHT, $ma, 0, 0, 'L', true);
+        // //             $PDF->SetFont('Arial', '', $IN_BOX_FONT_SIZE);
+        // //             $PDF->Cell($COL_WIDTH - $EVENT_HEAD_WIDTH, $TEXT_ROW_HEIGHT, $name, 0, 0, 'L', true);
+        // //         }
+        // //         // B-Dienst-Pager-Col
+        // //         if ($r2Set) {
+        // //             $key = null;
+        // //             if (isset($keys[1][$i]))
+        // //                 $key = $keys[1][$i];
+        // //             $PDF->SetFillColor(255, 232, 136);
+        // //             $ma = '';
+        // //             $name = '';
+        // //             if ($key) {
+        // //                 $ma = '';
+        // //                 $name = utf8_decode($row[1][$key]['tel']) . ' (' . utf8_decode($row[1][$key]['cont_typ']) . ')';
+        // //             }
+        // //             $PDF->SetFont('Arial', 'B', $IN_BOX_FONT_SIZE);
+        // //             $PDF->Cell($EVENT_HEAD_WIDTH, $TEXT_ROW_HEIGHT, $ma, 0, 0, 'L', true);
+        // //             $PDF->SetFont('Arial', '', $IN_BOX_FONT_SIZE);
+        // //             $PDF->Cell($COL_WIDTH - $EVENT_HEAD_WIDTH, $TEXT_ROW_HEIGHT, $name, 0, 0, 'L', true);
+        // //         }
+        // //         // Hintergrund-Dienst-Pager-Col
+        // //         if ($r3Set) {
+        // //             $key = null;
+        // //             if (isset($keys[2][$i]))
+        // //                 $key = $keys[2][$i];
+        // //             $PDF->SetFillColor(204, 204, 204);
+        // //             $ma = '';
+        // //             $name = '';
+        // //             if ($key) {
+        // //                 $ma = '';
+        // //                 $name = utf8_decode($row[2][$key]['tel']) . ' (' . utf8_decode($row[2][$key]['cont_typ']) . ')';
+        // //             }
+        // //             $PDF->SetFont('Arial', 'B', $IN_BOX_FONT_SIZE);
+        // //             $PDF->Cell($EVENT_HEAD_WIDTH, $TEXT_ROW_HEIGHT, $ma, 0, 0, 'L', true);
+        // //             $PDF->SetFont('Arial', '', $IN_BOX_FONT_SIZE);
+        // //             $PDF->Cell($COL_WIDTH - $EVENT_HEAD_WIDTH, $TEXT_ROW_HEIGHT, $name, 0, 0, 'L', true);
+        // //         }
+        // //         // Dienst-Absicherung-Pager-Col
+        // //         if ($r4Set) {
+        // //             $key = null;
+        // //             if (isset($keys[3][$i]))
+        // //                 $key = $keys[3][$i];
+        // //             $PDF->SetFillColor(255, 255, 255);
+        // //             $ma = '';
+        // //             $name = '';
+        // //             if ($key) {
+        // //                 $ma = '';
+        // //                 $name = utf8_decode($row[3][$key]['tel']) . ' (' . utf8_decode($row[3][$key]['cont_typ']) . ')';
+        // //             }
+        // //             $PDF->SetFont('Arial', 'B', $IN_BOX_FONT_SIZE);
+        // //             $PDF->Cell($EVENT_HEAD_WIDTH, $TEXT_ROW_HEIGHT, $ma, 0, 0, 'L', true);
+        // //             $PDF->SetFont('Arial', '', $IN_BOX_FONT_SIZE);
+        // //             $PDF->Cell($COL_WIDTH - $EVENT_HEAD_WIDTH, $TEXT_ROW_HEIGHT, $name, 0, 0, 'L', true);
+        // //         }
+        // //         $PDF->ln();
+        // //     }
+        // //     $PDF->ln();
+        // // }
+
+        // return $PDF->Output();
+    }
+
 
     public function overview($_start = null, $_end = null, $_currentUserOnly = false)
     {
-        $this->workerOnly();
-        $this->includeJs('jquery/jquery1.10.2/jquery');
-        $this->includeJs('jquery/ui-1.11.4/jquery-ui.min');
-        $this->includeCss('jquery/jquery-ui-1.11.4.custom/jquery-ui.min');
-        $this->includeCss('jquery/jquery-ui-1.11.4.custom/jquery-ui.structure.min');
-        $this->includeCss('jquery/jquery-ui-1.11.4.custom/jquery-ui.theme.min');
 
         $start = strtotime("midnight");
         $end = strtotime("+1 month", strtotime("tomorrow"));
@@ -108,6 +764,13 @@ class DienstplanController extends Controller
         );
         if ($_currentUserOnly && $this->webmodul_id == 441)
             $conds['maintainer'] = $this->Session->read('User.id');
+
+
+
+
+
+
+
 
         $userId = $this->Session->read('User.id');
 
@@ -280,22 +943,245 @@ class DienstplanController extends Controller
     /**
      * Display the dienstplanAktuell page.
      */
-    public function dienstplanAktuell(Request $request): View
+    public function dienstplanAktuell(Request $request) //: View
     {
-        return view('dienstplan.aktuell',);
+        $wid = $request->wid ?? $this->wid;
+        $ip_view = false;
+        // if (
+        //     $this->kontakteLogin() ||
+        //     $this->isWorker() ||
+        //     $this->request->clientIp() == '213.157.31.194' ||
+        //     $this->request->clientIp() == '194.127.205.2' ||
+        //     $this->request->clientIp() == '194.99.108.38' ||
+        //     $this->request->clientIp() == '213.188.107.58' ||
+        //     $this->request->clientIp() == '194.99.108.11' ||
+        //     $this->request->clientIp() == '87.129.237.211' ||
+        //     $this->request->clientIp() == '194.99.108.45' ||
+        //     $this->request->clientIp() == '85.132.222.48' ||
+        //     $this->request->clientIp() == '85.132.222.49' ||
+        //     $this->request->clientIp() == '85.132.222.50' ||
+        //     $this->request->clientIp() == '85.132.222.51' ||
+        //     $this->request->clientIp() == '80.147.177.186' ||
+        //     /*my ip*/ $this->request->clientIp() == '::1' ||
+        //     isset($_GET['k']) && $_GET['k'] == 'bmZzb2RlbndhbGQ='
+        // ) {
+        // if (!$this->isWorker()) {
+        //     $ip_view = true;
+        // }
+        // $this->set('ip_view', $ip_view);
+        $table = array();
+
+        $now = time();
+
+
+        $config = DienstplanConfig::with(["user"])->where('id', $wid)->first();
+        $atom = intval($config->dienst_time_h) * 60 * 60;
+
+        $events = DienstplanBooked::with(["user"])
+            ->where("wid", $wid)
+            ->where("start", ">=", $now)
+            // ->whereRaw('start + duration < ?', [$end])
+            ->get();
+
+
+        $reverse = [
+            "a" => 0,
+            "b" => 1,
+            "h" => 2,
+            "d" => 3,
+        ];
+        // $events = $this->DienstplanBooked->find('all', array(
+        //     'conditions' => array(
+        //         'start <=' => $now,
+        //         'end >' => $now,
+        //         'wid' => $this->webmodul_id
+        //     ),
+        //     'order' => array(
+        //         'col'
+        //     )
+        // ));
+
+        // echo '<pre>';
+        // print_r($events);
+        // echo '</pre>';
+
+        foreach ($events as $key => $event) {
+            $user = $event->user;
+
+
+            if ($user) {
+                $name = $user->fullname();
+                $tel = $user->telephone;
+                $pager = $user->props ? $user->props->pager : "";
+                $mobil = $user->mobile;
+
+                $timeTableId = intval($reverse[$event->col]);
+                // echo "timeTableIdtimeTableId".$event['DienstplanBooked']['col']." <br>";
+                // echo "timeTableId $timeTableId <br>";
+
+                if ($timeTableId == 0) {
+                    $timeTableKey = "a";
+                } elseif ($timeTableId == 1) {
+                    $timeTableKey = "b";
+                } elseif ($timeTableId == 2) {
+                    $timeTableKey = "h";
+                } elseif ($timeTableId == 3) {
+                    $timeTableKey = "d";
+                } else {
+                    $timeTableKey = "unkonwn";
+                }
+                // for c
+                if ($wid == 441 && $timeTableId == 2) {
+                    $timeTableKey = "c";
+                }
+                // for h
+                if ($wid != 441) {
+                    if ($timeTableId == 2) {
+                        $timeTableKey = "h";
+                    }
+                } else {
+                    if ($timeTableId == 3) {
+                        $timeTableKey = "h";
+                    }
+                }
+                // for d
+                if ($wid != 441 && $timeTableId == 3) {
+                    $timeTableKey = "d";
+                }
+                // for l
+                if ($wid == 441 && $timeTableId == 4) {
+                    $timeTableKey = "l";
+                }
+
+                $table[$timeTableKey]['name'] = $name;
+                if ($tel != '')
+                    $table[$timeTableKey]['tel'] = $tel;
+                if ($pager != '')
+                    $table[$timeTableKey]['pager'] = $pager;
+                if ($mobil != '')
+                    $table[$timeTableKey]['mobil'] = $mobil;
+
+
+                // $table[$event['DienstplanBooked']['col']]['name'] = $name;
+                // if( $tel != '' )
+                // 	$table[$event['DienstplanBooked']['col']]['tel'] = $tel;
+                // if( $pager != '' )
+                // 	$table[$event['DienstplanBooked']['col']]['pager'] = $pager;
+                // if( $mobil != '' )
+                // 	$table[$event['DienstplanBooked']['col']]['mobil'] = $mobil;
+            }
+        }
+
+        // echo 'Output<pre>';
+        // print_r($table);
+        // echo '</pre>';
+        // die;
+        // return $config;
+
+        $filluser = $config->user;
+
+        if ($filluser) {
+            // echo 'filluser<pre>';
+            // print_r($filluser);
+            // echo '</pre>';
+
+            $name = $filluser->fullname();
+            $tel = $filluser->telephone;
+            $pager = $filluser->props ? $filluser->props->pager : "";
+            $mobil = $filluser->mobile;
+
+            // $id = 3;
+            // if( $this->webmodul_id == 441 ){
+            // 	$id = 4;
+            // }
+
+            $id = "l";
+            if ($wid == 441) {
+                $id = 4;
+            }
+
+            $table[$id]['name'] = $name;
+            if ($tel != '') {
+                $table[$id]['tel'] = $tel;
+            }
+            if ($pager != '') {
+                $table[$id]['pager'] = $pager;
+            }
+            if ($mobil != '') {
+                $table[$id]['mobil'] = $mobil;
+            }
+        }
+
+        // echo 'Output filluser<pre>';
+        // print_r($table);
+        // echo '</pre>';
+        // die;
+
+        // $this->set('time', date('H:i', $now));
+        // // this is aktuell table
+        // $this->set('table', $table);
+        // $config = $this->DienstplanConfig->find('first', array('conditions' => array('id' => $this->webmodul_id)));
+        // $this->set('show_h', $config['DienstplanConfig']['show_h']);
+        // $this->set('allnumbers', $config['DienstplanConfig']['allnumbers']);
+        // $this->set('wid', $this->webmodul_id);
+
+        // Leitstellen-Login behandeln und erfolg loggen
+        // if (!$this->isWorker()) {
+        //     $log = array();
+        //     $log['DienstplanLeitstelleLog']['wid'] = $this->webmodul_id;
+        //     $log['DienstplanLeitstelleLog']['ip'] = $this->request->clientIp();
+        //     $log['DienstplanLeitstelleLog']['success'] = 1;
+        //     $log['DienstplanLeitstelleLog']['content'] = base64_encode(json_encode([
+        //         'time' => $this->viewVars['time'],
+        //         'table' => $this->viewVars['table'],
+        //         'show_h' => $this->viewVars['show_h'],
+        //         'allnumbers' => $this->viewVars['allnumbers']
+        //     ]));
+        //     $this->DienstplanLeitstelleLog->create();
+        //     $this->DienstplanLeitstelleLog->save($log);
+        // }
+        // } else {
+        // $log = array();
+        // $log['DienstplanLeitstelleLog']['wid'] = 0;
+        // $log['DienstplanLeitstelleLog']['ip'] = $this->request->clientIp();
+        // $log['DienstplanLeitstelleLog']['success'] = 0;
+        // $log['DienstplanLeitstelleLog']['content'] = "";
+        // $this->DienstplanLeitstelleLog->save($log);
+        // $this->redirect('/');
+        // }
+
+        $ip_view = $request->ip();
+        $allnumbers = $config->allnumbers;
+        $show_h = $config->show_h;
+        $time = date('H:i', $now);
+        return view('dienstplan.aktuell', compact('time', 'table', 'show_h', 'allnumbers', 'wid', 'ip_view'));
     }
+
 
     /**
      * Display the months page.
      */
     public function months(Request $request) //: View
     {
+        // \Illuminate\Support\Facades\Cache::rememberForever('wid', fn() => 439);
+
+        $wid = \Illuminate\Support\Facades\Cache::rememberForever('wid', fn () => 439);
+        $wid = $request->wid ?? $wid;
         if (Auth::user()->admin()) {
-            $users = User::select("first_name", "last_name", "username", "id")->whereNot("id", Auth::user()->id)->get();
+            // $users = User::with(["props"])->select("first_name", "last_name", "username", "id", "wid")->whereNot("id", Auth::user()->id)->get();
+            // $users = $users->pluck("name", "id");
+
+            $users = DienstplanUserProps::with(["user"])
+                ->select("id", "user_id", "wid")
+                ->where("wid", $wid)
+                ->get();
+            $users = $users->reject(function ($item) {
+                return is_null($item->user);
+            })->pluck("user.name", "user.id");
         } else {
-            $users = User::select("first_name", "last_name", "username", "id")->where("id", Auth::user()->id)->get();
+            $users = User::with(["props"])->select("first_name", "last_name", "username", "id", "wid")->where("id", Auth::user()->id)->get();
+            $users = $users->pluck("name", "id");
         }
-        $users = $users->pluck("name", "id");
 
         $start = strtotime(request("start", "now"));
         $start = $start ?? strtotime("now");
@@ -306,6 +1192,7 @@ class DienstplanController extends Controller
         $bookedStaticArr = [];
         $bookings = DienstplanBooked::with(["user"])->select("id", "col", "start", "duration", "maintainer")
             ->where("start", ">", $startOfMonth)
+            ->where("wid", $wid)
             ->whereRaw('start + duration < ?', [$endOfMonth])
             ->get();
         $currentUser = User::select("first_name", "last_name", "id")->where("id", Auth::user()->id)->first();
@@ -343,7 +1230,7 @@ class DienstplanController extends Controller
                 ];
             }
         }
-        return view('dienstplan.months', compact("users", "bookedArr", "bookedStaticArr", "currentUser"));
+        return view('dienstplan.months', compact("users", "bookedArr", "bookedStaticArr", "currentUser", "wid"));
     }
 
     /**
@@ -1084,6 +1971,90 @@ class DienstplanController extends Controller
     }
 
 
+    // public function bookdienstplan(Request $request)
+    // {
+    //     $hours = $request->hours;
+    //     $col = $request->col;
+    //     $maintainer = $request->user;
+    //     $months = array(
+    //         '01' => 'Jan',
+    //         '02' => 'Feb',
+    //         '03' => 'Mar',
+    //         '04' => 'Apr',
+    //         '05' => 'May',
+    //         '06' => 'Jun',
+    //         '07' => 'Jul',
+    //         '08' => 'Aug',
+    //         '09' => 'Sep',
+    //         '10' => 'Oct',
+    //         '11' => 'Nov',
+    //         '12' => 'Dec'
+    //     );
+
+
+    //     try {
+    //         $start = current($hours);
+    //         $start = str_replace("24:00", "00:00", $start);
+    //         $end = end($hours);
+    //         $endexpload = explode("-", $end);
+    //         $endmonth = $months[$endexpload[0]];
+    //         $end = substr($end, 2);
+    //         $endofmonth = "$endmonth$end";
+
+
+    //         $start = DateTime::createFromFormat('m-d-Y H:i', "$start")->getTimestamp();
+    //         $end = DateTime::createFromFormat('M-d-Y H:i', "$endofmonth")->getTimestamp();
+
+    //         $duration = $end - $start;
+    //         $total = $start + $duration;
+    //         $total = date("d-m-Y h:i:s A", $total);
+
+
+    //         try {
+    //             if (Auth::user()->admin()) {
+    //                 $user = DienstplanBooked::create([
+    //                     "wid" => $this->wid,
+    //                     "col" => $col,
+    //                     "start" => $start,
+    //                     "duration" => $duration,
+    //                     "maintainer" => $maintainer,
+    //                     "creator_id" => Auth::user()->id,
+    //                     "created" => Carbon::now(),
+    //                     "modified" =>  Carbon::now(),
+    //                 ]);
+    //             } else {
+    //                 $user = DienstplanBooked::create([
+    //                     "wid" => $this->wid,
+    //                     "col" => $col,
+    //                     "start" => $start,
+    //                     "duration" => $duration,
+    //                     "maintainer" => Auth::user()->id,
+    //                     "creator_id" => Auth::user()->id,
+    //                     "created" => Carbon::now(),
+    //                     "modified" => Carbon::now(),
+    //                 ]);
+    //             }
+    //             return redirect()->route('dienstplan.months', ["start" => request("start", date("d-m-yyyy")), "wid" => $this->wid])->with(
+    //                 "success",
+    //                 "Der Urlaub wurde erfolgreich gespeichert."
+    //             );
+    //         } catch (\Exception $e) {
+    //             // throw $e;
+    //             return redirect()->route('dienstplan.months', ["start" => request("start", date("d-m-yyyy")), "wid" => $this->wid])->withErrors(
+    //                 ["alert" => "Der buchbare Bereich konnte nicht in die Datenbank übertragen werden."]
+    //             );
+    //         }
+
+    //         dd($request->all(), $start, $end, $duration, $total);
+    //     } catch (\Exception $e) {
+    //         // throw $e;
+    //         return redirect()->route('dienstplan.months', ["start" => request("start", date("d-m-yyyy")), "wid" => $this->wid])->withErrors(
+    //             ["alert" => "Es kam zu Überschneidungen mit anderen Bereitschafts- oder Urlaubszeiten. Die Bereitschaftszeit wurde nicht angelegt."]
+    //         );
+    //     }
+    // }
+
+
     public function bookdienstplan(Request $request)
     {
         $hours = $request->hours;
@@ -1262,5 +2233,50 @@ class DienstplanController extends Controller
                 ["alert" => "Etwas ist schief gelaufen, bitte versuchen Sie es nach einiger Zeit erneut."]
             );
         }
+    }
+
+
+    public function changeWid(Request $request)
+    {
+        $wids = [
+            439 => "439",
+            440 => "440",
+            441 => "441",
+            442 => "442",
+            443 => "443",
+        ];
+        $wid = Cache::rememberForever('wid', function () {
+            return 439;
+        });
+        return  view('dienstplan.wid', compact('wids', 'wid'));
+    }
+
+    public function updateWid(Request $request)
+    {
+
+        $this->validate($request, [
+            'wid' => 'required',
+        ]);
+        Cache::forget('wid');
+
+        if (in_array($request->wid, [439, 440, 441, 442, 443])) {
+            $wid = $request->wid;
+        } else {
+            $wid = 439;
+        }
+
+        $updatedWid =  Cache::rememberForever('wid', function () use ($wid) {
+            return $wid;
+        });
+
+        return redirect()->route('dienstplan.change.wid')->with(
+            "success",
+            "Wid erfolgreich geändert."
+        );
+
+
+
+
+        // return redirect()->route('dienstplan.months', ["start" => request("start", date("d-m-yyyy")), "wid" => $this->wid]);
     }
 }

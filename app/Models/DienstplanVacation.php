@@ -23,6 +23,30 @@ class DienstplanVacation extends Model
      */
     protected $table = 'dienstplan_vacation';
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        "wid",
+        "user_id",
+        "start",
+        "duration",
+        "type",
+        "modified",
+        "created",
+    ];
+
+
+    /**
+     * Disable timestamps to the model.
+     *
+     * @var boolval
+     */
+    public $timestamps = false;
+
+
      /**
      * The order belong to user.
      *

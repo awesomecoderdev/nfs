@@ -65,6 +65,12 @@
                 margin: 0 14px;
             }
 
+            select, input[type="date"], input[type="text"], input[type="number"], input[type="email"], input[type="password"], input[type="search"], input[type="tel"], input[type="time"], input[type="url"], input[type="color"], textarea {
+                padding: 0.45rem;
+                width: 13rem;
+                margin: 0 14px;
+            }
+
             .submitanzeigen {
                 background: #2b8a3e;
                 padding: 0.5rem 2.3rem;
@@ -146,7 +152,7 @@
                             @php
                                 $id = $v->id;
                                 $starts = date('d.m.Y', $v->start);
-                                $ends = date('d.m.Y', $v->end);
+                                $ends = date('d.m.Y', $v->start + $v->duration);
                                 $day = ceil($v->duration / (60 * 60 * 24));
                                 $duration = '' . $day . ' Tage';
                                 if ($day == 1) {
@@ -183,7 +189,7 @@
                         @php
                             $id = $v->id;
                             $starts = date('d.m.Y', $v->start);
-                            $ends = date('d.m.Y', $v->end);
+                            $ends = date('d.m.Y', $v->start + $v->duration);
                             $day = ceil($v->duration / (60 * 60 * 24));
                             $duration = '' . $day . ' Tage';
                             if ($day == 1) {
@@ -219,7 +225,7 @@
                         @php
                             $id = $v->id;
                             $starts = date('d.m.Y', $v->start);
-                            $ends = date('d.m.Y', $v->end);
+                            $ends = date('d.m.Y', $v->start + $v->duration);
                             $day = ceil($v->duration / (60 * 60 * 24));
                             $duration = '' . $day . ' Tage';
                             if ($day == 1) {
@@ -256,7 +262,7 @@
                         @php
                             $id = $v->id;
                             $starts = date('d.m.Y', $v->start);
-                            $ends = date('d.m.Y', $v->end);
+                            $ends = date('d.m.Y', $v->start + $v->duration);
                             $day = ceil($v->duration / (60 * 60 * 24));
                             $duration = '' . $day . ' Tage';
                             if ($day == 1) {
@@ -293,7 +299,7 @@
                         @php
                             $id = $v->id;
                             $starts = date('d.m.Y', $v->start);
-                            $ends = date('d.m.Y', $v->end);
+                            $ends = date('d.m.Y', $v->start + $v->duration);
                             $day = ceil($v->duration / (60 * 60 * 24));
                             $duration = '' . $day . ' Tage';
                             if ($day == 1) {

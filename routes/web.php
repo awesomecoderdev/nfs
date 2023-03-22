@@ -64,6 +64,10 @@ Route::middleware([])->group(function () {
     Route::any('/hilfe_erfahren', [FrontendController::class, 'hilfe_erfahren'])->name('hilfe_erfahren');
     Route::any('/darmstadt-und-umgebung', [FrontendController::class, 'darmstadt_und_umgebung'])->name('darmstadt_und_umgebung');
     Route::any('/notfallseelsorge-vor-ort', [FrontendController::class, 'notfallseelsorge_vor_ort'])->name('notfallseelsorge_vor_ort');
+    Route::get('/contact', [FrontendController::class, 'contact'])->name('contact');
+    Route::post('/contact', [FrontendController::class, 'contactSubmit'])->name('contact.submit');
+    Route::any('/datenschutz', [FrontendController::class, 'datenschutz'])->name('datenschutz');
+    
 });
 
 // bergstrasse routes
@@ -130,7 +134,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // dienstplan routes
 Route::group(['prefix' => 'dienstplan', "as" => "dienstplan.", "controller" => DienstplanController::class,], function () {
     Route::any('/', 'index')->middleware(["auth", "verified"]);
+    Route::get('/change_wid', 'changeWid')->middleware(["auth", "verified"])->name("change.wid");
+    Route::post('/change_wid', 'updateWid')->middleware(["auth", "verified"])->name("update.wid");
     Route::any('/overview', 'dienstplanOverview')->middleware(["auth", "verified"])->name("overview");
+    Route::any('/overviewpdf', 'dienstplanOverviewPdf')->middleware(["auth", "verified"])->name("overview.pdf");
     Route::any('/aktuell', 'dienstplanAktuell')->middleware(["auth", "verified"])->name("aktuell");
     Route::any('/months', 'months')->middleware(["auth", "verified"])->name("months");
     Route::get('/vacation/{user?}', 'vacation')->middleware(["auth", "verified"])->name("vacation");
@@ -156,8 +163,6 @@ Route::group(['prefix' => 'dienstplan', "as" => "dienstplan.", "controller" => D
     Route::post('/bookdienstplan', 'bookdienstplan')->middleware(["auth", "verified"])->name("bookdienstplan");
     Route::delete('/bookdienstplan/delete', 'deleteBookdienstplan')->middleware(["auth", "verified"])->name("bookdienstplan.delete");
 });
-
-
 
 
 Route::any('/import', function () {

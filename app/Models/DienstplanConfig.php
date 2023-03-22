@@ -53,6 +53,6 @@ class DienstplanConfig extends Model
      */
     public function user()
     {
-        return $this->belongsTo(User::class, 'filluser')->where('firma_id', 250);
+        return $this->belongsTo(User::class, 'filluser')->where('firma_id', 250)->select("id", "first_name", "last_name","wid","username");
     }
 }

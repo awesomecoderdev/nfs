@@ -103,7 +103,10 @@ class User extends Authenticatable // implements MustVerifyEmail
      */
     public function getNameAttribute()
     {
-        return $this->attributes['first_name'] . ' ' . $this->attributes['last_name'];
+        $first_name = $this->attributes['first_name']; 
+        $last_name = $this->attributes['last_name']; 
+        $username = $this->attributes['username'];
+        return ucfirst($first_name != null ? ($last_name != null ? "$first_name $last_name" : "$first_name") : $username);
     }
 
 
@@ -115,6 +118,7 @@ class User extends Authenticatable // implements MustVerifyEmail
     public function props()
     {
         return $this->hasOne(DienstplanUserProps::class, 'user_id');
+        // return $this->hasOne(DienstplanUserProps::class, 'user_id')->onConnection('cake');
     }
 
 

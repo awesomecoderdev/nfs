@@ -6,6 +6,7 @@ import {
     TrashIcon,
 } from "@heroicons/react/24/solid";
 import { de } from "date-fns/locale";
+
 import {
     add,
     startOfDay,
@@ -48,7 +49,7 @@ const colStartClasses = [
     "start-7",
 ];
 const Time = () => {
-    const [wid, setWid] = useState(request.wid ?? 439);
+    const [wid, setWid] = useState(currentWid ?? 439);
     const startFromNow = startFrom
         ? parse(startFrom, "d-M-yyyy", new Date())
         : startOfToday();
@@ -447,9 +448,9 @@ const Time = () => {
                                                                                             .location
                                                                                             .pathname
                                                                                     }?start=${date}${
-                                                                                        request.wid
+                                                                                        wid
                                                                                             ? "&wid=" +
-                                                                                              request.wid
+                                                                                              wid
                                                                                             : ""
                                                                                     }`;
                                                                                     window.location =
@@ -548,13 +549,17 @@ const Time = () => {
                         <p>
                             <b>Start : </b>
                             {popoverData.start
-                                ? popoverData.start.substr(-5)
+                                ? popoverData.start
+                                      .substr(-5)
+                                      .replace("24:00", "00:00")
                                 : "Loading"}
                         </p>
                         <p>
                             <b>End : </b>
                             {popoverData.end
-                                ? popoverData.end.substr(-5)
+                                ? popoverData.end
+                                      .substr(-5)
+                                      .replace("24:00", "00:00")
                                 : "Loading"}
                         </p>
                         <p>
@@ -615,11 +620,23 @@ const Time = () => {
                                 </div>
                                 <div>
                                     <b>Start: </b>
-                                    {selectedSchedule[0].substr(-5)} Uhr
+                                    {selectedSchedule[0]
+                                        .substr(-5)
+                                        .replace("24:00", "00:00")}{" "}
+                                    Uhr
                                     {/* {parseInt(selectedSchedule[0].substr(-5, 2)) >
-                                12
-                                    ? " PM"
-                                    : " Bin"} */}
+                                    12
+                                        ? " PM"
+                                        : " Bin"} */}
+                                </div>
+                                <div>
+                                    <b>End: </b>
+                                    {selectedSchedule[
+                                        selectedSchedule.length - 1
+                                    ]
+                                        .substr(-5)
+                                        .replace("24:00", "00:00")}{" "}
+                                    Uhr
                                 </div>
                                 <div>
                                     <b>Dauer: </b>
@@ -765,6 +782,8 @@ const Time = () => {
                                                             )}`
                                                         ];
 
+                                                    // console.log("inAlreadyBooking",inAlreadyBooking);
+
                                                     return (
                                                         <button
                                                             key={
@@ -820,6 +839,39 @@ const Time = () => {
                                                                                             : hour,
                                                                                 }
                                                                             );
+
+                                                                        const itsInBooking =
+                                                                            selectedHours.filter(
+                                                                                (
+                                                                                    item
+                                                                                ) => {
+                                                                                    const inAlreadyBooking =
+                                                                                        alreadyBooked[
+                                                                                            `${
+                                                                                                timetable.group
+                                                                                            } ${format(
+                                                                                                item,
+                                                                                                "MM-d-yyyy kk:mm"
+                                                                                            )}`
+                                                                                        ];
+
+                                                                                    return inAlreadyBooking
+                                                                                        ? true
+                                                                                        : false;
+                                                                                }
+                                                                            );
+
+                                                                        if (
+                                                                            itsInBooking.length !=
+                                                                            0
+                                                                        ) {
+                                                                            setBookingStatus(
+                                                                                false
+                                                                            );
+                                                                            setBookingStatusMsg(
+                                                                                "Sie können nicht auswählen, was bereits gebucht ist."
+                                                                            );
+                                                                        }
 
                                                                         const selectedArr =
                                                                             selectedHours?.map(
@@ -1112,6 +1164,24 @@ const Time = () => {
                                                     {timetable.group.toUpperCase()}
                                                 </button>
                                                 {hours.map((hour, hrIndex) => {
+                                                    const inAlreadyBooking =
+                                                        alreadyBooked[
+                                                            `${
+                                                                timetable.group
+                                                            } ${format(
+                                                                hour,
+                                                                "MM-d-yyyy kk:mm"
+                                                            )}`
+                                                        ];
+
+                                                    const inAlreadyStaticBooked =
+                                                        alreadyStaticBooked[
+                                                            `${format(
+                                                                hour,
+                                                                "MM-d-yyyy kk:mm"
+                                                            )}`
+                                                        ];
+
                                                     return (
                                                         <button
                                                             key={
@@ -1122,22 +1192,190 @@ const Time = () => {
                                                             onClick={(e) => {
                                                                 const scheduleKey = `${format(
                                                                     hour,
-                                                                    "MM-dd-yyyy"
-                                                                )} ${getHours(
-                                                                    hour
-                                                                )}:00`;
-
-                                                                selectByGroup(
-                                                                    scheduleKey,
-                                                                    timetable.group
-                                                                );
+                                                                    "MM-dd-yyyy kk:mm"
+                                                                )}`;
 
                                                                 if (
-                                                                    selectedSchedule.length !=
-                                                                    0
+                                                                    !inAlreadyBooking
                                                                 ) {
-                                                                    setShowPopup(
-                                                                        false
+                                                                    if (
+                                                                        !firstSelect
+                                                                    ) {
+                                                                        setFirstSelect(
+                                                                            hour
+                                                                        );
+                                                                        setSelectedTheGroup(
+                                                                            timetable.group
+                                                                        );
+                                                                    } else {
+                                                                        setEndSelect(
+                                                                            hour
+                                                                        );
+
+                                                                        // console.log(
+                                                                        //     "firstSelect",
+                                                                        //     firstSelect,
+                                                                        //     endSelect
+                                                                        // );
+                                                                    }
+
+                                                                    if (
+                                                                        firstSelect
+                                                                    ) {
+                                                                        const selectedHours =
+                                                                            eachHourOfInterval(
+                                                                                {
+                                                                                    start:
+                                                                                        firstSelect <
+                                                                                        hour
+                                                                                            ? firstSelect
+                                                                                            : hour,
+                                                                                    end:
+                                                                                        firstSelect >
+                                                                                        hour
+                                                                                            ? firstSelect
+                                                                                            : hour,
+                                                                                }
+                                                                            );
+
+                                                                        const itsInBooking =
+                                                                            selectedHours.filter(
+                                                                                (
+                                                                                    item
+                                                                                ) => {
+                                                                                    const inAlreadyBooking =
+                                                                                        alreadyBooked[
+                                                                                            `${
+                                                                                                timetable.group
+                                                                                            } ${format(
+                                                                                                item,
+                                                                                                "MM-d-yyyy kk:mm"
+                                                                                            )}`
+                                                                                        ];
+
+                                                                                    return inAlreadyBooking
+                                                                                        ? true
+                                                                                        : false;
+                                                                                }
+                                                                            );
+
+                                                                        if (
+                                                                            itsInBooking.length !=
+                                                                            0
+                                                                        ) {
+                                                                            setBookingStatus(
+                                                                                false
+                                                                            );
+                                                                            setBookingStatusMsg(
+                                                                                "Sie können nicht auswählen, was bereits gebucht ist."
+                                                                            );
+                                                                        }
+
+                                                                        const selectedArr =
+                                                                            selectedHours?.map(
+                                                                                (
+                                                                                    item
+                                                                                ) =>
+                                                                                    `${format(
+                                                                                        item,
+                                                                                        "MM-dd-yyyy kk:mm"
+                                                                                    )}`
+                                                                            );
+
+                                                                        setSelectedSchedule(
+                                                                            selectedArr
+                                                                        );
+
+                                                                        // console.log(
+                                                                        //     "selectedArr",
+                                                                        //     selectedArr
+                                                                        // );
+
+                                                                        if (
+                                                                            timetable.group ==
+                                                                            "a"
+                                                                        ) {
+                                                                            setGroupA(
+                                                                                selectedArr
+                                                                            );
+                                                                        } else if (
+                                                                            timetable.group ==
+                                                                            "b"
+                                                                        ) {
+                                                                            setGroupB(
+                                                                                selectedArr
+                                                                            );
+                                                                        } else if (
+                                                                            timetable.group ==
+                                                                            "d"
+                                                                        ) {
+                                                                            setGroupD(
+                                                                                selectedArr
+                                                                            );
+                                                                        } else if (
+                                                                            timetable.group ==
+                                                                            "h"
+                                                                        ) {
+                                                                            setGroupH(
+                                                                                selectedArr
+                                                                            );
+                                                                        }
+                                                                        setShowPopup(
+                                                                            false
+                                                                        );
+                                                                    } else {
+                                                                        selectByGroup(
+                                                                            scheduleKey,
+                                                                            timetable.group
+                                                                        );
+                                                                    }
+                                                                } else {
+                                                                    const theScheduledUser =
+                                                                        users[
+                                                                            `${inAlreadyBooking?.user}`
+                                                                        ] ??
+                                                                        false;
+                                                                }
+                                                                const theScheduledUser =
+                                                                    users[
+                                                                        `${inAlreadyBooking?.user}`
+                                                                    ] ?? false;
+
+                                                                setTheClickedUser(
+                                                                    inAlreadyBooking
+                                                                );
+                                                                setPopoverData(
+                                                                    inAlreadyBooking
+                                                                );
+                                                                setPopoverUser({
+                                                                    id: inAlreadyBooking?.user,
+                                                                    name:
+                                                                        theScheduledUser.name ??
+                                                                        theScheduledUser,
+                                                                });
+
+                                                                if (
+                                                                    inAlreadyBooking
+                                                                ) {
+                                                                    handleMouseMove(
+                                                                        e
+                                                                    );
+
+                                                                    if (
+                                                                        theScheduledUser
+                                                                    ) {
+                                                                        setPopoverUser(
+                                                                            {
+                                                                                id: inAlreadyBooking?.user,
+                                                                                name:
+                                                                                    theScheduledUser.name ??
+                                                                                    theScheduledUser,
+                                                                            }
+                                                                        );
+                                                                    }
+
+                                                                    setPopover(
+                                                                        true
                                                                     );
                                                                 }
                                                             }}
@@ -1196,18 +1434,43 @@ const Time = () => {
                                                                 ].includes(
                                                                     hrIndex
                                                                 ) && "space",
-                                                                selectedSchedule.length !=
-                                                                    0 &&
+                                                                firstSelect &&
                                                                     format(
-                                                                        hour,
+                                                                        firstSelect,
+                                                                        "MM-dd-yyyy"
+                                                                    ) ==
+                                                                        format(
+                                                                            hour,
+                                                                            "MM-dd-yyyy"
+                                                                        ) &&
+                                                                    "sameday",
+                                                                firstSelect &&
+                                                                    format(
+                                                                        firstSelect,
                                                                         "MM-dd-yyyy"
                                                                     ) !=
-                                                                        selectedSchedule[0].substr(
-                                                                            0,
-                                                                            10
-                                                                        )
-                                                                    ? "sameday"
-                                                                    : "diffday"
+                                                                        format(
+                                                                            hour,
+                                                                            "MM-dd-yyyy"
+                                                                        ) &&
+                                                                    "diffday",
+                                                                selectedTheGroup !=
+                                                                    "" &&
+                                                                    selectedTheGroup ==
+                                                                        timetable.group &&
+                                                                    "samegroup",
+                                                                selectedTheGroup !=
+                                                                    "" &&
+                                                                    selectedTheGroup !=
+                                                                        timetable.group &&
+                                                                    "diffgroup",
+                                                                inAlreadyBooking &&
+                                                                    `${inAlreadyBooking.col} selected`,
+                                                                !isAdmin &&
+                                                                    popoverData.user ==
+                                                                        currentUser.id &&
+                                                                    inAlreadyStaticBooked &&
+                                                                    `diffgroup`
                                                             )}
                                                         >
                                                             <time

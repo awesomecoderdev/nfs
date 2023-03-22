@@ -17,6 +17,35 @@
         .readable img{
           margin: 0;
         }
+        
+select,
+input[type="date"],
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+input[type="time"],
+input[type="url"],
+input[type="color"],
+textarea {
+    padding: 0.45rem;
+    width: 13rem;
+    margin: 5px 14px;
+}
+
+button[type="submit"],
+button[type="reset"],
+button[type="button"],
+.button {
+    background: #2b8a3e;
+    padding: 0.5rem 2.3rem;
+    color: white;
+    font-size: 18px;
+    border: none;
+    border-radius: 0.25rem;
+}
     </style>
 
    <form action="{{route('dienstplan.hour.overview') }}" method="get">
